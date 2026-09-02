@@ -1,0 +1,1215 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Immune Crosstalk Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* ---------------------------------------------------------------
+   Immune Crosstalk Atlas
+   Palette derived from histology: haematoxylin ink, eosin accent,
+   five lineage hues that encode cell ancestry rather than decorate.
+   --------------------------------------------------------------- */
+:root{
+  --ground:#F8F4F6;
+  --surface:#FFFFFF;
+  --surface-2:#F2EAEE;
+  --line:#E2D5DC;
+  --line-strong:#C9B6C1;
+  --ink:#22162B;
+  --ink-2:#4B3B54;
+  --muted:#77677F;
+  --accent:#B23A63;
+  --accent-soft:#F6E3EA;
+
+  --lin-barrier:#A65B3C;
+  --lin-myeloid:#B8770F;
+  --lin-innate:#1F7A5E;
+  --lin-tcell:#1D6E93;
+  --lin-bcell:#5145B5;
+  --lin-soluble:#B23A63;
+
+  --band-barrier:#F0E2DC;
+  --band-tissue:#FBF1F4;
+  --band-node:#EAF0F2;
+  --band-blood:#F7E3E6;
+
+  --shadow:0 1px 2px rgba(34,22,43,.06), 0 8px 28px -14px rgba(34,22,43,.28);
+  --radius:10px;
+  --step:clamp(.9rem,.86rem + .2vw,1rem);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#150E1B;
+    --surface:#1E1526;
+    --surface-2:#271C31;
+    --line:#382A43;
+    --line-strong:#4E3D5B;
+    --ink:#F3E9EF;
+    --ink-2:#D3C3D6;
+    --muted:#A392AC;
+    --accent:#E8799C;
+    --accent-soft:#3A2030;
+
+    --lin-barrier:#DE9770;
+    --lin-myeloid:#E5AC3E;
+    --lin-innate:#4FC2A0;
+    --lin-tcell:#5FB6DD;
+    --lin-bcell:#9A90F0;
+    --lin-soluble:#E8799C;
+
+    --band-barrier:#2A1D24;
+    --band-tissue:#211724;
+    --band-node:#182229;
+    --band-blood:#2B1A20;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#150E1B;
+  --surface:#1E1526;
+  --surface-2:#271C31;
+  --line:#382A43;
+  --line-strong:#4E3D5B;
+  --ink:#F3E9EF;
+  --ink-2:#D3C3D6;
+  --muted:#A392AC;
+  --accent:#E8799C;
+  --accent-soft:#3A2030;
+
+  --lin-barrier:#DE9770;
+  --lin-myeloid:#E5AC3E;
+  --lin-innate:#4FC2A0;
+  --lin-tcell:#5FB6DD;
+  --lin-bcell:#9A90F0;
+  --lin-soluble:#E8799C;
+
+  --band-barrier:#2A1D24;
+  --band-tissue:#211724;
+  --band-node:#182229;
+  --band-blood:#2B1A20;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Public Sans","Helvetica Neue",Arial,sans-serif;
+  font-size:var(--step);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif;font-weight:600;text-wrap:balance;margin:0}
+p{margin:0 0 .7em}
+p:last-child{margin-bottom:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;letter-spacing:-.01em}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1500px;margin:0 auto;padding:0 clamp(14px,3vw,32px) 64px}
+header.top{
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:18px 28px;
+  padding:clamp(22px,4vw,40px) 0 18px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:22px;
+}
+.brand{flex:1 1 320px;min-width:280px}
+.brand h1{font-size:clamp(1.9rem,1.3rem + 2.2vw,3rem);line-height:1.02;letter-spacing:-.015em}
+.brand h1 em{font-style:italic;color:var(--accent)}
+.brand p{color:var(--ink-2);max-width:56ch;margin-top:.5em}
+
+/* depth selector */
+.depth{display:flex;flex-direction:column;gap:7px}
+.seg{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.seg button{
+  border:0;background:transparent;cursor:pointer;border-radius:999px;
+  padding:7px 15px;font-size:.85rem;font-weight:500;color:var(--muted);
+  transition:background .18s,color .18s;white-space:nowrap;
+}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);font-weight:600}
+
+/* ---------- scenario bar ---------- */
+.scenarios{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  padding-bottom:20px;
+}
+.scen-btn{
+  border:1px solid var(--line);background:var(--surface);cursor:pointer;
+  border-radius:999px;padding:8px 16px;font-size:.86rem;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:border-color .18s,background .18s,transform .18s;
+}
+.scen-btn:hover{border-color:var(--line-strong);transform:translateY(-1px)}
+.scen-btn[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.scen-btn .dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.55}
+
+/* ---------- layout ---------- */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 384px;gap:22px;align-items:start}
+@media(max-width:1080px){.stage{grid-template-columns:minmax(0,1fr)}}
+
+.mapcard{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.mapscroll{overflow-x:auto}
+svg.atlas{display:block;width:100%;min-width:880px;height:auto}
+
+/* map internals */
+.band-label{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;fill:var(--muted)}
+.node-label{font-family:"Public Sans",sans-serif;font-size:12.5px;font-weight:500;fill:var(--ink);pointer-events:none}
+.node-label.sub{font-size:10.5px;fill:var(--muted);font-weight:400}
+.edge{fill:none;stroke:var(--line-strong);stroke-width:1.2;opacity:.34;transition:opacity .25s,stroke-width .25s,stroke .25s}
+.edge.hot{stroke:var(--accent);stroke-width:2.4;opacity:1}
+.edge.dim{opacity:.07}
+.edgehit{fill:none;stroke:transparent;stroke-width:16;cursor:pointer}
+.edge-label{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;fill:var(--ink);
+  paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;
+  pointer-events:none;opacity:0;transition:opacity .2s;
+}
+.edge-label.show{opacity:1}
+g.node{cursor:pointer}
+g.node .body{transition:transform .2s,filter .2s}
+g.node:hover .body{filter:brightness(1.06)}
+g.node .ring{fill:none;stroke:var(--accent);stroke-width:2.5;opacity:0;transition:opacity .2s}
+g.node.sel .ring{opacity:1}
+g.node.dim{opacity:.22}
+g.node.pulse .body{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+@media(prefers-reduced-motion:reduce){
+  g.node.pulse .body{animation:none}
+  *{transition-duration:.01ms!important}
+}
+
+/* ---------- player ---------- */
+.player{border-top:1px solid var(--line);background:var(--surface-2);padding:14px 18px}
+.player .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pbtn{
+  border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;
+  padding:7px 14px;cursor:pointer;font-size:.85rem;font-weight:500;
+}
+.pbtn:hover{border-color:var(--accent);color:var(--accent)}
+.pbtn:disabled{opacity:.4;cursor:default}
+.pbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.pbtn.primary:hover{filter:brightness(1.08);color:#fff}
+.ticks{display:flex;gap:4px;flex:1 1 260px;min-width:200px}
+.tick{flex:1;height:5px;border-radius:3px;background:var(--line);cursor:pointer;border:0;padding:0;transition:background .2s}
+.tick[data-state="done"]{background:var(--line-strong)}
+.tick[data-state="now"]{background:var(--accent)}
+.step-cap{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:0 16px;align-items:baseline}
+.step-time{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--accent);white-space:nowrap;letter-spacing:.02em}
+.step-title{font-family:Fraunces,serif;font-size:1.06rem;font-weight:600;margin-bottom:.25em}
+.step-body{color:var(--ink-2);max-width:78ch}
+.step-cap .col2{grid-column:2}
+@media(max-width:620px){
+  .step-cap{grid-template-columns:1fr}
+  .step-cap .col2{grid-column:1}
+}
+
+/* ---------- rail ---------- */
+.rail{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:20px;position:sticky;top:18px;
+  max-height:calc(100vh - 36px);overflow:auto;
+}
+@media(max-width:1080px){.rail{position:static;max-height:none}}
+.rail h2{font-size:1.5rem;letter-spacing:-.01em;line-height:1.12}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;
+  padding:3px 10px;font-size:.72rem;font-weight:600;letter-spacing:.02em;
+  border:1px solid currentColor;
+}
+.chip .swatch{width:7px;height:7px;border-radius:50%;background:currentColor}
+.rail .meta{display:flex;flex-wrap:wrap;gap:7px;margin:.75em 0 1.1em}
+.rail .where{font-size:.78rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.block{border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
+.block h3{font-size:.95rem;margin-bottom:.5em}
+.kv{margin:0}
+.kv dt{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-family:"IBM Plex Mono",monospace;margin-top:.8em}
+.kv dt:first-child{margin-top:0}
+.kv dd{margin:.25em 0 0}
+.talks{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.talks button{
+  width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);
+  border-radius:8px;padding:9px 11px;cursor:pointer;display:block;
+  transition:border-color .18s,background .18s;
+}
+.talks button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.talks .who{font-weight:600;font-size:.88rem;display:flex;align-items:center;gap:7px}
+.talks .who .arrow{color:var(--muted);font-weight:400}
+.talks .sig{font-family:"IBM Plex Mono",monospace;font-size:.75rem;color:var(--accent);margin-top:2px;display:block}
+.clinical{background:var(--surface-2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:11px 13px;font-size:.9rem}
+.hint{color:var(--muted);font-size:.87rem}
+
+/* legend + index */
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--ink-2)}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.indexcard{
+  margin-top:22px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);
+}
+.idx-group{margin-top:14px}
+.idx-group h3{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;font-family:"IBM Plex Mono",monospace;font-weight:500;margin-bottom:8px}
+.idx-chips{display:flex;flex-wrap:wrap;gap:7px}
+.idx-chips button{
+  border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:5px 12px;font-size:.83rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  transition:border-color .18s,background .18s;
+}
+.idx-chips button:hover{border-color:currentColor}
+.idx-chips button[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.idx-chips i{width:8px;height:8px;border-radius:50%}
+
+footer.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;max-width:80ch}
+footer.foot p{margin-bottom:.5em}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <p class="eyebrow">A map of who talks to whom</p>
+      <h1>Immune <em>Crosstalk</em> Atlas</h1>
+      <p>Your immune system is a conversation between about twenty kinds of cell. Click any cell to hear what it says and who listens, or press play on a real event and watch the conversation unfold.</p>
+    </div>
+    <div class="depth">
+      <span class="eyebrow" id="depth-label">Explain it to me as a</span>
+      <div class="seg" role="group" aria-labelledby="depth-label" id="depthSeg">
+        <button type="button" data-depth="plain" aria-pressed="true">Curious reader</button>
+        <button type="button" data-depth="student" aria-pressed="false">Student</button>
+        <button type="button" data-depth="clinical" aria-pressed="false">Immunologist</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="scenarios" aria-label="Scenarios">
+    <span class="eyebrow" style="margin-right:4px">Watch it happen</span>
+    <button type="button" class="scen-btn" id="freeBtn" aria-pressed="true"><span class="dot"></span>Free explore</button>
+    <div id="scenBtns" style="display:contents"></div>
+  </nav>
+
+  <div class="stage">
+    <div>
+      <div class="mapcard">
+        <div class="mapscroll">
+          <svg class="atlas" id="atlas" viewBox="0 0 1200 790" role="img"
+               aria-label="Map of immune cells arranged by body compartment: airway surface, infected tissue, draining lymph node and bloodstream, with labelled signalling connections between them.">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"></path>
+              </marker>
+            </defs>
+            <g id="bands"></g>
+            <g id="edges"></g>
+            <g id="edgeLabels"></g>
+            <g id="nodes"></g>
+          </svg>
+        </div>
+        <div class="player">
+          <div class="row">
+            <button type="button" class="pbtn primary" id="playBtn">Play</button>
+            <button type="button" class="pbtn" id="prevBtn">Back</button>
+            <button type="button" class="pbtn" id="nextBtn">Next</button>
+            <div class="ticks" id="ticks" role="group" aria-label="Scenario steps"></div>
+          </div>
+          <div class="step-cap" id="stepCap">
+            <span class="step-time" id="stepTime">Free explore</span>
+            <div>
+              <div class="step-title" id="stepTitle">Nothing is happening yet</div>
+              <div class="step-body" id="stepBody">Pick an event above to run it step by step, or click any cell on the map to read about it. Connections stay quiet until you hover one, so the map is not a hairball.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <aside class="rail" id="rail" aria-live="polite"></aside>
+  </div>
+
+  <div class="indexcard">
+    <p class="eyebrow">Every cell on the map</p>
+    <div class="legend" id="legend"></div>
+    <div id="cellIndex"></div>
+  </div>
+
+  <footer class="foot">
+    <p><strong>How accurate is this?</strong> Every connection shown carries the molecule that actually mediates it, and the scenario timings follow the textbook course of each response in an average adult. Real responses vary with dose, route, age and prior exposure.</p>
+    <p>Simplifications worth naming: innate lymphoid cells, γδ T cells, follicular dendritic cells, basophils and the bone marrow compartment are described in the text but not drawn. The germinal centre is compressed into a single B cell node. Cell positions are schematic, not anatomical.</p>
+    <p>Built as a teaching aid. It is not medical advice.</p>
+  </footer>
+</div>
+
+<script>
+/* =====================================================================
+   DATA
+   Every edge carries the molecule that actually mediates it.
+   Prose exists at three depths: plain / student / clinical.
+   ===================================================================== */
+const LINEAGES = {
+  barrier:{label:"Barrier & sentinel", v:"--lin-barrier"},
+  myeloid:{label:"Myeloid — eat, alarm, present", v:"--lin-myeloid"},
+  innate:{label:"Innate killers", v:"--lin-innate"},
+  tcell:{label:"T cells — the coordinators", v:"--lin-tcell"},
+  bcell:{label:"B cells & antibody", v:"--lin-bcell"},
+  soluble:{label:"Soluble weapons", v:"--lin-soluble"}
+};
+
+const COMPARTMENTS = {
+  barrier:"Airway surface",
+  tissue:"Infected tissue",
+  node:"Draining lymph node",
+  blood:"Bloodstream"
+};
+
+const CELLS = [
+{ id:"epithelium", name:"Epithelial cell", sub:"the lining", lin:"barrier", comp:"barrier", glyph:"brick", x:120, y:100,
+  plain:"The wall itself. A tight sheet of cells covered in slime and tiny beating hairs that sweep dirt out. Most infections never get past it. When a cell of the wall is broken into, it does not fight — it shouts.",
+  student:"A physical and chemical barrier: tight junctions, mucus, cilia, defensins and lysozyme. It also senses. Pattern recognition receptors on and inside these cells detect viral RNA or bacterial products and trigger release of type I interferons plus the alarmins IL-33, TSLP and IL-25, which set the tone of everything that follows.",
+  clinical:"Non-haematopoietic sentinel. TLR3/7/8 and RIG-I/MDA5 sensing drives IRF3/IRF7 and NF-κB, giving IFN-β and CXCL8. Alarmin release (IL-33, TSLP, IL-25) biases downstream responses towards type 2 immunity, which is why epithelial dysfunction sits upstream of asthma and atopic dermatitis. Infected epithelium downregulates MHC I under some viruses, exposing it to NK missing-self killing.",
+  markers:"EpCAM+, cytokeratin+, MHC I+ (MHC II inducible)",
+  note:"Epithelial barrier genes (FLG in filaggrin deficiency) predict atopic disease more strongly than most immune loci. Barrier first, immunity second." },
+
+{ id:"mast", name:"Mast cell", sub:"the tripwire", lin:"myeloid", comp:"tissue", glyph:"granule", x:300, y:205,
+  plain:"A cell packed with pre-loaded chemical grenades, sitting permanently in your skin, gut and airways. It does not need to prepare. Touch the trigger and it dumps everything in seconds, which is why an allergic reaction is immediate.",
+  student:"Tissue-resident granulocyte loaded with histamine, heparin, tryptase and TNF. Degranulates within seconds of FcεRI cross-linking by allergen-bound IgE, or on complement anaphylatoxins C3a/C5a. Histamine dilates vessels and makes them leaky, letting plasma proteins and cells flood in. It then makes leukotrienes and prostaglandins over minutes.",
+  clinical:"Kit-dependent, long-lived, tissue-resident. Two arms: rapid degranulation (histamine, tryptase, TNF) and delayed eicosanoid/cytokine synthesis (LTC4, PGD2, IL-4, IL-5, IL-13). Tryptase is the clinical marker of systemic activation. Distinguish IgE-dependent activation from MRGPRX2-mediated pseudo-allergy to drugs such as vancomycin and neuromuscular blockers.",
+  markers:"CD117 (KIT)+, FcεRI+, tryptase+, CD203c+",
+  note:"Serum tryptase peaks 1–2 h after anaphylaxis and normalises by 24 h. A persistently raised baseline (>20 ng/mL) points to mastocytosis and a KIT D816V clone." },
+
+{ id:"macrophage", name:"Macrophage", sub:"resident eater", lin:"myeloid", comp:"tissue", glyph:"kidney", x:145, y:270,
+  plain:"The caretaker that lives in the tissue all the time. It eats debris, dead cells and bacteria, cleaning up quietly for years. When it swallows something dangerous it changes character and starts calling for reinforcements.",
+  student:"Phagocyte and cytokine hub. Engulfs opsonised targets via complement receptors and FcγR, kills them in the phagolysosome, and secretes IL-1β, TNF and IL-6 — the three cytokines that produce fever, vessel leak and the acute phase response. Some pathogens survive inside it; a Th1 cell delivering IFN-γ is what licenses the macrophage to finish the job.",
+  clinical:"Ontogeny is mixed: yolk-sac-derived self-renewing tissue macrophages (alveolar, Kupffer, microglia) plus monocyte-derived cells recruited during inflammation. Polarisation is a spectrum, not two states — IFN-γ/LPS drives iNOS and IL-12 (classical), IL-4/IL-13 drives arginase and tissue repair. Inflammasome activation (NLRP3 → caspase-1) is what converts pro-IL-1β into its active form.",
+  markers:"CD68+, CD14+, CD64+, MerTK+, CD163 on repair phenotypes",
+  note:"Uncontrolled macrophage activation with IFN-γ excess produces HLH/MAS: ferritin in the thousands, cytopenias, high soluble CD25. Anakinra and emapalumab target this axis directly." },
+
+{ id:"neutrophil", name:"Neutrophil", sub:"first responder", lin:"myeloid", comp:"tissue", glyph:"multilobed", x:145, y:435,
+  plain:"The infantry. Your marrow makes about a hundred billion a day, they live for less than a day, and they arrive in enormous numbers within hours. Pus is mostly spent neutrophils. Crude, fast and effective.",
+  student:"Most abundant leukocyte. Recruited by CXCL8, C5a and LTB4, it rolls, sticks and squeezes through the vessel wall, then kills by phagocytosis, by dumping granule enzymes, by the respiratory burst, and by NETs — throwing out its own DNA studded with antimicrobial proteins to trap bacteria.",
+  clinical:"Half-life in blood is hours; the marginated and marrow reserve pools explain the swing in counts with steroids or adrenaline. NADPH oxidase failure gives chronic granulomatous disease; adhesion molecule failure gives LAD with delayed cord separation. NETs are a source of externalised citrullinated histones and dsDNA, linking neutrophil death to autoantibody formation in lupus and to immunothrombosis.",
+  markers:"CD15+, CD16b+, CD66b+, CD11b+",
+  note:"Neutrophil count below 0.5 × 10⁹/L is the threshold at which fever becomes an emergency, because there is no cell left to make the usual signs of infection." },
+
+{ id:"dendritic", name:"Dendritic cell", sub:"the messenger", lin:"myeloid", comp:"tissue", glyph:"dendrite", x:485, y:205,
+  plain:"The one cell that connects the two halves of your immune system. It grabs a piece of whatever is attacking, then walks out of the tissue and into a lymph node to show that piece to the cells that plan the specific counterattack. Without this journey, nothing adaptive happens.",
+  student:"The professional antigen-presenting cell. On sensing danger it matures: it stops eating, upregulates MHC II and the costimulatory molecules CD80/CD86, switches on CCR7 and migrates up the lymphatic vessel to the draining lymph node. There it gives a naive T cell three signals — antigen on MHC, costimulation, and a cytokine that decides which kind of helper cell is made.",
+  clinical:"Subsets matter: cDC1 (CLEC9A, XCR1) cross-present to CD8 and drive Th1; cDC2 (CD1c) favour Th2/Th17; pDC (CD123, BDCA-2) are the dominant source of type I interferon. Signal 3 sets lineage — IL-12 → Th1, IL-6/IL-23 → Th17, IL-10/TGF-β → tolerance. A DC presenting antigen without costimulation deletes or anergises the T cell instead of activating it, which is the basis of peripheral tolerance.",
+  markers:"HLA-DR-high, CD11c+, CD80/CD86+ when mature, CCR7+ when migrating",
+  note:"Sustained pDC interferon production is a core feature of SLE; the interferon signature in blood tracks disease activity and is the target of anifrolumab." },
+
+{ id:"nk", name:"Natural killer cell", sub:"missing-self patrol", lin:"innate", comp:"tissue", glyph:"granule", x:505, y:400,
+  plain:"A patrol that checks whether each cell is still showing its identity badge. Viruses and tumours often hide the badge to escape other defences — and that absence is exactly what this cell is looking for. No badge, no survival.",
+  student:"Innate lymphocyte that integrates activating and inhibitory receptor signals. Inhibitory KIR and NKG2A read MHC I; healthy cells are spared. Infected or transformed cells that lose MHC I, or that display stress ligands such as MICA/MICB, are killed by perforin and granzyme within minutes. It also kills antibody-coated cells through CD16, and its IFN-γ pushes the whole response towards Th1.",
+  clinical:"Education/licensing means NK function depends on prior engagement of self MHC I. CD56-bright cells are cytokine producers, CD56-dim CD16+ cells are the cytotoxic effectors and the ones performing ADCC — the mechanism behind rituximab and trastuzumab. Familial HLH mutations in PRF1, UNC13D and STX11 abolish granule delivery in both NK and CD8 cells.",
+  markers:"CD56+ CD3−, CD16+ (dim subset), NKG2D+, KIR variable",
+  note:"NK cytotoxicity assays and perforin expression by flow are the first-line screen when HLH is suspected in a child." },
+
+{ id:"eosinophil", name:"Eosinophil", sub:"anti-parasite, pro-damage", lin:"myeloid", comp:"tissue", glyph:"granule", x:335, y:435,
+  plain:"A specialist for targets too big to swallow, such as parasitic worms. It cannot eat them, so it coats them in toxic proteins from the outside. The same toxins damage your own airway when it turns up for the wrong reason, which is much of what asthma is.",
+  student:"Granulocyte recruited and kept alive by IL-5 and CCL11 (eotaxin). Degranulates major basic protein, eosinophil cationic protein and peroxidase onto antibody-coated helminths. In allergic airway disease the same granule proteins strip the epithelium and drive remodelling.",
+  clinical:"IL-5 is the survival and differentiation signal — hence mepolizumab and benralizumab in eosinophilic asthma and EGPA. Sputum or blood eosinophil count predicts corticosteroid and biologic response. Consider hypereosinophilic syndromes, drug reaction (DRESS), parasitic infection and adrenal insufficiency when counts exceed 1.5 × 10⁹/L.",
+  markers:"CD11b+, Siglec-8+, CCR3+, IL-5Rα (CD125)+",
+  note:"A blood eosinophil count above 0.3 × 10⁹/L identifies the asthma and COPD patients most likely to benefit from inhaled corticosteroids." },
+
+{ id:"monocyte", name:"Monocyte", sub:"the reinforcement", lin:"myeloid", comp:"blood", glyph:"kidney", x:210, y:697,
+  plain:"A cell that circulates in the blood waiting for an address. When a tissue calls, it leaves the bloodstream and grows into a macrophage on arrival. Reinforcements that change job when they get there.",
+  student:"Circulates for a day or so. CCL2 acting on CCR2 pulls classical monocytes out of the blood into inflamed tissue, where they differentiate into macrophages or inflammatory dendritic cells depending on local cytokines. Non-classical monocytes instead patrol the vessel lumen.",
+  clinical:"Classical CD14++CD16−, intermediate CD14++CD16+, non-classical CD14+CD16++. The intermediate subset expands in active inflammation and correlates with cardiovascular risk. Monocyte HLA-DR expression falls in sepsis-associated immunoparalysis and is used as a recovery marker in ICU immunomonitoring.",
+  markers:"CD14, CD16, CCR2, HLA-DR",
+  note:"Persistently low monocyte HLA-DR after sepsis identifies patients at high risk of secondary infection." },
+
+{ id:"complement", name:"Complement", sub:"protein cascade", lin:"soluble", comp:"tissue", glyph:"molecule", x:150, y:545,
+  plain:"Not a cell at all — around thirty proteins drifting in your blood, ready to snap into action in a chain reaction. They tag invaders so eaters can find them, call cells to the site, and can punch holes straight through bacteria. It works in seconds and needs no prior knowledge.",
+  student:"Three activation routes converge on C3. The classical pathway starts at C1q binding IgG or IgM; the lectin pathway at mannose-binding lectin on microbial sugars; the alternative pathway ticks over spontaneously and amplifies. C3b opsonises, C3a and C5a recruit and activate cells, and C5b–9 forms the membrane attack complex.",
+  clinical:"Regulators are as important as the cascade: factor H, factor I, CD55 and CD59 protect host surfaces, and their failure causes aHUS and PNH. Terminal pathway deficiency (C5–C9) gives recurrent Neisseria infection — vaccinate before eculizumab. Early classical component deficiency (C1q, C4) paradoxically causes lupus, because immune complex and apoptotic cell clearance fails.",
+  markers:"C3, C4, CH50/AH50 functional assays",
+  note:"Low C3 with low C4 suggests classical pathway consumption by immune complexes, as in active lupus nephritis; low C3 with normal C4 points to alternative pathway dysregulation." },
+
+{ id:"antibody", name:"Antibody", sub:"the guided weapon", lin:"soluble", comp:"tissue", glyph:"molecule", x:355, y:545,
+  plain:"A Y-shaped protein made to fit one target and nothing else. It sticks to that target and does three things: blocks it from entering cells, marks it for eating, and switches on the protein cascade. It is the part of immunity that vaccines are designed to produce.",
+  student:"Secreted immunoglobulin. Its arms bind antigen; its stem determines what happens next. IgM comes first and activates complement well. IgG is the workhorse of the blood and crosses the placenta. IgA is secreted onto mucosal surfaces. IgE arms mast cells. Neutralisation, opsonisation, complement fixation and ADCC are its four jobs.",
+  clinical:"Class switching is directed by helper cytokines: IFN-γ → IgG1/IgG3, IL-4 → IgG4/IgE, TGF-β/APRIL → IgA. Effector strength varies by subclass; IgG1 and IgG3 fix complement and bind FcγRIIIa best, IgG4 is functionally inert and is engineered into checkpoint inhibitors for that reason. Fc glycosylation, particularly afucosylation, sharply increases ADCC.",
+  markers:"IgM, IgG1–4, IgA1–2, IgE; FcγRI/II/III, FcεRI, FcRn",
+  note:"FcRn recycling gives IgG its three-week half-life and explains why blocking FcRn (efgartigimod) rapidly lowers pathogenic autoantibody in myasthenia gravis." },
+
+{ id:"naiveCD4", name:"Naive CD4 T cell", sub:"awaiting orders", lin:"tcell", comp:"node", glyph:"plain", x:762, y:190,
+  plain:"A blank helper cell, waiting in a lymph node for a messenger to show it something. Each one recognises only a single molecular shape, so the body keeps millions of different ones on standby. Most will never be used.",
+  student:"Recirculates between blood and lymph node until its T cell receptor meets its specific peptide on MHC II. Full activation needs three signals: antigen, costimulation through CD28, and a polarising cytokine. It then proliferates enormously and commits to a helper lineage.",
+  clinical:"Repertoire generated by V(D)J recombination and shaped by thymic positive and negative selection; TRECs measure recent thymic output. Signal 1 without signal 2 gives anergy. Choice of lineage reflects the cytokine milieu acting on STAT proteins and master transcription factors — this is the decision point that everything downstream depends on.",
+  markers:"CD3+ CD4+ CD45RA+ CCR7+ CD62L+",
+  note:"Naive CD4 count is what HIV depletes and what CD4-directed reconstitution after transplant must rebuild; below 200 cells/µL opportunistic infection risk rises steeply." },
+
+{ id:"th1", name:"Th1 cell", sub:"anti-viral, anti-intracellular", lin:"tcell", comp:"node", glyph:"plain", x:920, y:120,
+  plain:"The helper that deals with things hiding inside your cells — viruses and certain bacteria. Its main move is to shout at macrophages until they become far better killers.",
+  student:"Made when IL-12 and IFN-γ drive T-bet. Its signature output is IFN-γ, which licenses macrophages to kill ingested organisms, drives class switching to complement-fixing IgG, and amplifies antigen presentation. Th1 responses build granulomas around organisms that cannot be cleared.",
+  clinical:"IL-12/IFN-γ axis defects (IL12RB1, IFNGR1/2, STAT1) cause Mendelian susceptibility to mycobacterial disease. Excess IFN-γ underlies HLH and drives the macrophage activation seen in severe infection. Th1 skewing contributes to Crohn's and to type 1 diabetes islet destruction.",
+  markers:"T-bet+, CXCR3+, IFN-γ+, IL-12Rβ2+",
+  note:"A positive IGRA reads Th1 memory to mycobacterial antigens; it cannot distinguish latent infection from past exposure or active disease." },
+
+{ id:"th2", name:"Th2 cell", sub:"anti-parasite, pro-allergy", lin:"tcell", comp:"node", glyph:"plain", x:920, y:240,
+  plain:"The helper for large parasites — worms and the like. It organises mucus, muscle contraction and toxic granule cells to expel them. Pointed at pollen instead, the same programme produces hay fever and asthma.",
+  student:"Made when IL-4 drives GATA3. Secretes IL-4, IL-5 and IL-13: IL-4 switches B cells to IgE, IL-5 recruits and sustains eosinophils, IL-13 drives mucus production, goblet cell hyperplasia and smooth muscle contraction.",
+  clinical:"Type 2 immunity is now understood as a network including ILC2s responding to epithelial alarmins, which is why type 2 disease occurs without obvious allergen sensitisation. Therapeutics map onto the pathway precisely: dupilumab blocks IL-4Rα (IL-4 and IL-13), mepolizumab blocks IL-5, omalizumab removes free IgE, tezepelumab blocks TSLP upstream of the whole module.",
+  markers:"GATA3+, CRTH2+, CCR4+, IL-4/IL-5/IL-13+",
+  note:"Type 2 biomarkers (blood eosinophils, FeNO, total IgE) select biologic therapy in severe asthma far better than symptom scores." },
+
+{ id:"th17", name:"Th17 cell", sub:"barrier defence", lin:"tcell", comp:"node", glyph:"plain", x:920, y:355,
+  plain:"The helper that guards skin and mucous membranes, especially against fungi. It works by telling the lining to make its own antibiotics and by summoning waves of infantry cells.",
+  student:"Made when TGF-β with IL-6 drives RORγt, and stabilised by IL-23. Secretes IL-17A, IL-17F and IL-22, which act on epithelial cells to produce antimicrobial peptides, and induce G-CSF and CXCL8 to recruit neutrophils.",
+  clinical:"Loss of function gives chronic mucocutaneous candidiasis (STAT3 in hyper-IgE syndrome, IL-17F/IL-17RA defects, AIRE-related autoantibodies against IL-17/IL-22). Excess drives psoriasis, psoriatic arthritis and axial spondyloarthritis — secukinumab and ixekizumab target IL-17A, ustekinumab and risankizumab target the IL-12/23 or IL-23 axis. IL-17 blockade can unmask or worsen inflammatory bowel disease, a useful reminder that the pathway is protective in the gut.",
+  markers:"RORγt+, CCR6+, IL-23R+, IL-17A/IL-22+",
+  note:"Candidiasis after starting an IL-17 inhibitor is expected pharmacology, not an unrelated infection." },
+
+{ id:"treg", name:"Regulatory T cell", sub:"the brake", lin:"tcell", comp:"node", glyph:"plain", x:1082, y:300,
+  plain:"The cell whose whole job is to stop the others. An immune response that cannot be switched off destroys the tissue it was meant to protect, so this brake matters as much as any weapon. When it fails, the immune system attacks the body.",
+  student:"FOXP3-expressing CD4 cell, made in the thymus or induced in the periphery by TGF-β and IL-2. Suppresses in several ways at once: CTLA-4 strips CD80/CD86 off dendritic cells, high-affinity CD25 consumes local IL-2, and it secretes IL-10 and TGF-β. It is the cellular arm of peripheral tolerance.",
+  clinical:"FOXP3 mutation causes IPEX; CTLA-4 haploinsufficiency and LRBA deficiency cause an overlapping autoimmune-lymphoproliferative picture treatable with abatacept. Checkpoint inhibitor toxicity is in large part Treg-checkpoint biology released. Low-dose IL-2 preferentially expands Tregs and is in trials for lupus and type 1 diabetes.",
+  markers:"CD4+ CD25-high CD127-low FOXP3+, CTLA-4+, Helios for thymic origin",
+  note:"CD127-low with CD25-high is the standard surface surrogate for Tregs in flow cytometry, because FOXP3 staining requires permeabilisation and cannot be sorted live." },
+
+{ id:"tfh", name:"Follicular helper T cell", sub:"the antibody coach", lin:"tcell", comp:"node", glyph:"plain", x:920, y:480,
+  plain:"The helper that specialises in coaching B cells. It sits in the part of the lymph node where antibodies are refined, and picks out the B cells making the best-fitting antibody, letting them survive and improve.",
+  student:"BCL6-driven, CXCR5+ so it homes to the B cell follicle. Delivers CD40L and IL-21 to B cells in the germinal centre, which is what permits class switching, somatic hypermutation and selection of high-affinity clones. Without this help, antibody stays low-affinity IgM.",
+  clinical:"CD40L deficiency causes X-linked hyper-IgM: normal or high IgM, absent IgG/IgA, no germinal centres, PJP risk. Circulating CXCR5+ PD-1-high cells are a usable blood surrogate for germinal centre activity and expand after vaccination and in active lupus and Sjögren's, where ectopic germinal centres form in the target tissue itself.",
+  markers:"CXCR5+ PD-1-high ICOS+ BCL6+, IL-21+",
+  note:"The magnitude of the circulating Tfh response after vaccination predicts the durability of the antibody titre better than the day-7 plasmablast count." },
+
+{ id:"naiveCD8", name:"Naive CD8 T cell", sub:"killer in training", lin:"tcell", comp:"node", glyph:"plain", x:762, y:430,
+  plain:"A killer cell that has not yet been given a target. It waits in the lymph node until a messenger shows it a fragment from inside an infected cell.",
+  student:"Recognises peptide on MHC I, which every nucleated cell displays, so it can inspect the inside of any cell. Priming usually requires a dendritic cell that has cross-presented viral antigen and been licensed by a CD4 cell; it then proliferates and acquires cytotoxic machinery.",
+  clinical:"Cross-presentation by cDC1 is the bottleneck for anti-viral and anti-tumour CD8 priming. CD4 help during priming, delivered via CD40, determines whether the resulting memory is durable or exhausted on re-encounter.",
+  markers:"CD3+ CD8+ CD45RA+ CCR7+",
+  note:"Antigen-specific CD8 frequency is measured directly with peptide-MHC multimers, the cleanest readout of a cellular vaccine response." },
+
+{ id:"ctl", name:"Cytotoxic T cell", sub:"licensed killer", lin:"tcell", comp:"node", glyph:"plain", x:762, y:545,
+  plain:"Once trained, this cell leaves the lymph node, travels to the infected tissue, and kills your own infected cells one at a time. It is precise and unsentimental: the only way to stop a virus factory is to destroy the factory.",
+  student:"Forms an immunological synapse with any cell displaying its peptide on MHC I, then releases perforin and granzymes into the target, triggering apoptosis, and engages Fas with FasL. It detaches and kills again — serial killing — and secretes IFN-γ and TNF as it goes.",
+  clinical:"Killing spares bystanders because delivery is directional into the synapse. Chronic antigen drives exhaustion: PD-1, TIM-3 and LAG-3 upregulation with progressive loss of IL-2 then TNF then IFN-γ. Checkpoint blockade works by restoring function in this population, and CAR-T redirects its specificity entirely.",
+  markers:"CD8+ granzyme B+ perforin+ CD107a on degranulation; PD-1/TIM-3 when exhausted",
+  note:"CD107a surface mobilisation is the standard functional degranulation assay when a cytotoxicity defect is suspected." },
+
+{ id:"bcell", name:"B cell", sub:"antibody designer", lin:"bcell", comp:"node", glyph:"plain", x:1082, y:430,
+  plain:"The cell that designs antibodies. It starts with a rough draft, then improves it through rounds of trial and error inside the lymph node until the fit is nearly perfect. This refinement takes days, which is why antibody protection is never immediate.",
+  student:"Binds intact antigen with its surface receptor, internalises and presents it on MHC II to a Tfh cell. With CD40L and IL-21 it enters a germinal centre, undergoes somatic hypermutation of its receptor genes and is selected on affinity. Survivors become plasma cells or memory B cells.",
+  clinical:"AID drives both class switch recombination and somatic hypermutation; its deficiency gives hyper-IgM type 2. Germinal centre output is the source of durable humoral memory and also of most B cell lymphomas. Anti-CD20 spares plasma cells, so it depletes the B pool without immediately dropping IgG — and blunts new vaccine responses far more than existing titres.",
+  markers:"CD19+ CD20+ IgM/IgD on naive cells; CD27+ marks memory",
+  note:"Check CD19 counts and time vaccination before the next rituximab cycle; response is poorest in the months immediately after infusion." },
+
+{ id:"plasma", name:"Plasma cell", sub:"antibody factory", lin:"bcell", comp:"node", glyph:"clock", x:1082, y:548,
+  plain:"A B cell that has given up everything else to manufacture antibody. It stops moving, stops learning and pumps out thousands of identical protein weapons every second. Long-lived ones move into the bone marrow and keep secreting for decades.",
+  student:"Terminally differentiated, driven by BLIMP1 and XBP1 with a massively expanded endoplasmic reticulum. Secretes up to a few thousand immunoglobulin molecules per second. Short-lived plasmablasts supply the early response; long-lived plasma cells occupy bone marrow survival niches and maintain serum titre for years without further antigen.",
+  clinical:"Long-lived plasma cells lack CD20, which is why anti-CD20 does not clear established autoantibody and why anti-CD38 (daratumumab) or BCMA-directed CAR-T are used when it must be. The day-7 plasmablast peak is the standard early readout of a vaccine response.",
+  markers:"CD38-high CD27-high CD138+, surface CD19/CD20 low or absent",
+  note:"Serum antibody after vaccination reflects the bone marrow niche, not circulating B cells — this is the mechanistic reason titres persist for decades after measles vaccination." },
+
+{ id:"memory", name:"Memory cells", sub:"the reason vaccines work", lin:"bcell", comp:"node", glyph:"plain", x:1082, y:150,
+  plain:"The survivors kept on file. After a threat is cleared, most of the cells that fought it die, but a few persist for years. Meet the same threat again and the response is faster, larger and better aimed — often finished before you notice anything. That is immunity.",
+  student:"Memory B cells carry already class-switched, affinity-matured receptors and re-enter germinal centres on rechallenge. Memory T cells divide into central memory (CCR7+, lymph node, high proliferative potential), effector memory (peripheral, rapid function) and tissue-resident memory that never leaves the site of first infection.",
+  clinical:"Tissue-resident memory (CD69+ CD103+) at the portal of entry explains why mucosal and intranasal routes give protection that intramuscular vaccination does not match. Memory B cells sustain recall antibody even when serum titre has waned, so a low titre does not by itself prove absent protection. Original antigenic sin biases recall towards the first-encountered variant.",
+  markers:"CD27+ switched memory B; CD45RO+ T cells, CCR7 splits central from effector memory",
+  note:"Anti-HBs below 10 IU/L in a previously vaccinated adult usually reflects waned titre with intact memory; a booster and a repeat level distinguishes this from true non-response." }
+];
+
+const EDGES = [
+ {a:"epithelium", b:"neutrophil", sig:"CXCL8 (IL-8)", plain:"The damaged lining releases a chemical scent trail; infantry cells follow it.", bow:.16},
+ {a:"epithelium", b:"dendritic", sig:"IL-33, TSLP, IL-25", plain:"Injured lining cells release alarm proteins that wake the messenger.", bow:-.12},
+ {a:"epithelium", b:"nk", sig:"type I IFN (IFN-α/β)", plain:"An infected cell warns its neighbours that a virus is inside.", bow:.1},
+ {a:"epithelium", b:"macrophage", sig:"DAMPs, IFN-α/β", plain:"Broken cells spill their contents, which is itself a danger signal.", bow:-.18},
+ {a:"macrophage", b:"neutrophil", sig:"IL-1β, TNF, CXCL8", plain:"The caretaker calls in the infantry and makes the vessels leaky so they can arrive.", bow:.12},
+ {a:"macrophage", b:"monocyte", sig:"CCL2 (MCP-1)", plain:"It sends an address to the blood so reinforcements know where to leave.", bow:.2},
+ {a:"mast", b:"neutrophil", sig:"histamine, TNF, LTB4", plain:"The tripwire opens the vessels within seconds so everything else can flood in.", bow:-.14},
+ {a:"mast", b:"eosinophil", sig:"LTC4, CCL11", plain:"It pulls in the anti-parasite specialist.", bow:.14},
+ {a:"antibody", b:"mast", sig:"IgE on FcεRI", plain:"Antibody sits on the tripwire like a detonator waiting for its trigger.", bow:.16},
+ {a:"antibody", b:"macrophage", sig:"IgG → FcγR", plain:"Coating a target in antibody makes it far easier to grab and swallow.", bow:-.16},
+ {a:"antibody", b:"nk", sig:"IgG + CD16 → ADCC", plain:"Antibody points the patrol at a cell it would otherwise ignore.", bow:.12},
+ {a:"antibody", b:"complement", sig:"IgG/IgM → C1q", plain:"Antibody switches on the protein cascade at the right place.", bow:-.14},
+ {a:"complement", b:"neutrophil", sig:"C5a chemotaxis", plain:"A fragment of the cascade is one of the strongest recruiting signals known.", bow:.12},
+ {a:"complement", b:"macrophage", sig:"C3b opsonisation", plain:"The cascade tags the target so the eater can see it.", bow:-.1},
+ {a:"complement", b:"mast", sig:"C3a/C5a anaphylatoxins", plain:"The same fragments make the tripwire fire.", bow:.22},
+ {a:"monocyte", b:"macrophage", sig:"CCR2 → differentiation", plain:"On arrival the reinforcement becomes a caretaker.", bow:-.1},
+ {a:"dendritic", b:"naiveCD4", sig:"MHC II + CD80/86 + IL-12", plain:"The messenger walks to the lymph node and shows the evidence, with instructions attached.", bow:-.1, key:true},
+ {a:"dendritic", b:"naiveCD8", sig:"cross-presentation on MHC I", plain:"It also shows the evidence to the killers in training.", bow:.14, key:true},
+ {a:"dendritic", b:"nk", sig:"IL-12/IL-15 ⇄ IFN-γ", plain:"Messenger and patrol sharpen each other.", both:true, bow:.1},
+ {a:"naiveCD4", b:"th1", sig:"IL-12 + IFN-γ → T-bet", plain:"Told there is a virus, the blank helper becomes the anti-viral kind.", bow:-.12},
+ {a:"naiveCD4", b:"th2", sig:"IL-4 → GATA3", plain:"Told there is a parasite, it becomes the expelling kind.", bow:-.06},
+ {a:"naiveCD4", b:"th17", sig:"TGF-β + IL-6/IL-23 → RORγt", plain:"Told there is a fungus at a barrier, it becomes the barrier-defence kind.", bow:.06},
+ {a:"naiveCD4", b:"treg", sig:"TGF-β + IL-2 → FOXP3", plain:"Told the situation is harmless, it becomes a brake instead.", bow:.2},
+ {a:"naiveCD4", b:"tfh", sig:"IL-6/IL-21 + ICOS → BCL6", plain:"Or it becomes the coach that trains antibody designers.", bow:.12},
+ {a:"naiveCD8", b:"ctl", sig:"antigen + CD4 help + IL-2", plain:"The trainee becomes a licensed killer and leaves for the tissue.", bow:-.08},
+ {a:"th1", b:"macrophage", sig:"IFN-γ ⇄ IL-12", plain:"The helper turns the caretaker into a far better killer, and is reinforced in return.", both:true, bow:.24, key:true},
+ {a:"th1", b:"ctl", sig:"IL-2, CD40L licensing", plain:"It supplies the growth signal the killers need.", bow:.3},
+ {a:"th1", b:"bcell", sig:"IFN-γ → IgG1/IgG3 switch", plain:"It tells the designers which class of antibody to build.", bow:.18},
+ {a:"th2", b:"eosinophil", sig:"IL-5", plain:"It recruits and arms the anti-parasite specialist.", bow:.26},
+ {a:"th2", b:"bcell", sig:"IL-4/IL-13 → IgE switch", plain:"It orders the allergy class of antibody.", bow:.1},
+ {a:"th17", b:"epithelium", sig:"IL-17A, IL-22 → defensins", plain:"It tells the lining to make its own antibiotics.", bow:.3},
+ {a:"th17", b:"neutrophil", sig:"IL-17 → G-CSF, CXCL8", plain:"And orders another wave of infantry.", bow:.34},
+ {a:"treg", b:"dendritic", sig:"CTLA-4 strips CD80/86", plain:"The brake removes the messenger's permission to activate anyone.", bow:-.22},
+ {a:"treg", b:"th1", sig:"IL-10, TGF-β, IL-2 sink", plain:"It quietens the helper and starves it of growth signal.", bow:.16},
+ {a:"treg", b:"ctl", sig:"IL-10, TGF-β, adenosine", plain:"It holds the killers back so healthy tissue survives.", bow:-.26},
+ {a:"tfh", b:"bcell", sig:"CD40L + IL-21", plain:"The coach lets the best designers survive and keep improving.", bow:.08, key:true},
+ {a:"bcell", b:"plasma", sig:"BLIMP1 → differentiation", plain:"The best design goes into mass production.", bow:-.08},
+ {a:"bcell", b:"memory", sig:"memory B output", plain:"A copy of the design is filed away for years.", bow:.1},
+ {a:"ctl", b:"memory", sig:"memory T pool", plain:"A few killers are kept on standby for next time.", bow:-.3},
+ {a:"plasma", b:"antibody", sig:"~10³ Ig molecules/second", plain:"The factory fills the blood with the finished weapon.", bow:.18, key:true},
+ {a:"ctl", b:"epithelium", sig:"perforin, granzyme B, FasL", plain:"The killer destroys your own infected cells, which is the only way to stop the virus factory.", bow:-.34, key:true},
+ {a:"nk", b:"epithelium", sig:"missing self → granzyme", plain:"No identity badge on the cell, no survival.", bow:.16},
+ {a:"eosinophil", b:"epithelium", sig:"MBP, ECP", plain:"Its toxins hit the parasite and the airway lining alike.", bow:-.2}
+];
+</script>
+
+<script>
+/* =====================================================================
+   SCENARIOS — each step lights the cells and connections in play.
+   ===================================================================== */
+const SCENARIOS = [
+{
+ id:"flu", label:"Flu virus in the airway",
+ blurb:"A respiratory virus lands on the lining of your nose and windpipe.",
+ steps:[
+ {t:"0–2 hours", title:"The virus gets inside a cell",
+  n:["epithelium"], e:[],
+  plain:"A virus cannot do anything on its own. It has to get inside one of your cells and use that cell's machinery to build copies of itself. Right now nothing has noticed. You feel completely well.",
+  student:"Influenza binds sialic acid on airway epithelium, is endocytosed and releases its genome. Viral RNA replication begins. The eclipse phase is silent — no symptoms, and the person is not yet infectious.",
+  clinical:"Incubation is typically 1–2 days for influenza. Viral shedding starts around 24 h post-inoculation and often precedes symptoms, which is the epidemiological problem. Innate sensing has not yet been engaged because replication intermediates are still below the detection threshold."},
+ {t:"0–4 hours", title:"The lining shouts",
+  n:["epithelium","macrophage","nk","dendritic"], e:["epithelium|nk","epithelium|macrophage","epithelium|dendritic"],
+  plain:"The infected cell detects that something foreign is copying itself inside it, and releases warning chemicals. These do two things: they make neighbouring cells harder to infect, and they call in help. This alarm, not the virus, is what makes you feel ill.",
+  student:"RIG-I and MDA5 detect viral RNA and drive type I interferon, which induces an antiviral state in neighbouring cells. Alarmins and chemokines recruit and activate resident macrophages, NK cells and dendritic cells. Systemic IL-1β, IL-6 and TNF produce fever, aches and malaise.",
+  clinical:"IFN-α/β signalling through IFNAR induces hundreds of interferon-stimulated genes. Influenza NS1 antagonises this sensing, and the balance between viral antagonism and host sensing largely sets disease severity. Symptoms are cytokine-driven, not cytopathic — a point worth making to patients who assume the virus itself causes the aching."},
+ {t:"2–12 hours", title:"Innate cells kill without knowing what they are killing",
+  n:["nk","epithelium","macrophage","neutrophil","monocyte"], e:["nk|epithelium","macrophage|neutrophil","epithelium|neutrophil","macrophage|monocyte"],
+  plain:"Cells that patrol without specific training arrive and start destroying infected cells. They are fast and approximate. They will not clear the infection alone, but they hold it back while the specific response is built.",
+  student:"NK cells kill cells that have downregulated MHC I. Macrophages phagocytose infected debris and secrete IL-1β, TNF and CXCL8; neutrophils extravasate in large numbers; CCL2 pulls monocytes from the blood. Innate control constrains viral load but does not eliminate infection.",
+  clinical:"Innate effectors buy the roughly four days that adaptive priming requires. Excessive innate recruitment is itself the problem in severe influenza: neutrophil-rich alveolar damage and monocyte-derived cytokine amplification underlie ARDS more than viral burden does at that stage."},
+ {t:"6–18 hours", title:"A messenger carries evidence to the lymph node",
+  n:["dendritic","naiveCD4","naiveCD8"], e:["dendritic|naiveCD4","dendritic|naiveCD8"],
+  plain:"This is the step that connects the fast, general defence to the slow, precise one. A messenger cell takes a fragment of the virus, leaves the airway, travels up a lymphatic vessel and arrives at a lymph node — the swollen gland you can feel in your neck. There it starts showing the fragment to millions of waiting cells until one of them fits.",
+  student:"Dendritic cells mature, upregulate MHC II, CD80/CD86 and CCR7, and migrate to the draining lymph node. They present viral peptide to naive CD4 cells on MHC II and cross-present to naive CD8 cells on MHC I. The rare cell with a matching receptor is found by sequential scanning.",
+  clinical:"cDC1 cross-presentation is the rate-limiting step for CD8 priming. Lymph node swelling is clonal expansion plus lymphocyte trapping via CD69-mediated S1PR1 downregulation. The three-signal requirement means an antigen encountered without danger signals here would produce tolerance instead."},
+ {t:"Day 2–4", title:"Orders are given",
+  n:["naiveCD4","th1","tfh","naiveCD8","ctl"], e:["naiveCD4|th1","naiveCD4|tfh","naiveCD8|ctl","th1|ctl"],
+  plain:"The matching cells are found and start dividing furiously — one cell becomes thousands in a couple of days. They also specialise. Some become coordinators for the anti-viral programme, some become coaches for antibody production, and some become killers.",
+  student:"IL-12 and IFN-γ drive T-bet and Th1 commitment; IL-6 and IL-21 with ICOS drive BCL6 and Tfh commitment. CD8 cells receive help and IL-2, proliferate and acquire perforin and granzyme. Clonal burst size can exceed 1000-fold.",
+  clinical:"The CD4 help delivered during priming, largely through CD40, programmes whether resulting CD8 memory is functional or exhaustion-prone. This is the window in which antivirals still change outcome, and it is why oseltamivir loses benefit after 48 h."},
+ {t:"Day 4–6", title:"Killers arrive in the lung",
+  n:["ctl","epithelium","th1","macrophage"], e:["ctl|epithelium","th1|macrophage"],
+  plain:"Trained killers leave the lymph node, travel through the blood and reach the airway. They inspect each cell and destroy the ones producing virus. There is no gentle option: stopping the virus means destroying the cells making it, and the cough and soreness of these days is partly your own tissue being cleared.",
+  student:"Effector CTLs traffic to the infected tissue and form immunological synapses with any cell displaying viral peptide on MHC I, delivering perforin and granzyme B. Th1-derived IFN-γ simultaneously licenses macrophages. Viral titre now falls steeply.",
+  clinical:"CD8 responses are the main determinant of recovery from established influenza and, because they target conserved internal proteins, provide the heterosubtypic protection that neutralising antibody does not. Immunopathology from this same response contributes to the day 5–7 clinical nadir."},
+ {t:"Day 6–10", title:"Antibody arrives",
+  n:["tfh","bcell","plasma","antibody","macrophage","nk"], e:["tfh|bcell","bcell|plasma","plasma|antibody","antibody|macrophage","antibody|nk"],
+  plain:"In a separate part of the lymph node, antibody has been under development. Designs are tested, improved and tested again until the fit is excellent, then sent into mass production. Antibody blocks free virus from entering new cells and marks anything coated in it for destruction. This is late, but it is what stops the next infection before it starts.",
+  student:"Germinal centre B cells undergo somatic hypermutation and affinity selection with Tfh help, then differentiate into plasma cells. Secreted IgG neutralises haemagglutinin, opsonises for FcγR-mediated phagocytosis and enables NK-mediated ADCC. Mucosal IgA appears at the airway surface.",
+  clinical:"Neutralising anti-HA titre is the accepted correlate of protection (HAI ≥ 1:40 in adults), though anti-NA and ADCC-competent non-neutralising antibody contribute independently. Affinity maturation takes 7–10 days, which is precisely why passive antibody or vaccination must precede exposure."},
+ {t:"Day 10–14", title:"Switching off, deliberately",
+  n:["treg","th1","ctl","dendritic","macrophage"], e:["treg|th1","treg|ctl","treg|dendritic"],
+  plain:"Once the virus is gone the response must be shut down, and shutting down is an active job, not a fading away. Brake cells suppress the fighters, most of the expanded army dies on purpose, and repair begins. A response that fails to stop here is how a mild infection becomes lasting lung damage.",
+  student:"Tregs suppress via CTLA-4, IL-10 and TGF-β. Around 90–95% of effector T cells die by apoptosis as IL-2 and antigen fall away. Macrophages switch towards a repair phenotype and clear apoptotic cells, which is itself anti-inflammatory.",
+  clinical:"Failure of resolution rather than failure of clearance drives post-viral morbidity: persistent alveolar macrophage activation, fibroproliferative repair and long-tail symptoms. Efferocytosis of apoptotic neutrophils is a key resolution signal and is impaired by smoking and by chronic steroid exposure."},
+ {t:"Weeks to decades", title:"What is kept",
+  n:["memory","bcell","ctl","plasma"], e:["bcell|memory","ctl|memory","plasma|antibody"],
+  plain:"A small number of cells from the winning response are kept. Meet the same virus again and the reply comes in hours instead of days, usually before you notice anything. That is immunity, and it is what a vaccine creates without the illness.",
+  student:"Memory B cells with class-switched, affinity-matured receptors persist, alongside long-lived bone marrow plasma cells maintaining serum titre. Central, effector and tissue-resident memory T cells persist, the last of these sitting permanently in the lung.",
+  clinical:"Lung tissue-resident memory CD8 gives the broadest cross-strain protection but wanes over months, unlike systemic memory. Influenza's problem is not memory failure but antigenic drift in HA, which is why the vaccine is reformulated annually while measles immunity lasts a lifetime."}]},
+
+{
+ id:"vaccine", label:"An mRNA vaccine in your arm",
+ blurb:"How a vaccine produces immunity without producing the disease.",
+ steps:[
+ {t:"0–2 hours", title:"Your own cells make the target",
+  n:["macrophage","dendritic"], e:[],
+  plain:"The injection contains instructions wrapped in a fatty bubble, not a virus. Cells in your arm take up the bubble and follow the instructions to build one protein from the virus surface. That protein is harmless by itself, and it is the only part of the virus present.",
+  student:"Lipid nanoparticles deliver modified mRNA into muscle cells and local antigen-presenting cells, which translate the encoded antigen. Nucleoside modification (pseudouridine) reduces innate sensing enough to allow translation while the lipid components themselves act as adjuvant.",
+  clinical:"Endogenous expression means the antigen enters both MHC I and MHC II pathways, generating CD8 as well as CD4 and antibody responses — an advantage over most protein subunit vaccines. Expression is transient and the mRNA never enters the nucleus."},
+ {t:"2–12 hours", title:"Danger, without damage",
+  n:["macrophage","dendritic","monocyte","neutrophil"], e:["macrophage|neutrophil","macrophage|monocyte"],
+  plain:"A protein alone is ignored. The immune system must also believe something dangerous is happening, and the fatty carrier supplies that belief. The result is a sore arm, and sometimes a headache or fever, produced entirely by your own signalling molecules.",
+  student:"The ionisable lipid triggers innate sensing and local cytokine release, providing the adjuvant effect. Local IL-1β, IL-6 and TNF cause reactogenicity: injection site pain, myalgia and fever. This is signal 2 for dendritic cell maturation.",
+  clinical:"Reactogenicity correlates only weakly with antibody titre, so its absence does not indicate failed response — a useful counselling point. Systemic symptoms are more common after dose two because memory T cells amplify the local response."},
+ {t:"Day 1–2", title:"The messenger reaches the lymph node",
+  n:["dendritic","naiveCD4","naiveCD8"], e:["dendritic|naiveCD4","dendritic|naiveCD8"],
+  plain:"Messenger cells carrying the manufactured protein travel to the lymph node under your armpit, which is why it can become tender and swollen. There they search for the rare cells that recognise this exact shape.",
+  student:"Mature dendritic cells migrate via CCR7 to the draining axillary node and present antigen to naive CD4 and CD8 cells. Lipid nanoparticles also drain directly, so node-resident APCs contribute.",
+  clinical:"Axillary lymphadenopathy after mRNA vaccination is common and FDG-avid, and it has a documented history of being mistaken for malignancy on staging PET-CT. Record the vaccinated side and time imaging accordingly."},
+ {t:"Day 3–7", title:"A germinal centre opens",
+  n:["naiveCD4","tfh","bcell","naiveCD8","ctl"], e:["naiveCD4|tfh","tfh|bcell","naiveCD8|ctl"],
+  plain:"Inside the node a training school forms. B cells generate variant antibody designs, and coach cells select only the ones that fit best. Rounds of improvement continue for weeks. This slow refinement is what makes vaccine antibody far better than the first rough attempt.",
+  student:"Tfh cells drive a germinal centre reaction: somatic hypermutation in the dark zone, affinity-based selection in the light zone, iterated over weeks. Output is high-affinity plasma cells and memory B cells. CD8 cells expand in parallel.",
+  clinical:"mRNA vaccines produce unusually persistent germinal centres — antigen and GC activity detectable in draining nodes for over 12 weeks by fine needle aspiration — which explains continued affinity maturation and the breadth gained after the primary series."},
+ {t:"Day 7–14", title:"Antibody peaks",
+  n:["bcell","plasma","antibody"], e:["bcell|plasma","plasma|antibody"],
+  plain:"Finished designs go into mass production and antibody fills the blood. From this point a real encounter with the virus meets a defence that is already waiting rather than one that has to be built.",
+  student:"Plasmablasts peak in blood around day 7 and serum antibody around day 14 after the first dose. Neutralising titre rises substantially after the second dose as memory B cells re-enter germinal centres.",
+  clinical:"The day-7 plasmablast frequency and the circulating Tfh response predict peak and durability of titre respectively. Interval matters: extending the prime-boost gap to 8–12 weeks raises peak neutralising titre compared with a 3-week schedule."},
+ {t:"Months to years", title:"Titre falls; memory does not",
+  n:["memory","bcell","plasma"], e:["bcell|memory","plasma|antibody"],
+  plain:"Antibody levels drop over months, and headlines call this immunity fading. Mostly it is not. The filed designs remain, so a real infection is answered in a day or two instead of a week. That is why protection against severe disease outlasts protection against catching it at all.",
+  student:"Circulating antibody declines with plasmablast contraction while long-lived bone marrow plasma cells and memory B cells persist. Recall responses regenerate high-affinity antibody within days, and T cell memory recognises epitopes largely unaffected by variant mutation.",
+  clinical:"This is the mechanistic basis for the divergence between waning protection against infection and preserved protection against severe disease. Antibody titre is a correlate of protection against infection only; memory B and T compartments carry the rest and are not captured by serology."}]},
+
+{
+ id:"wound", label:"A splinter and Staph in the skin",
+ blurb:"A bacterial infection at a breached barrier, from seconds to scar.",
+ steps:[
+ {t:"Seconds", title:"The barrier is breached",
+  n:["epithelium","complement","mast"], e:["complement|mast"],
+  plain:"The wall is broken and bacteria are through it. Defence begins immediately, using proteins already circulating in your blood that need no preparation at all.",
+  student:"Complement activates on the bacterial surface through the alternative and lectin pathways within seconds. Tissue mast cells sense C3a and C5a and degranulate. No prior exposure is required.",
+  clinical:"Alternative pathway tick-over means the response is instantaneous and antigen-independent. Host surfaces are protected by factor H and CD55; bacterial surfaces are not, which is the whole basis of discrimination here."},
+ {t:"0–1 hour", title:"Vessels open, proteins flood in",
+  n:["mast","complement","neutrophil","macrophage","epithelium"], e:["mast|neutrophil","complement|neutrophil","complement|macrophage","epithelium|neutrophil"],
+  plain:"Histamine from tripwire cells widens the local blood vessels and makes them leaky. The four classical signs of inflammation appear: redness, heat, swelling and pain. Every one of them is a delivery mechanism, not a malfunction.",
+  student:"Histamine and leukotrienes cause vasodilatation and increased permeability, delivering complement, antibody and fibrinogen into the tissue. C5a, CXCL8 and LTB4 form a chemotactic gradient that neutrophils climb. Resident macrophages amplify with IL-1β and TNF.",
+  clinical:"Redness and heat from vasodilatation, swelling from exudate, pain from bradykinin and prostaglandin sensitisation of nociceptors. NSAIDs reduce the prostaglandin component of pain and fever without touching the cellular response."},
+ {t:"1–6 hours", title:"Neutrophils arrive in force",
+  n:["neutrophil","macrophage","complement"], e:["macrophage|neutrophil","complement|neutrophil","complement|macrophage"],
+  plain:"Millions of short-lived infantry cells pour in, eat bacteria and die where they stand. Pus is the residue of that fight — spent cells, digested bacteria and fluid.",
+  student:"Rolling on selectins, firm adhesion via integrins and CD54, then transmigration. Killing by phagocytosis with the NADPH oxidase respiratory burst, granule proteases and NETs. Neutrophils apoptose within hours and are cleared by macrophages.",
+  clinical:"Absent pus formation with severe infection suggests a phagocyte defect: consider CGD (dihydrorhodamine test) or leucocyte adhesion deficiency. Recurrent deep abscesses with eczema and retained primary teeth suggest STAT3 hyper-IgE syndrome."},
+ {t:"6–24 hours", title:"Backup is requested",
+  n:["dendritic","naiveCD4","macrophage"], e:["dendritic|naiveCD4"],
+  plain:"If the infection is not already contained, a messenger cell takes bacterial fragments to the nearest lymph node — which may become a tender lump. The specific response is now being built.",
+  student:"Skin dendritic cells and Langerhans cells migrate to the draining node and present bacterial peptides with cytokines that reflect what they sensed. TLR2 and TLR9 engagement by staphylococcal ligands favours Th17 and Th1 polarisation.",
+  clinical:"Regional lymphadenopathy here is a normal, useful sign. Red streaking towards the node is lymphangitis and marks bacterial spread along lymphatics — an indication for systemic antibiotics rather than local care."},
+ {t:"Day 2–5", title:"Th17 defends the barrier",
+  n:["naiveCD4","th17","epithelium","neutrophil"], e:["naiveCD4|th17","th17|epithelium","th17|neutrophil"],
+  plain:"A helper cell specialised for skin and mucous surfaces is produced. It tells the skin to manufacture its own antibiotics and organises another sustained wave of infantry — a supply line rather than a single surge.",
+  student:"TGF-β with IL-6 and IL-23 drives RORγt. IL-17A and IL-22 act on keratinocytes to induce β-defensins, S100 proteins and lipocalin-2, and induce G-CSF and CXCL8 for sustained granulopoiesis and recruitment.",
+  clinical:"This is the pathway whose blockade in psoriasis predictably brings candidiasis, and whose genetic failure causes chronic mucocutaneous candidiasis. Staphylococcal skin susceptibility in hyper-IgE syndrome reflects the same axis."},
+ {t:"Day 5–10", title:"Antibody makes the eating easier",
+  n:["tfh","bcell","plasma","antibody","complement","macrophage"], e:["tfh|bcell","bcell|plasma","plasma|antibody","antibody|complement","antibody|macrophage"],
+  plain:"Antibody specific to these bacteria arrives and coats them. A coated bacterium is far easier to grab and swallow, and it switches on the protein cascade exactly where it is needed.",
+  student:"Opsonisation with IgG engages FcγR on phagocytes and C1q on the classical pathway, raising phagocytic efficiency by orders of magnitude relative to unopsonised bacteria. Anti-toxin antibody neutralises staphylococcal exotoxins.",
+  clinical:"Encapsulated organisms are cleared almost entirely by this opsonic route, hence the overwhelming risk from pneumococcus, meningococcus and Haemophilus in asplenia and in antibody deficiency, and the vaccination schedule that follows splenectomy."},
+ {t:"Day 10 onwards", title:"Repair, and a scar",
+  n:["macrophage","treg","epithelium"], e:["treg|dendritic"],
+  plain:"With the bacteria gone, the same caretaker cells that called for the attack switch to rebuilding. They clear the debris, signal for new blood vessels and lay down collagen. A scar is the fastest repair available, not a perfect one.",
+  student:"Macrophages transition to a repair phenotype, secreting TGF-β and VEGF, driving fibroblast proliferation, angiogenesis and matrix deposition. Tregs actively restrain residual inflammation and support epithelial regeneration.",
+  clinical:"Excess or unresolved TGF-β signalling gives hypertrophic and keloid scarring; deficient macrophage transition gives chronic non-healing ulceration, which is the picture in diabetic foot disease where this switch fails."}]},
+
+{
+ id:"allergy", label:"Pollen, and why hay fever exists",
+ blurb:"The same machinery that expels parasites, aimed at something harmless.",
+ steps:[
+ {t:"First season", title:"Sensitisation — and you feel nothing",
+  n:["epithelium","dendritic","naiveCD4"], e:["epithelium|dendritic","dendritic|naiveCD4"],
+  plain:"The first exposure causes no symptoms at all. Pollen lands on the lining of the nose, and because many pollens carry enzymes that nick the barrier, the lining releases alarm signals. A messenger cell carries pollen protein to a lymph node. Nothing is felt, but a decision is being made.",
+  student:"Protease activity in allergens damages epithelial tight junctions, releasing TSLP, IL-33 and IL-25. These alarmins condition dendritic cells towards a type 2 programme. The allergen is presented in the draining node under this influence.",
+  clinical:"The epithelium, not the lymphocyte, makes the first decision — a shift in the field with direct therapeutic consequence, since tezepelumab blocks TSLP upstream of the entire type 2 module. Route and dose matter: high-dose oral exposure favours tolerance, low-dose airway exposure favours sensitisation."},
+ {t:"Days later", title:"The wrong helper is chosen",
+  n:["naiveCD4","th2","bcell"], e:["naiveCD4|th2","th2|bcell"],
+  plain:"The lymph node commits to the anti-parasite programme, which is a reasonable response to something crossing a barrier and a catastrophic one for pollen. That commitment, once made, tends to persist for years.",
+  student:"IL-4 drives GATA3 and Th2 differentiation. IL-4 and IL-13 then act on B cells to direct class switching to IgE, with ILC2s responding to the same epithelial alarmins in parallel.",
+  clinical:"Type 2 skewing is reinforced by ILC2s independently of allergen-specific T cells, explaining non-allergic eosinophilic disease. Early-life microbial exposure influences this set point, the mechanistic core of the hygiene hypothesis."},
+ {t:"Weeks", title:"The tripwire is armed",
+  n:["bcell","plasma","antibody","mast"], e:["bcell|plasma","plasma|antibody","antibody|mast"],
+  plain:"IgE antibody specific to pollen is produced, and it does something no other antibody does: it loads itself onto tripwire cells in your nose, airways and skin and sits there waiting. You are now sensitised. You still feel nothing, and you may stay this way for years.",
+  student:"IgE binds FcεRI on mast cells and basophils with very high affinity and a tissue half-life of weeks to months, far longer than free serum IgE. Mast cells are now armed with receptors specific for pollen.",
+  clinical:"Sensitisation is not allergy: specific IgE or a positive skin prick test without clinical reactivity is common and must not be treated. Omalizumab works by removing free IgE and consequently downregulating FcεRI density — which is why its effect builds over weeks rather than immediately."},
+ {t:"Next spring, seconds", title:"Degranulation",
+  n:["mast","antibody","epithelium"], e:["antibody|mast","mast|neutrophil"],
+  plain:"Pollen returns and binds the loaded antibody, cross-linking it. Within seconds the tripwire cells dump histamine. Vessels leak, glands pour out mucus, nerves are irritated. Sneezing, itching, streaming eyes. All of it is your own defence firing perfectly at nothing.",
+  student:"Allergen cross-links adjacent IgE-FcεRI complexes, triggering immediate degranulation of histamine, tryptase and TNF, followed within minutes by newly synthesised leukotrienes and prostaglandins. H1 receptor engagement gives vasodilatation, permeability, itch and sneeze.",
+  clinical:"Antihistamines block a receptor, not the release, so pre-dosing before exposure works better than rescue use. Systemic degranulation is anaphylaxis: adrenaline is first-line because α1 vasoconstriction and β2 bronchodilation reverse the pathophysiology directly, while antihistamines and steroids do not."},
+ {t:"4–8 hours later", title:"The late phase",
+  n:["th2","eosinophil","epithelium","mast"], e:["th2|eosinophil","eosinophil|epithelium","mast|eosinophil"],
+  plain:"Hours after the sneezing settles, a second slower wave arrives: cells recruited to the site release toxic granule proteins that damage the lining. This late phase is where the chronic blockage, the persistent cough and the airway damage of asthma come from, and it is the reason steroids matter more than antihistamines in ongoing disease.",
+  student:"Th2 cells and ILC2s produce IL-5, recruiting eosinophils that release major basic protein and ECP onto the epithelium. Repeated cycles drive remodelling: goblet cell hyperplasia, subepithelial fibrosis and smooth muscle hypertrophy.",
+  clinical:"The late phase, not the immediate reaction, drives persistent symptoms and structural change, which is why inhaled corticosteroids are controller therapy and antihistamines are not. Biphasic anaphylaxis reflects the same biology and justifies extended observation."},
+ {t:"Over years", title:"Retraining the response",
+  n:["treg","naiveCD4","dendritic","bcell","antibody"], e:["naiveCD4|treg","treg|dendritic"],
+  plain:"Repeated small controlled doses over three years can teach the immune system to tolerate the allergen instead. Brake cells are generated, and a different, blocking antibody is produced that intercepts pollen before the tripwire ever sees it. This is the only treatment that changes the disease rather than the symptoms.",
+  student:"Allergen immunotherapy induces allergen-specific Tregs producing IL-10 and TGF-β, and drives a class switch towards IgG4 blocking antibody that competes with IgE for allergen. Specific IgE often rises initially before falling.",
+  clinical:"Three to five years of subcutaneous or sublingual immunotherapy gives benefit persisting years after discontinuation — the only disease-modifying option in allergy. The IgG4/IgE ratio tracks the response better than IgE alone."}]},
+
+{
+ id:"tolerance", label:"When it turns on you",
+ blurb:"Tolerance, how it is maintained, and what autoimmunity looks like when it fails.",
+ steps:[
+ {t:"Before birth onwards", title:"Most self-reactive cells are deleted early",
+  n:["naiveCD4","naiveCD8"], e:[],
+  plain:"Immune cells are built with randomly generated receptors, so by chance many recognise your own body. In an organ behind the breastbone, developing cells are tested against samples of self and those that react strongly are destroyed. Most dangerous cells never leave. Most, not all.",
+  student:"V(D)J recombination generates receptor diversity randomly. Thymic negative selection deletes strongly self-reactive thymocytes, with AIRE driving ectopic expression of tissue-restricted antigens in the medulla so that insulin and thyroglobulin are represented. Some self-reactive cells are diverted into the Treg lineage instead.",
+  clinical:"AIRE mutation causes APS-1 with multi-organ autoimmunity and anti-cytokine autoantibodies, the cleanest demonstration that central tolerance is an active mechanism. Escape is normal: self-reactive T and B cells are present in every healthy person."},
+ {t:"Every day of your life", title:"The brakes hold",
+  n:["treg","dendritic","th1","naiveCD4"], e:["naiveCD4|treg","treg|dendritic","treg|th1"],
+  plain:"Because dangerous cells do escape, a second system runs continuously outside that organ. Brake cells suppress them, and messenger cells that present self without any sign of danger switch off the cells they meet rather than activating them. Health is not the absence of self-reactive cells. It is this suppression working every day.",
+  student:"Peripheral tolerance: Tregs suppress via CTLA-4, IL-10, TGF-β and IL-2 consumption. Antigen presented without costimulation induces anergy or deletion. Apoptotic cell clearance is silent and actively tolerogenic. Inhibitory receptors PD-1 and CTLA-4 raise the activation threshold continuously.",
+  clinical:"Checkpoint inhibitor toxicity is this system deliberately removed: up to 70% of treated patients develop some immune-related adverse event, effectively iatrogenic autoimmunity. IPEX, CTLA-4 haploinsufficiency and LRBA deficiency are the monogenic proofs of each component."},
+ {t:"The break", title:"A self-reactive cell gets activated anyway",
+  n:["dendritic","naiveCD4","th1","tfh"], e:["dendritic|naiveCD4","naiveCD4|th1","naiveCD4|tfh"],
+  plain:"Something presents a piece of self alongside a genuine danger signal — often an infection, sometimes cell death that was not cleared properly. The escaped cell is now activated with permission it should never have received. It recruits others, and a response begins against tissue that was never a threat.",
+  student:"Proposed triggers include molecular mimicry between microbial and self epitopes, bystander activation, epitope spreading and exposure of cryptic antigens through defective clearance of apoptotic cells or NETs. Genetic risk is dominated by HLA class II alleles that determine which self peptides are presentable.",
+  clinical:"EBV and multiple sclerosis is now the strongest epidemiological case for a viral trigger. Epitope spreading explains why autoantibody profiles broaden over years and why anti-nuclear antibodies can precede clinical lupus by a decade — the ANA-positive, asymptomatic phase is a real and studied window."},
+ {t:"Weeks to months", title:"Autoantibody and immune complexes",
+  n:["tfh","bcell","plasma","antibody","complement","neutrophil"], e:["tfh|bcell","bcell|plasma","plasma|antibody","antibody|complement","complement|neutrophil"],
+  plain:"Coaching cells help B cells make antibody against the body's own material. These antibodies clump with their targets into complexes that lodge in small blood vessels, especially in the kidney, and switch on the protein cascade there. The damage is done less by the antibody than by everything the antibody summons.",
+  student:"Autoreactive germinal centres produce class-switched, affinity-matured autoantibody. Immune complexes deposit in glomeruli and small vessels, fix complement and recruit neutrophils, whose granule release and NETosis cause the tissue injury. Complement is consumed, so serum C3 and C4 fall.",
+  clinical:"Low C3 and C4 with rising anti-dsDNA is the classic signature of active lupus nephritis. NETs are a source of externalised nucleosomes and citrullinated histones, closing a self-amplifying loop: autoantibody drives NETosis, NETs supply more autoantigen."},
+ {t:"Chronic", title:"The loop that will not close",
+  n:["dendritic","macrophage","neutrophil","th1","complement"], e:["epithelium|dendritic","macrophage|neutrophil","treg|th1"],
+  plain:"In infection the response ends because the target is cleared. Self cannot be cleared, so the loop never closes. That is the essential difference between an infection and an autoimmune disease, and it is why treatment aims at interrupting the loop rather than at winning.",
+  student:"Nucleic-acid-containing immune complexes engage TLR7 and TLR9 in plasmacytoid dendritic cells, driving sustained type I interferon, which lowers the activation threshold of nearly every other cell and recruits more autoreactive lymphocytes. Antigen is continuously regenerated by ongoing tissue damage.",
+  clinical:"The blood interferon signature tracks disease activity in SLE and Sjögren's and predicts response to anifrolumab. Ectopic germinal centres form within target tissue itself in Sjögren's salivary gland and rheumatoid synovium, making the tissue locally self-sustaining and independent of lymph node input."},
+ {t:"Treatment", title:"Where each drug interrupts the conversation",
+  n:["bcell","plasma","treg","dendritic","th1","antibody"], e:["tfh|bcell","bcell|plasma","treg|dendritic","th1|macrophage"],
+  plain:"Once the map is in view, treatments stop looking like a list of names. Each one cuts a specific line on it: remove the antibody designers, remove the factories, block a single messenger molecule, or strengthen the brakes. Which line to cut depends on which conversation has gone wrong.",
+  student:"Anti-CD20 depletes B cells but spares CD20-negative long-lived plasma cells. Belimumab removes the BAFF survival signal for autoreactive B cells. Anifrolumab blocks IFNAR. Abatacept is CTLA-4-Ig, restoring the brake at the costimulation step. Anti-TNF and anti-IL-6R interrupt the myeloid amplification loop.",
+  clinical:"Persistent autoantibody after rituximab points to the plasma cell compartment: daratumumab or BCMA CAR-T reach it where anti-CD20 cannot. CD19 CAR-T achieving drug-free remission in refractory lupus, with the reconstituted naive B repertoire returning tolerant, is the strongest evidence yet that this disease is B-cell-driven and in principle resettable."}]}
+];
+</script>
+
+<script>
+/* =====================================================================
+   RENDER + INTERACTION
+   ===================================================================== */
+const NODE = Object.fromEntries(CELLS.map(c => [c.id, c]));
+const SHORT = {
+  epithelium:"Epithelial cell", dendritic:"Dendritic cell", naiveCD4:"Naive CD4 T",
+  naiveCD8:"Naive CD8 T", tfh:"Tfh cell", treg:"Regulatory T", ctl:"Cytotoxic T",
+  memory:"Memory cells", complement:"Complement", eosinophil:"Eosinophil"
+};
+const shortName = c => SHORT[c.id] || c.name;
+const ekey = e => e.a + "|" + e.b;
+const matchKey = (e, k) => { const [x,y] = k.split("|"); return (e.a===x&&e.b===y)||(e.a===y&&e.b===x); };
+
+const BANDS = [
+  {x:32,  y:48,  w:636,  h:104, v:"--band-barrier", label:"Airway surface · epithelium & mucus"},
+  {x:32,  y:152, w:636,  h:452, v:"--band-tissue",  label:"Infected tissue"},
+  {x:692, y:48,  w:476,  h:556, v:"--band-node",    label:"Draining lymph node"},
+  {x:32,  y:630, w:1136, h:126, v:"--band-blood",   label:"Bloodstream"}
+];
+
+const state = { depth:"plain", sel:null, scen:null, step:0, timer:null };
+
+/* ---------- glyphs: each cell drawn as what it looks like down a microscope ---------- */
+function glyph(c){
+  const fill = `var(${LINEAGES[c.lin].v})`;
+  const s = o => `style="fill:${fill};${o||""}"`;
+  const hole = `style="fill:var(--surface);opacity:.55"`;
+  switch(c.glyph){
+    case "brick":
+      return `<rect x="-23" y="-17" width="46" height="34" rx="7" ${s()}/>
+              <rect x="-13" y="-8" width="26" height="16" rx="5" ${hole}/>`;
+    case "kidney":
+      return `<circle r="22" ${s()}/>
+              <path d="M-11,-6 a12,12 0 1,0 12,12 a8,8 0 1,1 -12,-12 z" ${hole}/>`;
+    case "multilobed":
+      return `<circle r="22" ${s()}/>
+              <circle cx="-8" cy="-6" r="6" ${hole}/><circle cx="7" cy="-7" r="5.5" ${hole}/>
+              <circle cx="1" cy="7" r="6" ${hole}/>`;
+    case "dendrite":
+      return `<g ${s()}>${[0,45,90,135,180,225,270,315].map(a=>{
+                const r=a*Math.PI/180;
+                return `<line x1="${Math.cos(r)*15}" y1="${Math.sin(r)*15}" x2="${Math.cos(r)*27}" y2="${Math.sin(r)*27}"
+                        style="stroke:${fill};stroke-width:3.4;stroke-linecap:round"/>`;}).join("")}
+              </g><circle r="16" ${s()}/><circle r="7" ${hole}/>`;
+    case "granule":
+      return `<circle r="22" ${s()}/>
+              ${[[-9,-8],[6,-10],[10,4],[-7,8],[0,-1],[-2,13]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.6" ${hole}/>`).join("")}`;
+    case "clock":
+      return `<ellipse rx="24" ry="20" ${s()}/>
+              <circle cx="-7" cy="-2" r="10" ${hole}/>
+              ${[0,60,120,180,240,300].map(a=>{const r=a*Math.PI/180;
+                return `<line x1="${-7+Math.cos(r)*4}" y1="${-2+Math.sin(r)*4}" x2="${-7+Math.cos(r)*9}" y2="${-2+Math.sin(r)*9}" style="stroke:${fill};stroke-width:1.6"/>`;}).join("")}
+              <path d="M6,8 q9,3 14,-4" style="fill:none;stroke:var(--surface);stroke-width:2.6;opacity:.6"/>`;
+    case "plain":
+      return `<circle r="22" ${s()}/><circle r="14" ${hole}/>`;
+    case "molecule":
+      if(c.id === "antibody")
+        return `<g style="stroke:${fill};stroke-width:5;stroke-linecap:round;fill:none">
+                  <line x1="0" y1="18" x2="0" y2="0"/><line x1="0" y1="0" x2="-13" y2="-16"/><line x1="0" y1="0" x2="13" y2="-16"/>
+                </g><circle cx="-13" cy="-16" r="4.5" ${s()}/><circle cx="13" cy="-16" r="4.5" ${s()}/>`;
+      return `${[0,1,2].map(i=>`<path d="M${-18+i*12},-14 l10,14 l-10,14" style="fill:none;stroke:${fill};stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:${1-i*0.22}"/>`).join("")}`;
+    default: return `<circle r="22" ${s()}/>`;
+  }
+}
+
+/* ---------- draw ---------- */
+const svg = document.getElementById("atlas");
+const gBands = document.getElementById("bands");
+const gEdges = document.getElementById("edges");
+const gLabels = document.getElementById("edgeLabels");
+const gNodes = document.getElementById("nodes");
+
+gBands.innerHTML = BANDS.map(b => `
+  <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="14"
+        style="fill:var(${b.v});stroke:var(--line);stroke-width:1"/>
+  <text class="band-label" x="${b.x+16}" y="${b.y+24}">${b.label}</text>`).join("")
+  + `<path d="M604,232 L706,196" style="fill:none;stroke:var(--band-barrier);stroke-width:30;stroke-linecap:round;opacity:.9"/>
+     <text class="band-label" x="655" y="252" text-anchor="middle">lymphatic</text>
+     <path d="M212,634 L182,486" style="fill:none;stroke:var(--band-blood);stroke-width:32;stroke-linecap:round;opacity:.9"/>
+     <text class="band-label" x="620" y="700" text-anchor="middle" style="letter-spacing:.06em;text-transform:none;font-size:12px">
+       Cells leave the blood to enter tissue, and antibody made in the node returns through it
+     </text>`;
+
+function edgeGeom(e){
+  const A = NODE[e.a], B = NODE[e.b];
+  const dx = B.x-A.x, dy = B.y-A.y, len = Math.hypot(dx,dy) || 1;
+  const ux = dx/len, uy = dy/len, pad = 34;
+  const ax = A.x+ux*pad, ay = A.y+uy*pad, bx = B.x-ux*pad, by = B.y-uy*pad;
+  const mx = (ax+bx)/2, my = (ay+by)/2, bow = (e.bow||0)*len;
+  const cx = mx - uy*bow, cy = my + ux*bow;
+  return { d:`M${ax},${ay} Q${cx},${cy} ${bx},${by}`,
+           lx:0.25*ax+0.5*cx+0.25*bx, ly:0.25*ay+0.5*cy+0.25*by };
+}
+
+const GEOM = EDGES.map(edgeGeom);
+
+gEdges.innerHTML = EDGES.map((e,i) => {
+  const g = GEOM[i];
+  const marker = e.both ? `marker-start="url(#arrow)" marker-end="url(#arrow)"` : `marker-end="url(#arrow)"`;
+  return `<g data-i="${i}">
+    <path class="edge" d="${g.d}" ${marker}></path>
+    <path class="edgehit" d="${g.d}"><title>${NODE[e.a].name} → ${NODE[e.b].name}: ${e.sig}</title></path>
+  </g>`;
+}).join("");
+
+gLabels.innerHTML = EDGES.map((e,i) => {
+  const g = GEOM[i];
+  return `<text class="edge-label" data-i="${i}" x="${g.lx}" y="${g.ly}" text-anchor="middle">${e.sig}</text>`;
+}).join("");
+
+gNodes.innerHTML = CELLS.map(c => `
+  <g class="node" data-id="${c.id}" transform="translate(${c.x},${c.y})" tabindex="0" role="button"
+     aria-label="${c.name}, ${LINEAGES[c.lin].label}, in ${COMPARTMENTS[c.comp]}">
+    <circle class="ring" r="32"></circle>
+    <g class="body">${glyph(c)}</g>
+    <text class="node-label" y="44" text-anchor="middle">${shortName(c)}</text>
+    <text class="node-label sub" y="58" text-anchor="middle">${c.sub}</text>
+  </g>`).join("");
+
+/* ---------- highlighting ---------- */
+function paint({nodes=null, edges=null} = {}){
+  const nodeSet = nodes ? new Set(nodes) : null;
+  const edgeIdx = new Set();
+  if(edges) EDGES.forEach((e,i) => { if(edges.some(k => matchKey(e,k))) edgeIdx.add(i); });
+
+  gNodes.querySelectorAll("g.node").forEach(g => {
+    const id = g.dataset.id;
+    g.classList.toggle("dim", !!nodeSet && !nodeSet.has(id));
+    g.classList.toggle("pulse", !!nodeSet && nodeSet.has(id) && !!state.scen);
+    g.classList.toggle("sel", id === state.sel);
+  });
+  gEdges.querySelectorAll("g[data-i]").forEach(g => {
+    const i = +g.dataset.i, p = g.querySelector(".edge");
+    const hot = edgeIdx.has(i);
+    p.classList.toggle("hot", hot);
+    p.classList.toggle("dim", (!!nodeSet || !!edges) && !hot);
+  });
+  gLabels.querySelectorAll(".edge-label").forEach(t => {
+    t.classList.toggle("show", edgeIdx.has(+t.dataset.i));
+  });
+}
+
+function edgesOf(id){ return EDGES.filter(e => e.a===id || e.b===id); }
+
+function selectCell(id, {scroll=false} = {}){
+  state.sel = id;
+  stopPlay();
+  state.scen = null; state.step = 0;
+  syncScenButtons();
+  renderTicks();
+  const es = edgesOf(id);
+  paint({ nodes:[id, ...es.map(e => e.a===id ? e.b : e.a)], edges:es.map(ekey) });
+  renderRail();
+  syncIndex();
+  document.getElementById("stepTime").textContent = "Free explore";
+  document.getElementById("stepTitle").textContent = NODE[id].name;
+  document.getElementById("stepBody").textContent =
+    "Connections from this cell are lit on the map with the molecule that carries each one. Click any conversation in the panel to follow it.";
+  if(scroll && window.innerWidth <= 1080) document.getElementById("rail").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function clearSelection(){
+  state.sel = null;
+  paint({});
+  renderRail(); syncIndex();
+}
+
+gNodes.addEventListener("click", ev => {
+  const g = ev.target.closest("g.node"); if(g) selectCell(g.dataset.id, {scroll:true});
+});
+gNodes.addEventListener("keydown", ev => {
+  if(ev.key !== "Enter" && ev.key !== " ") return;
+  const g = ev.target.closest("g.node"); if(!g) return;
+  ev.preventDefault(); selectCell(g.dataset.id);
+});
+gEdges.addEventListener("mouseover", ev => {
+  const g = ev.target.closest("g[data-i]"); if(!g || state.scen) return;
+  const i = +g.dataset.i;
+  g.querySelector(".edge").classList.add("hot");
+  gLabels.querySelector(`.edge-label[data-i="${i}"]`).classList.add("show");
+});
+gEdges.addEventListener("mouseout", ev => {
+  const g = ev.target.closest("g[data-i]"); if(!g || state.scen) return;
+  const i = +g.dataset.i, e = EDGES[i];
+  const keep = state.sel && (e.a===state.sel || e.b===state.sel);
+  if(!keep){
+    g.querySelector(".edge").classList.remove("hot");
+    gLabels.querySelector(`.edge-label[data-i="${i}"]`).classList.remove("show");
+  }
+});
+document.addEventListener("keydown", ev => { if(ev.key === "Escape") clearSelection(); });
+</script>
+
+<script>
+/* ---------- the reading panel ---------- */
+const rail = document.getElementById("rail");
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function railIntro(){
+  const groups = Object.entries(LINEAGES).map(([k,v]) =>
+    `<span><i style="background:var(${v.v})"></i>${v.label}</span>`).join("");
+  const depthNote = {
+    plain:"Everything is written in plain language right now. No prior biology assumed.",
+    student:"Explanations now name the molecules and the mechanisms, at the level of an undergraduate immunology course.",
+    clinical:"Explanations now carry surface phenotypes, transcription factors, the relevant inborn errors and where current drugs act."
+  }[state.depth];
+  rail.innerHTML = `
+    <p class="eyebrow">Start here</p>
+    <h2>Immunity is a conversation, not an army</h2>
+    <p style="margin-top:.7em;color:var(--ink-2)">Almost nothing in immunity is done by one cell alone. A cell detects, a second cell carries the news somewhere useful, a third decides what kind of response to mount, and a fourth carries it out. Break any link and the whole thing fails, which is exactly what most immune diseases turn out to be.</p>
+    <div class="block">
+      <h3>Three ways to use this</h3>
+      <p style="color:var(--ink-2)"><strong>Click a cell</strong> on the map to read what it does and every conversation it takes part in.</p>
+      <p style="color:var(--ink-2)"><strong>Hover a connection</strong> to see the actual molecule that carries it. Labels stay hidden until you ask, so the map stays readable.</p>
+      <p style="color:var(--ink-2)"><strong>Play an event</strong> from the row at the top to watch a real response unfold in order, with the timings it takes in a real body.</p>
+    </div>
+    <div class="block">
+      <h3>Reading level</h3>
+      <p style="color:var(--ink-2)">${depthNote}</p>
+    </div>
+    <div class="block">
+      <h3>The map</h3>
+      <p style="color:var(--ink-2)">Cells sit in the compartment where they actually work. The tissue is where infection starts, the lymph node is where the specific response is planned, and the bloodstream is how cells travel between them. Colour marks the family a cell belongs to.</p>
+      <div class="legend">${groups}</div>
+    </div>`;
+}
+
+function railCell(id){
+  const c = NODE[id];
+  const lin = LINEAGES[c.lin];
+  const es = edgesOf(id);
+  const convos = es.map(e => {
+    const otherId = e.a===id ? e.b : e.a;
+    const other = NODE[otherId];
+    const arrow = e.both ? "⇄" : (e.a===id ? "→" : "←");
+    const sig = state.depth === "plain" ? "" : `<span class="sig">${esc(e.sig)}</span>`;
+    return `<li><button type="button" data-go="${otherId}">
+      <span class="who"><span class="arrow">${arrow}</span>${esc(shortName(other))}</span>
+      ${sig}
+      <span style="color:var(--muted);font-size:.84rem;display:block;margin-top:2px">${esc(e.plain)}</span>
+    </button></li>`;
+  }).join("");
+
+  const markers = state.depth === "plain" ? "" : `
+    <div class="block">
+      <h3>How it is identified</h3>
+      <p class="mono" style="color:var(--ink-2)">${esc(c.markers)}</p>
+    </div>`;
+  const note = state.depth === "clinical" ? `
+    <div class="block">
+      <h3>In the clinic</h3>
+      <div class="clinical">${esc(c.note)}</div>
+    </div>` : "";
+
+  rail.innerHTML = `
+    <p class="eyebrow">${esc(COMPARTMENTS[c.comp])}</p>
+    <h2>${esc(c.name)}</h2>
+    <div class="meta">
+      <span class="chip" style="color:var(${lin.v})"><span class="swatch"></span>${esc(lin.label)}</span>
+      <span class="where">${esc(c.sub)}</span>
+    </div>
+    <p style="color:var(--ink-2)">${esc(c[state.depth])}</p>
+    ${markers}
+    <div class="block">
+      <h3>Its conversations <span style="color:var(--muted);font-weight:400">(${es.length})</span></h3>
+      <ul class="talks">${convos}</ul>
+    </div>
+    ${note}
+    <div class="block">
+      <button type="button" class="pbtn" id="clearSel">Clear selection</button>
+    </div>`;
+
+  rail.querySelectorAll("[data-go]").forEach(b =>
+    b.addEventListener("click", () => selectCell(b.dataset.go)));
+  const cs = document.getElementById("clearSel");
+  if(cs) cs.addEventListener("click", clearSelection);
+}
+
+function railStep(){
+  const sc = SCENARIOS.find(s => s.id === state.scen);
+  const st = sc.steps[state.step];
+  const cells = st.n.map(id => `<button type="button" data-go="${id}">
+      <span class="who">${esc(shortName(NODE[id]))}</span>
+      <span style="color:var(--muted);font-size:.84rem;display:block;margin-top:2px">${esc(NODE[id].sub)}</span>
+    </button>`).join("");
+  const sigs = st.e.length && state.depth !== "plain" ? `
+    <div class="block">
+      <h3>Molecules in play</h3>
+      <p class="mono" style="color:var(--ink-2);line-height:1.9">${
+        st.e.map(k => { const e = EDGES.find(x => matchKey(x,k)); return e ? esc(e.sig) : ""; })
+            .filter(Boolean).join(" &middot; ")}</p>
+    </div>` : "";
+
+  rail.innerHTML = `
+    <p class="eyebrow">${esc(sc.label)} &middot; step ${state.step+1} of ${sc.steps.length}</p>
+    <h2>${esc(st.title)}</h2>
+    <div class="meta"><span class="chip" style="color:var(--accent)"><span class="swatch"></span>${esc(st.t)}</span></div>
+    <p style="color:var(--ink-2)">${esc(st[state.depth])}</p>
+    ${sigs}
+    <div class="block">
+      <h3>Cells on stage</h3>
+      <ul class="talks">${cells}</ul>
+    </div>`;
+  rail.querySelectorAll("[data-go]").forEach(b =>
+    b.addEventListener("click", () => selectCell(b.dataset.go)));
+}
+
+function renderRail(){
+  if(state.scen) railStep();
+  else if(state.sel) railCell(state.sel);
+  else railIntro();
+}
+
+/* ---------- cell index below the map ---------- */
+const idxEl = document.getElementById("cellIndex");
+idxEl.innerHTML = Object.entries(LINEAGES).map(([k,v]) => {
+  const members = CELLS.filter(c => c.lin === k);
+  if(!members.length) return "";
+  return `<div class="idx-group">
+    <h3 style="color:var(${v.v})">${v.label}</h3>
+    <div class="idx-chips">${members.map(c =>
+      `<button type="button" data-id="${c.id}" aria-pressed="false">
+         <i style="background:var(${v.v})"></i>${esc(shortName(c))}</button>`).join("")}</div>
+  </div>`;
+}).join("");
+idxEl.addEventListener("click", ev => {
+  const b = ev.target.closest("button[data-id]"); if(!b) return;
+  if(b.getAttribute("aria-pressed") === "true") clearSelection();
+  else selectCell(b.dataset.id);
+});
+function syncIndex(){
+  idxEl.querySelectorAll("button[data-id]").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.id === state.sel)));
+}
+document.getElementById("legend").innerHTML = Object.entries(LINEAGES)
+  .map(([k,v]) => `<span><i style="background:var(${v.v})"></i>${v.label}</span>`).join("");
+
+/* ---------- scenarios ---------- */
+const scenBtns = document.getElementById("scenBtns");
+scenBtns.innerHTML = SCENARIOS.map(s =>
+  `<button type="button" class="scen-btn" data-scen="${s.id}" aria-pressed="false" title="${esc(s.blurb)}">
+     <span class="dot"></span>${esc(s.label)}</button>`).join("");
+
+const freeBtn = document.getElementById("freeBtn");
+const playBtn = document.getElementById("playBtn");
+const ticksEl = document.getElementById("ticks");
+
+function syncScenButtons(){
+  scenBtns.querySelectorAll("[data-scen]").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.scen === state.scen)));
+  freeBtn.setAttribute("aria-pressed", String(!state.scen));
+  const on = !!state.scen;
+  document.getElementById("prevBtn").disabled = !on || state.step === 0;
+  document.getElementById("nextBtn").disabled = !on ||
+    (on && state.step >= SCENARIOS.find(s => s.id === state.scen).steps.length - 1);
+  playBtn.textContent = state.timer ? "Pause" : (on ? "Play" : "Play the flu");
+}
+
+function renderTicks(){
+  if(!state.scen){ ticksEl.innerHTML = ""; return; }
+  const sc = SCENARIOS.find(s => s.id === state.scen);
+  ticksEl.innerHTML = sc.steps.map((s,i) =>
+    `<button type="button" class="tick" data-step="${i}" title="${esc(s.t)}: ${esc(s.title)}"
+      aria-label="Step ${i+1}: ${esc(s.title)}"
+      data-state="${i < state.step ? "done" : i === state.step ? "now" : "todo"}"></button>`).join("");
+}
+ticksEl.addEventListener("click", ev => {
+  const b = ev.target.closest("[data-step]"); if(!b) return;
+  stopPlay(); state.step = +b.dataset.step; showStep();
+});
+
+function showStep(){
+  const sc = SCENARIOS.find(s => s.id === state.scen);
+  const st = sc.steps[state.step];
+  state.sel = null;
+  paint({ nodes:st.n, edges:st.e });
+  renderTicks(); syncScenButtons(); syncIndex();
+  document.getElementById("stepTime").textContent = st.t;
+  document.getElementById("stepTitle").textContent = st.title;
+  document.getElementById("stepBody").textContent = st[state.depth];
+  renderRail();
+}
+
+function startScenario(id){
+  state.scen = id; state.step = 0; state.sel = null;
+  syncScenButtons(); showStep();
+}
+scenBtns.addEventListener("click", ev => {
+  const b = ev.target.closest("[data-scen]"); if(!b) return;
+  stopPlay(); startScenario(b.dataset.scen);
+});
+freeBtn.addEventListener("click", () => {
+  stopPlay(); state.scen = null; state.step = 0; state.sel = null;
+  ticksEl.innerHTML = ""; paint({}); syncScenButtons(); syncIndex(); renderRail();
+  document.getElementById("stepTime").textContent = "Free explore";
+  document.getElementById("stepTitle").textContent = "Nothing is happening yet";
+  document.getElementById("stepBody").textContent =
+    "Pick an event above to run it step by step, or click any cell on the map to read about it. Connections stay quiet until you hover one, so the map is not a hairball.";
+});
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+  stopPlay();
+  const sc = SCENARIOS.find(s => s.id === state.scen); if(!sc) return;
+  if(state.step < sc.steps.length-1){ state.step++; showStep(); }
+});
+document.getElementById("prevBtn").addEventListener("click", () => {
+  stopPlay();
+  if(state.scen && state.step > 0){ state.step--; showStep(); }
+});
+
+function stopPlay(){
+  if(state.timer){ clearInterval(state.timer); state.timer = null; }
+  syncScenButtons();
+}
+playBtn.addEventListener("click", () => {
+  if(state.timer){ stopPlay(); return; }
+  if(!state.scen){ startScenario(SCENARIOS[0].id); }
+  const sc = SCENARIOS.find(s => s.id === state.scen);
+  if(state.step >= sc.steps.length-1){ state.step = 0; showStep(); }
+  state.timer = setInterval(() => {
+    const s = SCENARIOS.find(x => x.id === state.scen);
+    if(state.step >= s.steps.length-1){ stopPlay(); return; }
+    state.step++; showStep();
+  }, 9000);
+  syncScenButtons();
+});
+
+/* ---------- reading depth ---------- */
+document.getElementById("depthSeg").addEventListener("click", ev => {
+  const b = ev.target.closest("[data-depth]"); if(!b) return;
+  state.depth = b.dataset.depth;
+  document.querySelectorAll("#depthSeg button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x === b)));
+  if(state.scen){
+    const st = SCENARIOS.find(s => s.id === state.scen).steps[state.step];
+    document.getElementById("stepBody").textContent = st[state.depth];
+  }
+  renderRail();
+});
+
+/* ---------- go ---------- */
+syncScenButtons(); renderRail(); syncIndex();
+</script>
