@@ -1,6 +1,6 @@
 # Immune Crosstalk Atlas
 
-**▶ Open the live site: <https://USERNAME.github.io/immune-system-map/>**
+**▶ Open the live site: <https://junjiepeng.github.io/immune-system-map/>**
 
 *Built by Junjie Peng · MIT licensed · questions, corrections and suggestions:
 [open an issue](../../issues)*
