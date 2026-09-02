@@ -171,12 +171,11 @@ svg.atlas{display:block;width:100%;min-width:880px;height:auto}
 .edge.hot{stroke:var(--accent);stroke-width:2.4;opacity:1}
 .edge.dim{opacity:.07}
 .edgehit{fill:none;stroke:transparent;stroke-width:16;cursor:pointer}
-.edge-label{
-  font-family:"IBM Plex Mono",monospace;font-size:10.5px;fill:var(--ink);
-  paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;
-  pointer-events:none;opacity:0;transition:opacity .2s;
-}
+.edge-label{pointer-events:none;opacity:0;transition:opacity .18s}
 .edge-label.show{opacity:1}
+.edge-label text{font-family:"IBM Plex Mono",monospace;font-size:10px;fill:var(--ink)}
+.edge-label rect{fill:var(--surface);stroke:var(--line);stroke-width:1}
+.edge-label .leader{stroke:var(--line-strong);stroke-width:1;fill:none;opacity:.7}
 g.node{cursor:pointer}
 g.node .body{transition:transform .2s,filter .2s}
 g.node:hover .body{filter:brightness(1.06)}
@@ -582,12 +581,12 @@ const SCENARIOS = [
   student:"Influenza binds sialic acid on airway epithelium, is endocytosed and releases its genome. Viral RNA replication begins. The eclipse phase is silent — no symptoms, and the person is not yet infectious.",
   clinical:"Incubation is typically 1–2 days for influenza. Viral shedding starts around 24 h post-inoculation and often precedes symptoms, which is the epidemiological problem. Innate sensing has not yet been engaged because replication intermediates are still below the detection threshold."},
  {t:"0–4 hours", title:"The lining shouts",
-  n:["epithelium","macrophage","nk","dendritic"], e:["epithelium|nk","epithelium|macrophage","epithelium|dendritic"],
+  n:["epithelium","macrophage","nk","dendritic"], e:["epithelium>nk","epithelium|macrophage","epithelium|dendritic"],
   plain:"The infected cell detects that something foreign is copying itself inside it, and releases warning chemicals. These do two things: they make neighbouring cells harder to infect, and they call in help. This alarm, not the virus, is what makes you feel ill.",
   student:"RIG-I and MDA5 detect viral RNA and drive type I interferon, which induces an antiviral state in neighbouring cells. Alarmins and chemokines recruit and activate resident macrophages, NK cells and dendritic cells. Systemic IL-1β, IL-6 and TNF produce fever, aches and malaise.",
   clinical:"IFN-α/β signalling through IFNAR induces hundreds of interferon-stimulated genes. Influenza NS1 antagonises this sensing, and the balance between viral antagonism and host sensing largely sets disease severity. Symptoms are cytokine-driven, not cytopathic — a point worth making to patients who assume the virus itself causes the aching."},
  {t:"2–12 hours", title:"Innate cells kill without knowing what they are killing",
-  n:["nk","epithelium","macrophage","neutrophil","monocyte"], e:["nk|epithelium","macrophage|neutrophil","epithelium|neutrophil","macrophage|monocyte"],
+  n:["nk","epithelium","macrophage","neutrophil","monocyte"], e:["nk>epithelium","macrophage|neutrophil","epithelium|neutrophil","macrophage>monocyte"],
   plain:"Cells that patrol without specific training arrive and start destroying infected cells. They are fast and approximate. They will not clear the infection alone, but they hold it back while the specific response is built.",
   student:"NK cells kill cells that have downregulated MHC I. Macrophages phagocytose infected debris and secrete IL-1β, TNF and CXCL8; neutrophils extravasate in large numbers; CCL2 pulls monocytes from the blood. Innate control constrains viral load but does not eliminate infection.",
   clinical:"Innate effectors buy the roughly four days that adaptive priming requires. Excessive innate recruitment is itself the problem in severe influenza: neutrophil-rich alveolar damage and monocyte-derived cytokine amplification underlie ARDS more than viral burden does at that stage."},
@@ -632,7 +631,7 @@ const SCENARIOS = [
   student:"Lipid nanoparticles deliver modified mRNA into muscle cells and local antigen-presenting cells, which translate the encoded antigen. Nucleoside modification (pseudouridine) reduces innate sensing enough to allow translation while the lipid components themselves act as adjuvant.",
   clinical:"Endogenous expression means the antigen enters both MHC I and MHC II pathways, generating CD8 as well as CD4 and antibody responses — an advantage over most protein subunit vaccines. Expression is transient and the mRNA never enters the nucleus."},
  {t:"2–12 hours", title:"Danger, without damage",
-  n:["macrophage","dendritic","monocyte","neutrophil"], e:["macrophage|neutrophil","macrophage|monocyte"],
+  n:["macrophage","dendritic","monocyte","neutrophil"], e:["macrophage|neutrophil","macrophage>monocyte"],
   plain:"A protein alone is ignored. The immune system must also believe something dangerous is happening, and the fatty carrier supplies that belief. The result is a sore arm, and sometimes a headache or fever, produced entirely by your own signalling molecules.",
   student:"The ionisable lipid triggers innate sensing and local cytokine release, providing the adjuvant effect. Local IL-1β, IL-6 and TNF cause reactogenicity: injection site pain, myalgia and fever. This is signal 2 for dendritic cell maturation.",
   clinical:"Reactogenicity correlates only weakly with antibody titre, so its absence does not indicate failed response — a useful counselling point. Systemic symptoms are more common after dose two because memory T cells amplify the local response."},
@@ -781,7 +780,13 @@ const SHORT = {
 };
 const shortName = c => SHORT[c.id] || c.name;
 const ekey = e => e.a + "|" + e.b;
-const matchKey = (e, k) => { const [x,y] = k.split("|"); return (e.a===x&&e.b===y)||(e.a===y&&e.b===x); };
+// "a>b" matches that direction only; "a|b" matches either. Two cell pairs
+// carry a connection in each direction, so those steps must be directed.
+const matchKey = (e, k) => {
+  if(k.includes(">")){ const [x,y] = k.split(">"); return e.a===x && e.b===y; }
+  const [x,y] = k.split("|");
+  return (e.a===x && e.b===y) || (e.a===y && e.b===x);
+};
 
 const BANDS = [
   {x:32,  y:48,  w:636,  h:104, v:"--band-barrier", label:"Airway surface · epithelium & mucus"},
@@ -860,8 +865,7 @@ function edgeGeom(e){
   const ax = A.x+ux*pad, ay = A.y+uy*pad, bx = B.x-ux*pad, by = B.y-uy*pad;
   const mx = (ax+bx)/2, my = (ay+by)/2, bow = (e.bow||0)*len;
   const cx = mx - uy*bow, cy = my + ux*bow;
-  return { d:`M${ax},${ay} Q${cx},${cy} ${bx},${by}`,
-           lx:0.25*ax+0.5*cx+0.25*bx, ly:0.25*ay+0.5*cy+0.25*by };
+  return { d:`M${ax},${ay} Q${cx},${cy} ${bx},${by}`, ax, ay, cx, cy, bx, by };
 }
 
 const GEOM = EDGES.map(edgeGeom);
@@ -875,10 +879,107 @@ gEdges.innerHTML = EDGES.map((e,i) => {
   </g>`;
 }).join("");
 
-gLabels.innerHTML = EDGES.map((e,i) => {
-  const g = GEOM[i];
-  return `<text class="edge-label" data-i="${i}" x="${g.lx}" y="${g.ly}" text-anchor="middle">${e.sig}</text>`;
-}).join("");
+gLabels.innerHTML = EDGES.map((e,i) =>
+  `<g class="edge-label" data-i="${i}">
+     <path class="leader"></path>
+     <rect rx="4"></rect>
+     <text text-anchor="middle" dominant-baseline="central">${e.sig}</text>
+   </g>`).join("");
+
+/* ---------- label placement -------------------------------------------
+   Every label used to sit on its curve's midpoint, so lighting eight
+   connections at once stacked them on each other and on the cell names.
+   Each label now searches along its own curve for a spot that hits
+   nothing, treating cells, cell names and already-placed labels as
+   obstacles, and draws a leader line when it has to sit off the curve.
+   --------------------------------------------------------------------- */
+const LBL = [];        // measured label sizes
+let OBST = [];         // static obstacles: cell glyphs and their names
+
+const qAt = (g,t) => {
+  const u = 1-t;
+  return { x:u*u*g.ax + 2*u*t*g.cx + t*t*g.bx,
+           y:u*u*g.ay + 2*u*t*g.cy + t*t*g.by };
+};
+const qNormal = (g,t) => {
+  const u = 1-t;
+  const dx = 2*u*(g.cx-g.ax) + 2*t*(g.bx-g.cx);
+  const dy = 2*u*(g.cy-g.ay) + 2*t*(g.by-g.cy);
+  const len = Math.hypot(dx,dy) || 1;
+  return { x:-dy/len, y:dx/len };
+};
+const overlap = (a,b) => Math.max(0, Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))
+                       * Math.max(0, Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+
+function measure(){
+  gLabels.querySelectorAll(".edge-label").forEach(g => {
+    const i = +g.dataset.i, t = g.querySelector("text"), r = g.querySelector("rect");
+    const bb = t.getBBox();
+    const w = Math.ceil(bb.width) + 10, h = Math.ceil(bb.height) + 6;
+    LBL[i] = { w, h };
+    r.setAttribute("x", -w/2); r.setAttribute("y", -h/2);
+    r.setAttribute("width", w); r.setAttribute("height", h);
+  });
+  OBST = [];
+  CELLS.forEach(c => OBST.push({ x:c.x-29, y:c.y-29, w:58, h:58 }));
+  gNodes.querySelectorAll("g.node").forEach(g => {
+    const c = NODE[g.dataset.id];
+    g.querySelectorAll("text").forEach(t => {
+      const bb = t.getBBox();
+      OBST.push({ x:c.x+bb.x-3, y:c.y+bb.y-2, w:bb.width+6, h:bb.height+4 });
+    });
+  });
+}
+
+const T_STEPS   = [.5,.42,.58,.34,.66,.26,.74,.18,.82];
+const OFFSETS   = [0,-15,15,-28,28,-42,42];
+
+function placeLabels(indices){
+  const taken = [];
+  // widest first: the labels that are hardest to fit get first choice
+  const order = [...indices].sort((a,b) => (LBL[b]?.w||0) - (LBL[a]?.w||0));
+  const result = new Map();
+
+  order.forEach(i => {
+    const g = GEOM[i], dim = LBL[i] || { w:70, h:16 };
+    let best = null, bestScore = Infinity;
+
+    outer:
+    for(const t of T_STEPS){
+      const p = qAt(g,t), n = qNormal(g,t);
+      for(const off of OFFSETS){
+        const x = p.x + n.x*off, y = p.y + n.y*off;
+        const box = { x:x-dim.w/2-2, y:y-dim.h/2-2, w:dim.w+4, h:dim.h+4 };
+        // keep the chip inside the drawing
+        if(box.x < 4 || box.y < 4 || box.x+box.w > 1196 || box.y+box.h > 786) continue;
+        let score = 0;
+        for(const o of OBST)  score += overlap(box,o);
+        for(const o of taken) score += overlap(box,o) * 3;   // label-on-label is worst
+        score += Math.abs(off) * 0.35;                        // prefer sitting on the curve
+        if(score === 0){ best = {x,y,box,off,anchor:p}; break outer; }
+        if(score < bestScore){ bestScore = score; best = {x,y,box,off,anchor:p}; }
+      }
+    }
+    if(best){ taken.push(best.box); result.set(i,best); }
+  });
+
+  gLabels.querySelectorAll(".edge-label").forEach(el => {
+    const i = +el.dataset.i, r = result.get(i);
+    if(!r){ el.classList.remove("show"); return; }
+    el.setAttribute("transform", `translate(${r.x.toFixed(1)},${r.y.toFixed(1)})`);
+    const leader = el.querySelector(".leader");
+    // a short line back to the curve when the chip had to step aside
+    if(Math.abs(r.off) > 16){
+      const dx = r.anchor.x - r.x, dy = r.anchor.y - r.y;
+      const len = Math.hypot(dx,dy) || 1;
+      const startGap = Math.min(len, (LBL[i]?.h || 16)/2 + 2);
+      leader.setAttribute("d", `M${(dx/len*startGap).toFixed(1)},${(dy/len*startGap).toFixed(1)} L${dx.toFixed(1)},${dy.toFixed(1)}`);
+      leader.style.display = "";
+    } else {
+      leader.style.display = "none";
+    }
+  });
+}
 
 gNodes.innerHTML = CELLS.map(c => `
   <g class="node" data-id="${c.id}" transform="translate(${c.x},${c.y})" tabindex="0" role="button"
@@ -890,7 +991,9 @@ gNodes.innerHTML = CELLS.map(c => `
   </g>`).join("");
 
 /* ---------- highlighting ---------- */
+let lastPaint = {};
 function paint({nodes=null, edges=null} = {}){
+  lastPaint = {nodes, edges};
   const nodeSet = nodes ? new Set(nodes) : null;
   const edgeIdx = new Set();
   if(edges) EDGES.forEach((e,i) => { if(edges.some(k => matchKey(e,k))) edgeIdx.add(i); });
@@ -910,6 +1013,7 @@ function paint({nodes=null, edges=null} = {}){
   gLabels.querySelectorAll(".edge-label").forEach(t => {
     t.classList.toggle("show", edgeIdx.has(+t.dataset.i));
   });
+  placeLabels([...edgeIdx]);
 }
 
 function edgesOf(id){ return EDGES.filter(e => e.a===id || e.b===id); }
@@ -945,11 +1049,21 @@ gNodes.addEventListener("keydown", ev => {
   const g = ev.target.closest("g.node"); if(!g) return;
   ev.preventDefault(); selectCell(g.dataset.id);
 });
+function visibleLabelSet(extra){
+  const keys = state.sel ? edgesOf(state.sel).map(ekey) : [];
+  const set = new Set();
+  EDGES.forEach((e,i) => { if(keys.some(k => matchKey(e,k))) set.add(i); });
+  if(extra !== undefined) set.add(extra);
+  return set;
+}
 gEdges.addEventListener("mouseover", ev => {
   const g = ev.target.closest("g[data-i]"); if(!g || state.scen) return;
   const i = +g.dataset.i;
   g.querySelector(".edge").classList.add("hot");
-  gLabels.querySelector(`.edge-label[data-i="${i}"]`).classList.add("show");
+  const set = visibleLabelSet(i);
+  gLabels.querySelectorAll(".edge-label").forEach(t =>
+    t.classList.toggle("show", set.has(+t.dataset.i)));
+  placeLabels([...set]);
 });
 gEdges.addEventListener("mouseout", ev => {
   const g = ev.target.closest("g[data-i]"); if(!g || state.scen) return;
@@ -957,7 +1071,10 @@ gEdges.addEventListener("mouseout", ev => {
   const keep = state.sel && (e.a===state.sel || e.b===state.sel);
   if(!keep){
     g.querySelector(".edge").classList.remove("hot");
-    gLabels.querySelector(`.edge-label[data-i="${i}"]`).classList.remove("show");
+    const set = visibleLabelSet();
+    gLabels.querySelectorAll(".edge-label").forEach(t =>
+      t.classList.toggle("show", set.has(+t.dataset.i)));
+    placeLabels([...set]);
   }
 });
 document.addEventListener("keydown", ev => { if(ev.key === "Escape") clearSelection(); });
@@ -1211,5 +1328,9 @@ document.getElementById("depthSeg").addEventListener("click", ev => {
 });
 
 /* ---------- go ---------- */
+measure();
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(() => { measure(); paint(lastPaint); });
+}
 syncScenButtons(); renderRail(); syncIndex();
 </script>
