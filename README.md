@@ -3,7 +3,7 @@
 **▶ Open the live site: <https://junjiepeng.github.io/immune-system-map/>**
 
 *Built by Junjie Peng · MIT licensed · questions, corrections and suggestions:
-[open an issue](../../issues)*
+[open an issue](https://github.com/junjiepeng/immune-system-map/issues)*
 
 An interactive map of how immune cells signal to one another, written so that
 the same page works for a curious member of the public, an undergraduate
@@ -11,21 +11,22 @@ revising immunology, and a working immunologist.
 
 Almost nothing in immunity is done by one cell alone. A cell detects, a second
 carries the news somewhere useful, a third decides what kind of response to
-mount, and a fourth carries it out. Break any link and the whole thing fails —
-which is what most immune diseases turn out to be. This site is built around
-those links rather than around a list of cell types.
+mount, and a fourth carries it out. Changes to these interactions can disrupt
+immune responses. This site is built around those links rather than around a list of cell types.
 
 ## What it does
 
-**A tissue-section map.** Twenty-one cells are placed in the compartment where
-they actually work: airway surface, infected tissue, draining lymph node and
-bloodstream. Forty-three connections join them, and each one carries the
-molecule that really mediates it — `CXCL8`, `MHC II + CD80/86 + IL-12`,
-`perforin, granzyme B, FasL`. Connection labels stay hidden until you hover
-one or a scenario lights it, so the map never becomes a hairball.
+**A tissue-section map.** Twenty-one entries represent selected immune cells,
+cell groups and two soluble components: antibody and complement. They are
+placed in representative compartments: airway surface, infected tissue,
+draining lymph node and bloodstream. Forty-three connections carry
+labels describing signalling, differentiation or protein production —
+`CXCL8`, `MHC II + CD80/86 + IL-12`,
+`perforin, granzyme B, FasL`. Connection labels appear when you hover a connection,
+select an entry or follow a scenario.
 
-**Three reading depths, switched in place.** One control rewrites every
-explanation on the page:
+**Three reading depths, switched in place.** One control switches the
+explanatory prose throughout the page:
 
 | Depth | What you get |
 | --- | --- |
@@ -33,14 +34,22 @@ explanation on the page:
 | Student | Named cytokines, receptors and mechanisms, at undergraduate level |
 | Immunologist | Surface phenotypes, transcription factors, the relevant inborn errors, and where current drugs act |
 
-**Five responses played step by step**, with the timings they take in a real
-body:
+**Five responses played step by step**, with illustrative biological timings:
 
-- **Flu virus in the airway** — nine steps from hour zero to lifelong memory
+- **Flu virus in the airway** — nine steps from initial exposure to immune memory
 - **An mRNA vaccine in your arm** — why the arm aches, and why titre falling is not immunity failing
 - **A splinter and Staph in the skin** — complement, neutrophils, Th17, and the scar
 - **Pollen, and why hay fever exists** — silent sensitisation, degranulation, the late phase, and how immunotherapy retrains it
 - **When it turns on you** — tolerance, how it is maintained, and what breaks
+
+**Inspect without losing your place.** Choosing a cell during a scenario pauses
+playback. Use **Back to scenario** to return to the same step, or **Resume
+scenario** to continue. Escape pauses playback and clears cell inspection;
+**Free explore** exits the scenario.
+
+**A searchable index.** Find entries by cell name, marker or connected signal,
+including `Treg`, `CD4`, `IL-5` and `IFN-gamma`. Search filters the index without
+changing the selected scenario. Keyboard users can skip directly to the index.
 
 ## Running it
 
@@ -52,8 +61,9 @@ file in any modern browser, or serve the folder:
 python3 -m http.server 8000
 ```
 
-Google Fonts is the only external request; everything else — data, layout,
-drawing, interaction — ships in the file.
+Google Fonts is the only external request needed for the page styling; data,
+layout, drawing and interaction ship in the file. The app works with fallback
+fonts offline. Selected entries link to external scientific sources.
 
 ## How it is built
 
@@ -63,8 +73,13 @@ rendering and interaction, then the reading panel, cell index and player.
 - **Cells** carry `plain` / `student` / `clinical` prose plus surface markers
   and a clinical note. Adding a cell means writing all three depths, or it
   renders blank at that level.
-- **Connections** carry the mediating molecule and a plain-language gloss, and
-  are referenced by scenarios as `"cellA|cellB"` in either direction.
+- **Connections** carry a mechanism label and a plain-language gloss. Scenarios
+  use `"cellA|cellB"` for either direction or `"cellA>cellB"` for an exact
+  direction. Use a directed key when an undirected pair would be ambiguous.
+  Active connection endpoints are included in the highlighted node list.
+- **Selected sources** live in `SOURCES`. Add a `refs` array to a cell or a
+  scenario step, with a source title, URL and a precise statement of what it
+  supports. The current citations cover targeted corrections, not the full atlas.
 - **Cell glyphs** are hand-authored SVG resembling real morphology — the
   multilobed neutrophil nucleus, dendritic processes, mast cell granules, the
   plasma cell's clock-face nucleus. No icon font, no emoji.
@@ -79,17 +94,34 @@ body, and IBM Plex Mono is reserved for markers and cytokines so that
 
 ## Accuracy, and what is left out
 
-Every connection shown carries the molecule that actually mediates it, and the
-scenario timings follow the textbook course of each response in an average
-adult. Real responses vary with dose, route, age and prior exposure.
+This is a simplified teaching map. Some connections represent indirect effects,
+differentiation or protein production rather than a direct ligand–receptor
+interaction. Scenario timings are illustrative and vary with dose, route, age
+and prior exposure. Selected entries include sources; a systematic evidence
+review of the full atlas remains a priority.
 
 Deliberate simplifications, named in the site footer as well as here: innate
 lymphoid cells, γδ T cells, follicular dendritic cells, basophils and the bone
 marrow compartment are described in the text but not drawn. The germinal
-centre is compressed into a single B cell node. Cell positions are schematic,
-not anatomical.
+centre is compressed into a single B cell node. Cell positions show
+representative compartments, not exclusive locations; cells migrate and effectors also act outside nodes.
 
 Built as a teaching aid. It is not medical advice.
+
+## Validation and development priorities
+
+The optional validator requires Node.js and no packages:
+
+```bash
+node scripts/validate.mjs
+```
+
+It checks all four script blocks for syntax errors, unique IDs, complete
+reading depths, scenario edge references and source links. It checks structure,
+not scientific correctness or browser behavior.
+
+See [PROJECT_REVIEW.md](PROJECT_REVIEW.md) for the refinement report, scoped
+scientific corrections, verification details and a prioritized roadmap.
 
 ## Contributing
 

@@ -1,4 +1,8 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
+<meta name="description" content="Explore how immune cells communicate through an interactive map, five guided scenarios and three reading levels.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Immune Crosstalk Atlas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -212,9 +216,9 @@ g.node.pulse .body{animation:pulse 1.6s ease-in-out infinite}
 .pbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .pbtn.primary:hover{filter:brightness(1.08);color:#fff}
 .ticks{display:flex;gap:4px;flex:1 1 260px;min-width:200px}
-.tick{flex:1;height:5px;border-radius:3px;background:var(--line);cursor:pointer;border:0;padding:0;transition:background .2s}
-.tick[data-state="done"]{background:var(--line-strong)}
-.tick[data-state="now"]{background:var(--accent)}
+.tick{flex:1;min-width:24px;height:28px;border-radius:3px;background:var(--line);background-clip:padding-box;cursor:pointer;border:solid transparent;border-width:11px 0;padding:0;transition:background-color .2s}
+.tick[data-state="done"]{background-color:var(--line-strong)}
+.tick[data-state="now"]{background-color:var(--accent)}
 .step-cap{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:0 16px;align-items:baseline}
 .step-time{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--accent);white-space:nowrap;letter-spacing:.02em}
 .step-title{font-family:Fraunces,serif;font-size:1.06rem;font-weight:600;margin-bottom:.25em}
@@ -282,14 +286,28 @@ g.node.pulse .body{animation:pulse 1.6s ease-in-out infinite}
 
 footer.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;max-width:80ch}
 footer.foot p{margin-bottom:.5em}
+/* ---------- navigation and index search ---------- */
+.skip-link{position:absolute;left:16px;top:-100px;z-index:10;background:var(--surface);padding:10px 16px;border:2px solid var(--accent);border-radius:8px}
+.skip-link:focus{top:12px}
+.index-search{margin:14px 0;max-width:540px}
+.index-search label{display:block;font-weight:600;font-size:.88rem;margin-bottom:6px}
+.index-search input{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;padding:10px 12px}
+.index-search .hint{margin-top:6px}
+.idx-group[hidden],.idx-chips button[hidden]{display:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.source-list{padding-left:18px;margin:0;font-size:.84rem}
+.source-list li+li{margin-top:10px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
-
-<div class="wrap">
+</head>
+<body>
+<a class="skip-link" href="#cellIndexSection">Skip to searchable cell index</a>
+<main class="wrap" id="main">
   <header class="top">
     <div class="brand">
       <p class="eyebrow">A map of who talks to whom</p>
       <h1>Immune <em>Crosstalk</em> Atlas</h1>
-      <p>Your immune system is a conversation between about twenty kinds of cell. Click any cell to hear what it says and who listens, or press play on a real event and watch the conversation unfold.</p>
+      <p>Explore how selected immune cells and soluble signals work together. Choose a cell to see what it does and who it talks to, or play a guided scenario to follow a response step by step.</p>
     </div>
     <div class="depth">
       <span class="eyebrow" id="depth-label">Explain it to me as a</span>
@@ -311,7 +329,7 @@ footer.foot p{margin-bottom:.5em}
     <div>
       <div class="mapcard">
         <div class="mapscroll">
-          <svg class="atlas" id="atlas" viewBox="0 0 1200 790" role="img"
+          <svg class="atlas" id="atlas" viewBox="0 0 1200 790" role="graphics-document group"
                aria-label="Map of immune cells arranged by body compartment: airway surface, infected tissue, draining lymph node and bloodstream, with labelled signalling connections between them.">
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -343,26 +361,33 @@ footer.foot p{margin-bottom:.5em}
 
     </div>
 
-    <aside class="rail" id="rail" aria-live="polite"></aside>
+    <aside class="rail" id="rail" aria-label="Cell and scenario details" tabindex="-1"></aside>
+    <div class="sr-only" id="selectionStatus" role="status" aria-live="polite"></div>
   </div>
 
-  <div class="indexcard">
-    <p class="eyebrow">Every cell on the map</p>
+  <section class="indexcard" id="cellIndexSection" aria-labelledby="indexHeading" tabindex="-1">
+    <h2 id="indexHeading" style="font-size:1.35rem">Cell &amp; signal index</h2>
+    <div class="index-search">
+      <label for="cellSearch">Search the index</label>
+      <input type="search" id="cellSearch" placeholder="Try Treg, CD4, IL-5 or IFN-gamma" aria-controls="cellIndex" aria-describedby="searchHelp" autocomplete="off">
+      <p class="hint" id="searchHelp">Find entries by name, marker or connected signal. Choose a result to open its details.</p>
+      <p class="hint" id="searchStatus" role="status" aria-live="polite"></p>
+    </div>
     <div class="legend" id="legend"></div>
     <div id="cellIndex"></div>
-  </div>
+  </section>
 
   <footer class="foot">
-    <p><strong>How accurate is this?</strong> Every connection shown carries the molecule that actually mediates it, and the scenario timings follow the textbook course of each response in an average adult. Real responses vary with dose, route, age and prior exposure.</p>
-    <p>Simplifications worth naming: innate lymphoid cells, γδ T cells, follicular dendritic cells, basophils and the bone marrow compartment are described in the text but not drawn. The germinal centre is compressed into a single B cell node. Cell positions are schematic, not anatomical.</p>
+    <p><strong>How accurate is this?</strong> This is a simplified teaching map of selected immune pathways. Connections include signalling, differentiation and protein production; some act through intermediate cells that are not drawn. Scenario timings are illustrative and vary with dose, route, age and prior exposure. Selected entries include sources; the full atlas has not yet had a systematic evidence review.</p>
+    <p>Simplifications worth naming: innate lymphoid cells, γδ T cells, follicular dendritic cells, basophils and the bone marrow compartment are described in the text but not drawn. The germinal centre is compressed into a single B cell node. Positions show representative compartments, not exclusive locations: cells migrate, and effector cells also act outside lymph nodes.</p>
     <p>Built as a teaching aid. It is not medical advice.</p>
   </footer>
-</div>
+</main>
 
 <script>
 /* =====================================================================
    DATA
-   Every edge carries the molecule that actually mediates it.
+   Each edge carries a mechanism label and a plain-language explanation.
    Prose exists at three depths: plain / student / clinical.
    ===================================================================== */
 const LINEAGES = {
@@ -381,6 +406,13 @@ const COMPARTMENTS = {
   blood:"Bloodstream"
 };
 
+// Sources are attached to specific entries, not offered as validation of the whole atlas.
+const SOURCES = {
+  helios:{title:"Akimova et al. (2011) — Helios expression is a marker of T cell activation and proliferation", url:"https://pubmed.ncbi.nlm.nih.gov/21918685/", scope:"Helios alone does not establish thymic Treg origin."},
+  tryptase:{title:"Valent et al. (2021) — Updated diagnostic criteria and classification of mast cell disorders", url:"https://pubmed.ncbi.nlm.nih.gov/34901755/", scope:"Elevated basal tryptase is not specific to systemic mastocytosis."},
+  cart:{title:"Müller et al. (2024) — CD19 CAR T-cell therapy in autoimmune disease: a case series with follow-up", url:"https://doi.org/10.1056/NEJMoa2308917", scope:"An uncontrolled series of 15 patients, including 8 with SLE; findings from this cohort do not establish a universal cure."}
+};
+
 const CELLS = [
 { id:"epithelium", name:"Epithelial cell", sub:"the lining", lin:"barrier", comp:"barrier", glyph:"brick", x:120, y:100,
   plain:"The wall itself. A tight sheet of cells covered in slime and tiny beating hairs that sweep dirt out. Most infections never get past it. When a cell of the wall is broken into, it does not fight — it shouts.",
@@ -394,7 +426,7 @@ const CELLS = [
   student:"Tissue-resident granulocyte loaded with histamine, heparin, tryptase and TNF. Degranulates within seconds of FcεRI cross-linking by allergen-bound IgE, or on complement anaphylatoxins C3a/C5a. Histamine dilates vessels and makes them leaky, letting plasma proteins and cells flood in. It then makes leukotrienes and prostaglandins over minutes.",
   clinical:"Kit-dependent, long-lived, tissue-resident. Two arms: rapid degranulation (histamine, tryptase, TNF) and delayed eicosanoid/cytokine synthesis (LTC4, PGD2, IL-4, IL-5, IL-13). Tryptase is the clinical marker of systemic activation. Distinguish IgE-dependent activation from MRGPRX2-mediated pseudo-allergy to drugs such as vancomycin and neuromuscular blockers.",
   markers:"CD117 (KIT)+, FcεRI+, tryptase+, CD203c+",
-  note:"Serum tryptase peaks 1–2 h after anaphylaxis and normalises by 24 h. A persistently raised baseline (>20 ng/mL) points to mastocytosis and a KIT D816V clone." },
+  note:"Serum tryptase peaks 1–2 h after anaphylaxis and normalises by 24 h. A basal tryptase above 20 ng/mL is one minor criterion for systemic mastocytosis; hereditary alpha-tryptasemia and some myeloid neoplasms can also raise it. The level alone does not establish mastocytosis or a KIT mutation.", refs:["tryptase"] },
 
 { id:"macrophage", name:"Macrophage", sub:"resident eater", lin:"myeloid", comp:"tissue", glyph:"kidney", x:145, y:270,
   plain:"The caretaker that lives in the tissue all the time. It eats debris, dead cells and bacteria, cleaning up quietly for years. When it swallows something dangerous it changes character and starts calling for reinforcements.",
@@ -484,8 +516,8 @@ const CELLS = [
   plain:"The cell whose whole job is to stop the others. An immune response that cannot be switched off destroys the tissue it was meant to protect, so this brake matters as much as any weapon. When it fails, the immune system attacks the body.",
   student:"FOXP3-expressing CD4 cell, made in the thymus or induced in the periphery by TGF-β and IL-2. Suppresses in several ways at once: CTLA-4 strips CD80/CD86 off dendritic cells, high-affinity CD25 consumes local IL-2, and it secretes IL-10 and TGF-β. It is the cellular arm of peripheral tolerance.",
   clinical:"FOXP3 mutation causes IPEX; CTLA-4 haploinsufficiency and LRBA deficiency cause an overlapping autoimmune-lymphoproliferative picture treatable with abatacept. Checkpoint inhibitor toxicity is in large part Treg-checkpoint biology released. Low-dose IL-2 preferentially expands Tregs and is in trials for lupus and type 1 diabetes.",
-  markers:"CD4+ CD25-high CD127-low FOXP3+, CTLA-4+, Helios for thymic origin",
-  note:"CD127-low with CD25-high is the standard surface surrogate for Tregs in flow cytometry, because FOXP3 staining requires permeabilisation and cannot be sorted live." },
+  markers:"CD4+ CD25-high CD127-low FOXP3+, CTLA-4+; Helios alone does not establish thymic origin",
+  note:"CD127-low with CD25-high is the standard surface surrogate for Tregs in flow cytometry, because FOXP3 staining requires permeabilisation and cannot be sorted live.", refs:["helios"] },
 
 { id:"tfh", name:"Follicular helper T cell", sub:"the antibody coach", lin:"tcell", comp:"node", glyph:"plain", x:920, y:480,
   plain:"The helper that specialises in coaching B cells. It sits in the part of the lymph node where antibodies are refined, and picks out the B cells making the best-fitting antibody, letting them survive and improve.",
@@ -775,7 +807,7 @@ const SCENARIOS = [
   n:["bcell","plasma","treg","dendritic","th1","antibody"], e:["tfh|bcell","bcell|plasma","treg|dendritic","th1|macrophage"],
   plain:"Once the map is in view, treatments stop looking like a list of names. Each one cuts a specific line on it: remove the antibody designers, remove the factories, block a single messenger molecule, or strengthen the brakes. Which line to cut depends on which conversation has gone wrong.",
   student:"Anti-CD20 depletes B cells but spares CD20-negative long-lived plasma cells. Belimumab removes the BAFF survival signal for autoreactive B cells. Anifrolumab blocks IFNAR. Abatacept is CTLA-4-Ig, restoring the brake at the costimulation step. Anti-TNF and anti-IL-6R interrupt the myeloid amplification loop.",
-  clinical:"Persistent autoantibody after rituximab points to the plasma cell compartment: daratumumab or BCMA CAR-T reach it where anti-CD20 cannot. CD19 CAR-T achieving drug-free remission in refractory lupus, with the reconstituted naive B repertoire returning tolerant, is the strongest evidence yet that this disease is B-cell-driven and in principle resettable."}]}
+  clinical:"Persistent autoantibody after rituximab points to the plasma cell compartment: daratumumab or BCMA CAR-T reach it where anti-CD20 cannot. A 2024 uncontrolled case series of 15 patients, including 8 with SLE, reported remission in the SLE participants after CD19 CAR-T. That cohort supports further study of B-cell depletion but does not establish a universal cure or durable tolerance in all patients.", refs:["cart"]}]}
 ];
 </script>
 
@@ -1015,8 +1047,9 @@ function paint({nodes=null, edges=null} = {}){
   gNodes.querySelectorAll("g.node").forEach(g => {
     const id = g.dataset.id;
     g.classList.toggle("dim", !!nodeSet && !nodeSet.has(id));
-    g.classList.toggle("pulse", !!nodeSet && nodeSet.has(id) && !!state.scen);
+    g.classList.toggle("pulse", !!nodeSet && nodeSet.has(id) && !!state.scen && !state.sel);
     g.classList.toggle("sel", id === state.sel);
+    g.setAttribute("aria-pressed", String(id === state.sel));
   });
   gEdges.querySelectorAll("g[data-i]").forEach(g => {
     const i = +g.dataset.i, p = g.querySelector(".edge");
@@ -1032,27 +1065,51 @@ function paint({nodes=null, edges=null} = {}){
 
 function edgesOf(id){ return EDGES.filter(e => e.a===id || e.b===id); }
 
-function selectCell(id, {scroll=false} = {}){
-  state.sel = id;
+function selectCell(id, {scroll=false, focus=false} = {}){
+  if(!NODE[id]) return;
   stopPlay();
-  state.scen = null; state.step = 0;
+  state.sel = id;
   syncScenButtons();
   renderTicks();
   const es = edgesOf(id);
   paint({ nodes:[id, ...es.map(e => e.a===id ? e.b : e.a)], edges:es.map(ekey) });
   renderRail();
   syncIndex();
+  renderCellCaption();
+  if(focus || (scroll && window.innerWidth <= 1080)) focusRail();
+}
+
+function focusRail(){
+  rail.focus({preventScroll:true});
+  rail.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"nearest"});
+}
+
+function renderCellCaption(){
+  const sc = SCENARIOS.find(s => s.id === state.scen);
+  document.getElementById("stepTime").textContent = sc ? `Paused · step ${state.step+1} of ${sc.steps.length}` : "Free explore";
+  document.getElementById("stepTitle").textContent = NODE[state.sel].name;
+  document.getElementById("stepBody").textContent = sc
+    ? `You are inspecting a cell. ${sc.label} is paused at “${sc.steps[state.step].title}”. Choose Back to scenario or Resume scenario to continue.`
+    : "Connections from this entry are lit on the map. Choose a conversation in the details panel to follow it.";
+}
+
+function renderExploreCaption(){
   document.getElementById("stepTime").textContent = "Free explore";
-  document.getElementById("stepTitle").textContent = NODE[id].name;
-  document.getElementById("stepBody").textContent =
-    "Connections from this cell are lit on the map with the molecule that carries each one. Click any conversation in the panel to follow it.";
-  if(scroll && window.innerWidth <= 1080) document.getElementById("rail").scrollIntoView({behavior:"smooth", block:"start"});
+  document.getElementById("stepTitle").textContent = "Choose a cell or a scenario";
+  document.getElementById("stepBody").textContent = "Choose an event above to follow it step by step, select a cell on the map, or search the index by cell name, marker or signal.";
 }
 
 function clearSelection(){
+  const restoreFocus = rail.contains(document.activeElement);
+  stopPlay();
   state.sel = null;
-  paint({});
-  renderRail(); syncIndex();
+  if(state.scen) showStep();
+  else {
+    paint({});
+    renderExploreCaption();
+    renderRail(); syncIndex();
+  }
+  if(restoreFocus) focusRail();
 }
 
 gNodes.addEventListener("click", ev => {
@@ -1061,7 +1118,7 @@ gNodes.addEventListener("click", ev => {
 gNodes.addEventListener("keydown", ev => {
   if(ev.key !== "Enter" && ev.key !== " ") return;
   const g = ev.target.closest("g.node"); if(!g) return;
-  ev.preventDefault(); selectCell(g.dataset.id);
+  ev.preventDefault(); selectCell(g.dataset.id, {scroll:true});
 });
 function visibleLabelSet(extra){
   const keys = state.sel ? edgesOf(state.sel).map(ekey) : [];
@@ -1071,7 +1128,7 @@ function visibleLabelSet(extra){
   return set;
 }
 gEdges.addEventListener("mouseover", ev => {
-  const g = ev.target.closest("g[data-i]"); if(!g || state.scen) return;
+  const g = ev.target.closest("g[data-i]"); if(!g || (state.scen && !state.sel)) return;
   const i = +g.dataset.i;
   g.querySelector(".edge").classList.add("hot");
   const set = visibleLabelSet(i);
@@ -1080,7 +1137,7 @@ gEdges.addEventListener("mouseover", ev => {
   placeLabels([...set]);
 });
 gEdges.addEventListener("mouseout", ev => {
-  const g = ev.target.closest("g[data-i]"); if(!g || state.scen) return;
+  const g = ev.target.closest("g[data-i]"); if(!g || (state.scen && !state.sel)) return;
   const i = +g.dataset.i, e = EDGES[i];
   const keep = state.sel && (e.a===state.sel || e.b===state.sel);
   if(!keep){
@@ -1091,13 +1148,23 @@ gEdges.addEventListener("mouseout", ev => {
     placeLabels([...set]);
   }
 });
-document.addEventListener("keydown", ev => { if(ev.key === "Escape") clearSelection(); });
+document.addEventListener("keydown", ev => {
+  if(ev.key === "Escape" && !ev.target.matches("input, textarea, select, [contenteditable]")) clearSelection();
+});
 </script>
 
 <script>
 /* ---------- the reading panel ---------- */
 const rail = document.getElementById("rail");
-const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+
+function renderReferences(entry){
+  if(!entry.refs?.length) return "";
+  return `<div class="block"><h3>Selected sources</h3><ul class="source-list">${entry.refs.map(id => {
+    const source = SOURCES[id];
+    return `<li><a href="${esc(source.url)}">${esc(source.title)}</a><br>${esc(source.scope)}</li>`;
+  }).join("")}</ul></div>`;
+}
 
 function railIntro(){
   const groups = Object.entries(LINEAGES).map(([k,v]) =>
@@ -1110,12 +1177,12 @@ function railIntro(){
   rail.innerHTML = `
     <p class="eyebrow">Start here</p>
     <h2>Immunity is a conversation, not an army</h2>
-    <p style="margin-top:.7em;color:var(--ink-2)">Almost nothing in immunity is done by one cell alone. A cell detects, a second cell carries the news somewhere useful, a third decides what kind of response to mount, and a fourth carries it out. Break any link and the whole thing fails, which is exactly what most immune diseases turn out to be.</p>
+    <p style="margin-top:.7em;color:var(--ink-2)">Almost nothing in immunity is done by one cell alone. A cell detects, a second cell carries the news somewhere useful, a third decides what kind of response to mount, and a fourth carries it out. Changes to these interactions can disrupt immune responses.</p>
     <div class="block">
       <h3>Three ways to use this</h3>
       <p style="color:var(--ink-2)"><strong>Click a cell</strong> on the map to read what it does and every conversation it takes part in.</p>
       <p style="color:var(--ink-2)"><strong>Hover a connection</strong> to see the actual molecule that carries it. Labels stay hidden until you ask, so the map stays readable.</p>
-      <p style="color:var(--ink-2)"><strong>Play an event</strong> from the row at the top to watch a real response unfold in order, with the timings it takes in a real body.</p>
+      <p style="color:var(--ink-2)"><strong>Play an event</strong> from the row at the top to follow a response in order, with illustrative biological timings.</p>
     </div>
     <div class="block">
       <h3>Reading level</h3>
@@ -1123,7 +1190,7 @@ function railIntro(){
     </div>
     <div class="block">
       <h3>The map</h3>
-      <p style="color:var(--ink-2)">Cells sit in the compartment where they actually work. The tissue is where infection starts, the lymph node is where the specific response is planned, and the bloodstream is how cells travel between them. Colour marks the family a cell belongs to.</p>
+      <p style="color:var(--ink-2)">Cells sit in representative compartments; they can migrate and work in other locations. The tissue is where infection starts, the lymph node is where the specific response is planned, and the bloodstream is how cells travel between them. Colour marks the family a cell belongs to.</p>
       <div class="legend">${groups}</div>
     </div>`;
 }
@@ -1169,12 +1236,13 @@ function railCell(id){
       <ul class="talks">${convos}</ul>
     </div>
     ${note}
+    ${renderReferences(c)}
     <div class="block">
-      <button type="button" class="pbtn" id="clearSel">Clear selection</button>
+      <button type="button" class="pbtn" id="clearSel">${state.scen ? "Back to scenario" : "Clear selection"}</button>
     </div>`;
 
   rail.querySelectorAll("[data-go]").forEach(b =>
-    b.addEventListener("click", () => selectCell(b.dataset.go)));
+    b.addEventListener("click", () => selectCell(b.dataset.go, {focus:true})));
   const cs = document.getElementById("clearSel");
   if(cs) cs.addEventListener("click", clearSelection);
 }
@@ -1182,7 +1250,7 @@ function railCell(id){
 function railStep(){
   const sc = SCENARIOS.find(s => s.id === state.scen);
   const st = sc.steps[state.step];
-  const cells = st.n.map(id => `<button type="button" data-go="${id}">
+  const cells = stepNodeIds(st).map(id => `<button type="button" data-go="${id}">
       <span class="who">${esc(shortName(NODE[id]))}</span>
       <span style="color:var(--muted);font-size:.84rem;display:block;margin-top:2px">${esc(NODE[id].sub)}</span>
     </button>`).join("");
@@ -1200,18 +1268,24 @@ function railStep(){
     <div class="meta"><span class="chip" style="color:var(--accent)"><span class="swatch"></span>${esc(st.t)}</span></div>
     <p style="color:var(--ink-2)">${esc(st[state.depth])}</p>
     ${sigs}
+    ${renderReferences(st)}
     <div class="block">
       <h3>Cells on stage</h3>
       <ul class="talks">${cells}</ul>
     </div>`;
   rail.querySelectorAll("[data-go]").forEach(b =>
-    b.addEventListener("click", () => selectCell(b.dataset.go)));
+    b.addEventListener("click", () => selectCell(b.dataset.go, {focus:true})));
 }
 
 function renderRail(){
-  if(state.scen) railStep();
-  else if(state.sel) railCell(state.sel);
+  if(state.sel) railCell(state.sel);
+  else if(state.scen) railStep();
   else railIntro();
+  rail.scrollTop = 0;
+  const title = rail.querySelector("h2").textContent;
+  document.getElementById("selectionStatus").textContent = state.scen
+    ? `${title}. ${state.sel ? "Scenario paused. " : ""}Step ${state.step+1} of ${SCENARIOS.find(s => s.id === state.scen).steps.length}.`
+    : `${title}.`;
 }
 
 /* ---------- cell index below the map ---------- */
@@ -1229,7 +1303,7 @@ idxEl.innerHTML = Object.entries(LINEAGES).map(([k,v]) => {
 idxEl.addEventListener("click", ev => {
   const b = ev.target.closest("button[data-id]"); if(!b) return;
   if(b.getAttribute("aria-pressed") === "true") clearSelection();
-  else selectCell(b.dataset.id);
+  else selectCell(b.dataset.id, {focus:true});
 });
 function syncIndex(){
   idxEl.querySelectorAll("button[data-id]").forEach(b =>
@@ -1237,6 +1311,36 @@ function syncIndex(){
 }
 document.getElementById("legend").innerHTML = Object.entries(LINEAGES)
   .map(([k,v]) => `<span><i style="background:var(${v.v})"></i>${v.label}</span>`).join("");
+
+/* Search only filters the index; selected details and scenario progress stay intact. */
+const cellSearch = document.getElementById("cellSearch");
+const searchStatus = document.getElementById("searchStatus");
+const normaliseSearch = text => String(text).toLowerCase().normalize("NFKD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/α/g,"alpha").replace(/β/g,"beta").replace(/γ/g,"gamma").replace(/δ/g,"delta").replace(/ε/g,"epsilon").replace(/κ/g,"kappa")
+  .replace(/[^a-z0-9]/g, "");
+const SEARCH_TEXT = Object.fromEntries(CELLS.map(c => [c.id, normaliseSearch([
+  c.name, c.sub, c.id, shortName(c), c.markers, LINEAGES[c.lin].label, ...edgesOf(c.id).map(e => e.sig)
+].join(" "))]));
+function filterIndex(){
+  const query = normaliseSearch(cellSearch.value);
+  let count = 0;
+  idxEl.querySelectorAll("button[data-id]").forEach(button => {
+    button.hidden = !SEARCH_TEXT[button.dataset.id].includes(query);
+    if(!button.hidden) count++;
+  });
+  idxEl.querySelectorAll(".idx-group").forEach(group => {
+    group.hidden = !group.querySelector("button:not([hidden])");
+  });
+  searchStatus.textContent = count
+    ? `${count} of ${CELLS.length} entries${query ? " match your search" : " on the map"}.`
+    : "No matching entries. Try a cell name, marker or signal, or clear the search.";
+}
+cellSearch.addEventListener("input", filterIndex);
+cellSearch.addEventListener("keydown", ev => {
+  if(ev.key === "Escape") { cellSearch.value = ""; filterIndex(); ev.stopPropagation(); }
+});
+filterIndex();
 
 /* ---------- scenarios ---------- */
 const scenBtns = document.getElementById("scenBtns");
@@ -1256,27 +1360,38 @@ function syncScenButtons(){
   document.getElementById("prevBtn").disabled = !on || state.step === 0;
   document.getElementById("nextBtn").disabled = !on ||
     (on && state.step >= SCENARIOS.find(s => s.id === state.scen).steps.length - 1);
-  playBtn.textContent = state.timer ? "Pause" : (on ? "Play" : "Play the flu");
+  playBtn.textContent = state.timer ? "Pause" : (on ? (state.sel ? "Resume scenario" : "Play") : "Play the flu");
 }
 
 function renderTicks(){
   if(!state.scen){ ticksEl.innerHTML = ""; return; }
   const sc = SCENARIOS.find(s => s.id === state.scen);
+  const focusedStep = ticksEl.contains(document.activeElement) ? document.activeElement.dataset.step : null;
   ticksEl.innerHTML = sc.steps.map((s,i) =>
     `<button type="button" class="tick" data-step="${i}" title="${esc(s.t)}: ${esc(s.title)}"
-      aria-label="Step ${i+1}: ${esc(s.title)}"
+      aria-label="Step ${i+1}: ${esc(s.title)}" aria-current="${i === state.step ? "step" : "false"}"
       data-state="${i < state.step ? "done" : i === state.step ? "now" : "todo"}"></button>`).join("");
+  if(focusedStep !== null) ticksEl.querySelector(`[data-step="${focusedStep}"]`)?.focus({preventScroll:true});
 }
 ticksEl.addEventListener("click", ev => {
   const b = ev.target.closest("[data-step]"); if(!b) return;
   stopPlay(); state.step = +b.dataset.step; showStep();
 });
 
+// Include endpoints of every active connection so a lit edge never points at a dimmed entry.
+function stepNodeIds(step){
+  const ids = new Set(step.n);
+  EDGES.forEach(edge => {
+    if(step.e.some(key => matchKey(edge,key))) { ids.add(edge.a); ids.add(edge.b); }
+  });
+  return [...ids];
+}
+
 function showStep(){
   const sc = SCENARIOS.find(s => s.id === state.scen);
   const st = sc.steps[state.step];
   state.sel = null;
-  paint({ nodes:st.n, edges:st.e });
+  paint({ nodes:stepNodeIds(st), edges:st.e });
   renderTicks(); syncScenButtons(); syncIndex();
   document.getElementById("stepTime").textContent = st.t;
   document.getElementById("stepTitle").textContent = st.title;
@@ -1295,10 +1410,7 @@ scenBtns.addEventListener("click", ev => {
 freeBtn.addEventListener("click", () => {
   stopPlay(); state.scen = null; state.step = 0; state.sel = null;
   ticksEl.innerHTML = ""; paint({}); syncScenButtons(); syncIndex(); renderRail();
-  document.getElementById("stepTime").textContent = "Free explore";
-  document.getElementById("stepTitle").textContent = "Nothing is happening yet";
-  document.getElementById("stepBody").textContent =
-    "Pick an event above to run it step by step, or click any cell on the map to read about it. Connections stay quiet until you hover one, so the map is not a hairball.";
+  renderExploreCaption();
 });
 
 document.getElementById("nextBtn").addEventListener("click", () => {
@@ -1319,6 +1431,7 @@ playBtn.addEventListener("click", () => {
   if(state.timer){ stopPlay(); return; }
   if(!state.scen){ startScenario(SCENARIOS[0].id); }
   const sc = SCENARIOS.find(s => s.id === state.scen);
+  if(state.sel) showStep();
   if(state.step >= sc.steps.length-1){ state.step = 0; showStep(); }
   state.timer = setInterval(() => {
     const s = SCENARIOS.find(x => x.id === state.scen);
@@ -1334,7 +1447,8 @@ document.getElementById("depthSeg").addEventListener("click", ev => {
   state.depth = b.dataset.depth;
   document.querySelectorAll("#depthSeg button").forEach(x =>
     x.setAttribute("aria-pressed", String(x === b)));
-  if(state.scen){
+  if(state.sel) renderCellCaption();
+  else if(state.scen){
     const st = SCENARIOS.find(s => s.id === state.scen).steps[state.step];
     document.getElementById("stepBody").textContent = st[state.depth];
   }
@@ -1346,5 +1460,8 @@ measure();
 if(document.fonts && document.fonts.ready){
   document.fonts.ready.then(() => { measure(); paint(lastPaint); });
 }
-syncScenButtons(); renderRail(); syncIndex();
+syncScenButtons(); renderRail(); syncIndex(); renderExploreCaption();
 </script>
+
+</body>
+</html>
