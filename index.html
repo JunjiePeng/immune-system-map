@@ -326,9 +326,9 @@ footer.foot p{margin-bottom:.5em}
 .cell-clock{fill:var(--cell-nucleus-deep)}
 .cell-cilia,.cell-receptors,.cell-basement{fill:none;stroke:currentColor;stroke-width:1.4}
 .cell-basement{stroke-width:2.4}
-.cell-badge circle{fill:currentColor;stroke:var(--surface);stroke-width:1.8}
+.cell-badge :is(circle,rect){fill:currentColor;stroke:var(--surface);stroke-width:1.8}
 .cell-badge text{fill:var(--surface);font-family:"Public Sans",sans-serif;font-weight:700;letter-spacing:-.3px}
-.cell-badge.resting circle{fill:var(--surface);stroke:currentColor;stroke-width:1.5}
+.cell-badge.resting :is(circle,rect){fill:var(--surface);stroke:currentColor;stroke-width:1.5}
 .cell-badge.resting text{fill:currentColor}
 .cell-antibody{fill:none}
 .cell-protein-shadow{stroke:var(--surface);stroke-width:11}
@@ -356,6 +356,99 @@ footer.foot p{margin-bottom:.5em}
 .source-list{padding-left:18px;margin:0;font-size:.84rem}
 .source-list li+li{margin-top:10px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* ---------- lineage explorer ---------- */
+.explore-card{display:grid;grid-template-columns:1fr auto;gap:5px 14px;width:100%;margin-top:18px;padding:15px 16px;border:1px solid var(--lineage-tone,var(--accent));border-radius:12px;text-align:left;color:var(--ink);background:color-mix(in srgb,var(--surface) 91%,var(--lineage-tone,var(--accent)));cursor:pointer}
+.explore-card:hover{background:color-mix(in srgb,var(--surface) 83%,var(--lineage-tone,var(--accent)))}
+.explore-card strong{font-size:.93rem}.explore-card small{grid-column:1;font-size:.78rem;color:var(--ink-2)}
+.explore-card .explore-arrow{grid-column:2;grid-row:1 / 3;align-self:center;font-size:1.5rem;color:var(--lineage-tone,var(--accent))}
+html.lineage-open{overflow:hidden}
+.lineage-dialog{width:min(1320px,calc(100vw - 40px));max-width:none;height:min(900px,calc(100dvh - 48px));max-height:calc(100dvh - 48px);padding:0;border:1px solid var(--line-strong);border-radius:20px;background:var(--surface);color:var(--ink);box-shadow:0 24px 100px #0005;overflow:hidden}
+.lineage-dialog::backdrop{background:rgba(24,18,29,.5);backdrop-filter:blur(5px)}
+.lineage-dialog[open]{display:flex;flex-direction:column}
+.lineage-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 26px 18px;border-bottom:1px solid var(--line);flex-shrink:0}
+.lineage-header h2{font:600 clamp(1.45rem,2.4vw,2rem)/1.15 Fraunces,serif;letter-spacing:-.02em;margin-top:6px}
+.lineage-header .eyebrow{color:var(--lineage-tone)}
+.lineage-close{white-space:nowrap;flex-shrink:0}
+.lineage-controls{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:12px 20px;padding:14px 26px;border-bottom:1px solid var(--line);background:var(--surface-2);flex-shrink:0}
+.lineage-controls label{font-size:.72rem;color:var(--muted);display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.lineage-controls select,.lineage-controls input{font:inherit;font-size:.86rem;color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;min-height:38px;padding:7px 10px;min-width:0;width:100%;max-width:100%}
+.lineage-family-control{flex:0 1 250px;min-width:0}
+.lineage-search-control{flex:1 1 225px;max-width:340px;min-width:0}
+.lineage-controls .seg{align-self:end}.lineage-controls .seg button{padding:7px 11px;font-size:.77rem}
+.lineage-workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,330px);flex:1;min-height:0}
+.lineage-map-pane{min-width:0;min-height:0;overflow:auto;padding:22px 26px 30px;background-color:var(--surface-2);background-image:radial-gradient(var(--line) .75px,transparent .75px);background-size:16px 16px;overscroll-behavior:contain}
+.lineage-map-intro{max-width:65ch;color:var(--ink-2);font-size:.88rem;line-height:1.6;margin-bottom:18px}
+.lineage-map-meta{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:18px;color:var(--muted);font:400 .69rem/1.5 "IBM Plex Mono",monospace}
+.lineage-map-meta span:first-child{border:1px solid var(--line);border-radius:99px;padding:3px 8px;background:var(--surface)}
+.lineage-root{display:flex;align-items:center;justify-content:center;gap:12px;width:fit-content;max-width:100%;margin:0 auto 28px;border:1px solid var(--lineage-tone);border-radius:14px;padding:10px 19px;background:var(--surface);color:var(--ink);cursor:pointer;position:relative;text-align:left}
+.lineage-root::after{content:"";position:absolute;width:1px;height:29px;top:100%;left:50%;background:var(--line-strong)}
+.lineage-root svg{width:48px;height:48px;flex-shrink:0;overflow:visible}
+.lineage-root strong{font-size:.95rem;display:block}.lineage-root small{font-size:.72rem;color:var(--muted)}
+.lineage-root[aria-pressed="true"]{box-shadow:0 0 0 3px color-mix(in srgb,var(--lineage-tone) 15%,transparent)}
+.lineage-branches{display:grid;grid-template-columns:repeat(var(--columns),minmax(0,1fr));gap:20px;list-style:none;margin:0;padding:0}
+.lineage-branch{min-width:0;position:relative;padding-top:19px}
+.lineage-branch::before{content:"";position:absolute;left:50%;height:18px;top:0;border-left:1px solid var(--line-strong)}
+.lineage-branch::after{content:"";position:absolute;top:0;left:-10px;right:-10px;border-top:1px solid var(--line-strong)}
+.lineage-branch:first-child::after{left:50%}.lineage-branch:last-child::after{right:50%}
+.lineage-branch:only-child::after{display:none}
+.lineage-branch h3{font:500 .69rem/1.5 "IBM Plex Mono",monospace;letter-spacing:.02em;text-transform:uppercase;text-align:center;min-height:32px;margin:0 0 13px;color:var(--ink-2);overflow-wrap:anywhere}
+.lineage-branch ul{list-style:none;padding:0 0 0 12px;margin:0;border-left:1px solid var(--line-strong)}
+.lineage-branch li{position:relative;margin:0 0 9px}
+.lineage-branch li:last-child{margin-bottom:0}
+.lineage-branch li::before{content:"";position:absolute;left:-12px;width:12px;top:27px;border-top:1px solid var(--line-strong)}
+.subtype-node{display:block;width:100%;min-height:63px;border:1px solid var(--line);border-radius:10px;background:var(--surface);text-align:left;padding:10px 11px;color:var(--ink);cursor:pointer;overflow-wrap:anywhere;transition:border-color .15s,box-shadow .15s,background .15s}
+.subtype-node:hover{border-color:var(--lineage-tone);box-shadow:0 2px 10px #00000008}
+.subtype-node[aria-pressed="true"]{border-color:var(--lineage-tone);background:color-mix(in srgb,var(--surface) 91%,var(--lineage-tone));box-shadow:inset 3px 0 var(--lineage-tone)}
+.subtype-node strong{display:block;font-size:.84rem;line-height:1.35;font-weight:600}
+.subtype-node small{display:block;font-size:.65rem;color:var(--muted);margin-top:5px}
+.lineage-map-note{padding:13px 15px;margin-top:22px;border-left:2px solid var(--lineage-tone);background:var(--surface);font-size:.76rem;line-height:1.65;color:var(--ink-2)}
+.lineage-map-note strong{color:var(--ink);display:block;margin-bottom:3px}
+.lineage-detail{min-width:0;overflow:auto;overscroll-behavior:contain;padding:24px;border-left:1px solid var(--line);background:var(--surface)}
+.lineage-detail h3{font:600 1.55rem/1.18 Fraunces,serif;letter-spacing:-.015em;margin:14px 0 12px;overflow-wrap:anywhere}
+.lineage-detail .detail-portrait{width:84px;height:84px;margin:0 0 12px;overflow:visible}
+.lineage-detail p{font-size:.89rem;color:var(--ink-2);line-height:1.65}
+.lineage-detail .profile-kind{display:inline-block;font-size:.68rem;color:color-mix(in srgb,var(--lineage-tone) 70%,var(--ink));border:1px solid currentColor;border-radius:99px;padding:3px 8px}
+.lineage-detail .detail-block{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.lineage-detail h4{font-size:.74rem;font-weight:600;letter-spacing:.035em;margin-bottom:7px}
+.lineage-detail .marker-list{display:flex;flex-wrap:wrap;gap:5px}
+.lineage-detail .marker-list span{font:400 .7rem/1.6 "IBM Plex Mono",monospace;padding:3px 7px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);overflow-wrap:anywhere;max-width:100%}
+.lineage-detail .source-list{list-style:none;padding:0;font-size:.76rem;line-height:1.5}
+.lineage-detail .source-list a{color:var(--accent);text-underline-offset:3px}
+.lineage-detail .source-list li+li{margin-top:9px}
+.lineage-profile-count{font:500 2.5rem/1 Fraunces,serif;color:var(--lineage-tone);display:block;margin-bottom:8px}
+.lineage-map-return{display:none}
+.lineage-next-hint{margin-top:20px;font-size:.79rem!important;color:var(--muted)!important}
+.lineage-empty{padding:28px 16px;text-align:center;border:1px dashed var(--line-strong);border-radius:12px;font-size:.9rem;background:var(--surface)}
+.lineage-empty .pbtn{margin-top:12px}
+.lineage-footer{padding:11px 26px;border-top:1px solid var(--line);font-size:.72rem;line-height:1.5;color:var(--muted);flex-shrink:0}
+@media(max-width:1000px){
+ .lineage-dialog{width:calc(100vw - 24px);height:calc(100dvh - 24px);max-height:calc(100dvh - 24px)}
+ .lineage-workspace{grid-template-columns:minmax(0,1fr) 270px}
+ .lineage-map-pane{padding:18px}.lineage-detail{padding:20px}
+ .lineage-branches{gap:12px}.lineage-branch::after{left:-6px;right:-6px}
+ .subtype-node{padding:9px 8px}.subtype-node strong{font-size:.77rem}
+}
+@media(max-width:760px){
+ .lineage-dialog{width:calc(100vw - 16px);height:calc(100dvh - 16px);max-height:calc(100dvh - 16px);border-radius:14px}
+ .lineage-header{padding:16px;gap:10px}.lineage-header .eyebrow{font-size:.59rem}.lineage-header h2{font-size:1.3rem}
+ .lineage-close{padding:6px 9px;font-size:.75rem}
+ .lineage-controls{padding:10px 16px;gap:8px}.lineage-family-control,.lineage-search-control{flex:1 1 130px;max-width:none}
+ .lineage-controls .seg{width:100%;display:flex}.lineage-controls .seg button{flex:1;padding:6px 8px}
+ .lineage-workspace{display:block;overflow:auto;overscroll-behavior:contain}
+ .lineage-map-return{display:block;margin-bottom:20px;font-size:.78rem}
+ .lineage-map-pane,.lineage-detail{overflow:visible}.lineage-detail{border-left:0;border-top:1px solid var(--line)}
+ .lineage-map-pane{padding:17px 15px}.lineage-map-intro{font-size:.82rem}
+ .lineage-branches{grid-template-columns:1fr;gap:18px;padding-left:12px;border-left:1px solid var(--line-strong)}
+ .lineage-root{margin-bottom:22px}.lineage-root::after{display:none}
+ .lineage-branch{padding:0}.lineage-branch::after{display:none}.lineage-branch::before{left:-12px;top:10px;width:10px;height:0;border-top:1px solid var(--line-strong);border-left:0}
+ .lineage-branch h3{text-align:left;min-height:0;margin-bottom:9px}
+ .lineage-branch ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0;border:0}
+ .lineage-branch li{margin:0}.lineage-branch li::before{display:none}
+ .subtype-node{height:100%;min-height:64px}.subtype-node strong{font-size:.81rem}
+ .lineage-footer{padding:9px 16px;font-size:.66rem}
+}
+@media(max-width:360px){.lineage-branch ul{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -451,6 +544,33 @@ footer.foot p{margin-bottom:.5em}
     <p>Built as a teaching aid. It is not medical advice.</p>
   </footer>
 </main>
+<dialog id="lineageDialog" class="lineage-dialog" aria-labelledby="lineageTitle" aria-describedby="lineageDescription">
+  <header class="lineage-header">
+    <div><p class="eyebrow">Immune crosstalk atlas / Lineage explorer</p><h2 id="lineageTitle"></h2></div>
+    <button type="button" class="pbtn lineage-close" id="closeLineage" autofocus>Back to atlas <span aria-hidden="true">×</span></button>
+  </header>
+  <div class="lineage-controls">
+    <label class="lineage-family-control">Explore a family<select id="lineageFamily"></select></label>
+    <label class="lineage-search-control">Find a profile or marker<input type="search" id="lineageSearch" placeholder="Try memory, CCR7, CD16…" autocomplete="off" aria-controls="lineageTree"></label>
+    <div class="seg" id="lineageDepth" role="group" aria-label="Explorer reading level">
+      <button type="button" data-depth="plain">Curious reader</button>
+      <button type="button" data-depth="student">Student</button>
+      <button type="button" data-depth="clinical">Immunologist</button>
+    </div>
+  </div>
+  <div class="lineage-workspace" id="lineageWorkspace">
+    <section class="lineage-map-pane" aria-label="Subtype map">
+      <p class="lineage-map-intro" id="lineageDescription"></p>
+      <div class="lineage-map-meta"><span id="lineageReferenceLabel">Curated human reference</span><span id="lineageResultCount" role="status"></span></div>
+      <div id="lineageTree"></div>
+      <p class="lineage-map-note" id="lineageMapNote"></p>
+    </section>
+    <aside class="lineage-detail" id="lineageDetail" aria-label="Selected subtype details" tabindex="-1"></aside>
+  </div>
+  <footer class="lineage-footer" id="lineageFooter"></footer>
+  <div id="lineageStatus" class="sr-only" role="status" aria-live="polite"></div>
+</dialog>
+
 
 <script>
 /* =====================================================================
@@ -675,6 +795,1456 @@ const EDGES = [
  {a:"nk", b:"epithelium", sig:"missing self → granzyme", plain:"No identity badge on the cell, no survival.", bow:.16},
  {a:"eosinophil", b:"epithelium", sig:"MBP, ECP", plain:"Its toxins hit the parasite and the airway lining alike.", bow:-.2}
 ];
+
+/* Curated reference profiles. Branches group identities and states; they do not infer ancestry. */
+const SUBTYPE_SOURCES = {
+  "immune_atlas": {
+    "title": "Domínguez Conde et al. · Cross-tissue human immune atlas (2022)",
+    "url": "https://doi.org/10.1126/science.abl5197"
+  },
+  "tcell_atlas": {
+    "title": "Szabo et al. · Human T-cell tissue and activation states (2019)",
+    "url": "https://www.nature.com/articles/s41467-019-12464-3"
+  },
+  "treg_states": {
+    "title": "Miyara et al. · Resting and activated human Tregs (2009)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/19464196/"
+  },
+  "cd8_states": {
+    "title": "Sade-Feldman et al. · Human CD8 states in melanoma (2018)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/30388456/"
+  },
+  "bcell_atlas": {
+    "title": "Glass et al. · Human B-cell identity (2020)",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7369630/"
+  },
+  "bcell_health": {
+    "title": "Allen Institute · B-cell and plasma-cell atlas annotations",
+    "url": "https://apps.allenimmunology.org/aifi/resources/imm-health-atlas/cell-type-descriptions/b-cells-and-plasma-cells/"
+  },
+  "gc_states": {
+    "title": "Victora et al. · Human germinal-centre zones (2012)",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3447782/"
+  },
+  "dc_atlas": {
+    "title": "Villani et al. · Human dendritic cells and monocytes (2017)",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5775029/"
+  },
+  "dc3": {
+    "title": "Bourdely et al. · Human DC3 identity and function (2020)",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7445430/"
+  },
+  "macrophage_atlas": {
+    "title": "Mulder et al. · Human monocyte and macrophage landscape (2021)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/34331874/"
+  },
+  "microglia": {
+    "title": "Masuda et al. · Human and mouse microglial diversity (2019)",
+    "url": "https://www.nature.com/articles/s41586-019-0924-x"
+  },
+  "liver": {
+    "title": "Guilliams et al. · Hepatic macrophage niches (2022)",
+    "url": "https://biblio.ugent.be/publication/8738275"
+  },
+  "nk_atlas": {
+    "title": "Rebuffet et al. · Human NK-cell heterogeneity (2024)",
+    "url": "https://doi.org/10.1038/s41590-024-01883-0"
+  },
+  "mast_atlas": {
+    "title": "Dwyer et al. · Human airway mast-cell phenotypes (2021)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/33637594/"
+  },
+  "neutrophil_atlas": {
+    "title": "Montaldo et al. · Human neutrophil maturation and stress (2022)",
+    "url": "https://doi.org/10.1038/s41590-022-01311-1"
+  },
+  "neutrophil_ifn": {
+    "title": "Wigerblad et al. · Circulating human neutrophil states (2022)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/35858733/"
+  },
+  "eosinophil_blood": {
+    "title": "Human blood eosinophils: plasticity without canonical subsets (2024)",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11804299/"
+  },
+  "eosinophil_tissue": {
+    "title": "Human nasal-polyp eosinophil heterogeneity (2024)",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11456383/"
+  },
+  "lung_atlas": {
+    "title": "Travaglini et al. · A molecular atlas of the human lung (2020)",
+    "url": "https://doi.org/10.1038/s41586-020-2922-4"
+  },
+  "bsi_bcells": {
+    "title": "British Society for Immunology · B cells",
+    "url": "https://www.immunology.org/public-information/bitesized-immunology/cells/b-cells"
+  },
+  "bsi_complement": {
+    "title": "British Society for Immunology · Complement system",
+    "url": "https://www.immunology.org/public-information/bitesized-immunology/systems-processes/complement-system"
+  },
+  "memory_states": {
+    "title": "Sallusto et al. · Human central and effector memory T cells (1999)",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/10537110/"
+  },
+  "airway_atlas": {
+    "title": "Plasschaert et al. · Airway epithelial identities (2018)",
+    "url": "https://www.nature.com/articles/s41586-018-0394-6"
+  },
+  "imgt": {
+    "title": "IMGT · Human immunoglobulin classes and subclasses",
+    "url": "https://www.imgt.org/IMGTeducation/Tutorials/index.php?article=IGandBcells&chapter=Properties&lang=UK&nbr=Tableau2"
+  }
+};
+const SUBTYPE_PROFILES = {
+  "tcm": {
+    "id": "tcm",
+    "name": "Central memory · TCM",
+    "kind": "Memory state",
+    "plain": "A mobile reserve that can multiply quickly when a familiar threat returns.",
+    "student": "CCR7-associated lymphoid homing distinguishes central memory from many effector-memory cells.",
+    "markers": "CCR7+, CD45RO+, SELL",
+    "location": "Blood and lymphoid tissue",
+    "refs": [
+      "memory_states"
+    ],
+    "icon": "memory",
+    "clinical": ""
+  },
+  "tem": {
+    "id": "tem",
+    "name": "Effector memory · TEM",
+    "kind": "Memory state",
+    "plain": "Experienced T cells ready to act in the circulation and tissues.",
+    "student": "These cells lack CCR7 and retain faster effector potential than naive cells.",
+    "markers": "CCR7−, CD45RO+",
+    "location": "Blood and peripheral tissues",
+    "refs": [
+      "memory_states"
+    ],
+    "icon": "memory",
+    "clinical": ""
+  },
+  "trm": {
+    "id": "trm",
+    "name": "Tissue-resident memory · TRM",
+    "kind": "Memory state",
+    "plain": "Local sentries remain near a previous encounter instead of routinely circulating.",
+    "student": "Residency programs differ by organ; CD103 is common in some epithelial sites but is not universal.",
+    "markers": "CD69; ITGAE/CD103 varies",
+    "location": "Barrier and other tissues",
+    "refs": [
+      "tcell_atlas"
+    ],
+    "icon": "memory",
+    "clinical": ""
+  },
+  "cd4_naive": {
+    "id": "cd4_naive",
+    "name": "Naive CD4 T",
+    "kind": "Subtype",
+    "plain": "An uncommitted helper waiting to recognise its particular antigen.",
+    "student": "Antigen presentation and the surrounding cytokines shape subsequent helper programs.",
+    "markers": "CD4, CCR7, CD45RA, TCF7",
+    "location": "Blood and lymphoid tissue",
+    "refs": [
+      "immune_atlas"
+    ],
+    "icon": "naiveCD4",
+    "clinical": ""
+  },
+  "th1": {
+    "id": "th1",
+    "name": "Th1",
+    "kind": "Helper program",
+    "plain": "Coordinates defence against threats living inside cells.",
+    "student": "IFN-γ production and the T-bet program support macrophage activation.",
+    "markers": "TBX21, CXCR3, IFNG",
+    "location": "Lymphoid and inflamed tissues",
+    "refs": [
+      "immune_atlas"
+    ],
+    "icon": "th1",
+    "clinical": ""
+  },
+  "th2": {
+    "id": "th2",
+    "name": "Th2",
+    "kind": "Helper program",
+    "plain": "Coordinates parasite defence and many allergic responses.",
+    "student": "GATA3-associated IL-4, IL-5 and IL-13 programs recruit and instruct type 2 immunity.",
+    "markers": "GATA3, PTGDR2/CRTH2, IL4",
+    "location": "Lymphoid and barrier tissues",
+    "refs": [
+      "immune_atlas"
+    ],
+    "icon": "th2",
+    "clinical": ""
+  },
+  "th17": {
+    "id": "th17",
+    "name": "Th17",
+    "kind": "Helper program",
+    "plain": "Helps defend barriers against extracellular microbes.",
+    "student": "RORγt-associated IL-17 responses recruit neutrophils indirectly through tissue signals.",
+    "markers": "RORC, CCR6, IL17A",
+    "location": "Mucosal and inflamed tissues",
+    "refs": [
+      "immune_atlas"
+    ],
+    "icon": "th17",
+    "clinical": ""
+  },
+  "tfh": {
+    "id": "tfh",
+    "name": "Follicular helper T · Tfh",
+    "kind": "Helper program",
+    "plain": "Helps B cells improve and select their antibody responses.",
+    "student": "Follicular positioning brings IL-21 and CD40L help to responding B cells.",
+    "markers": "CXCR5, PDCD1, ICOS, BCL6",
+    "location": "B-cell follicles",
+    "refs": [
+      "immune_atlas"
+    ],
+    "icon": "tfh",
+    "clinical": ""
+  },
+  "treg_rest": {
+    "id": "treg_rest",
+    "name": "Resting Treg",
+    "kind": "Regulatory state",
+    "plain": "A resting regulatory reserve that restrains inappropriate immune responses.",
+    "student": "CD45RA-positive FOXP3-low human Tregs can acquire an activated regulatory phenotype.",
+    "markers": "CD4, CD45RA+, FOXP3-low",
+    "location": "Blood and lymphoid tissue",
+    "refs": [
+      "treg_states"
+    ],
+    "icon": "treg",
+    "clinical": ""
+  },
+  "treg_active": {
+    "id": "treg_active",
+    "name": "Activated Treg",
+    "kind": "Regulatory state",
+    "plain": "Regulatory cells actively engaged in controlling an immune response.",
+    "student": "Human activated Tregs have higher FOXP3 and lack CD45RA in this phenotypic framework.",
+    "markers": "CD4, CD45RA−, FOXP3-high, CTLA4",
+    "location": "Blood and responding tissues",
+    "refs": [
+      "treg_states"
+    ],
+    "icon": "treg",
+    "clinical": "FOXP3 expression alone also occurs in some activated conventional T cells; use a combined phenotype."
+  },
+  "cd8_naive": {
+    "id": "cd8_naive",
+    "name": "Naive CD8 T",
+    "kind": "Subtype",
+    "plain": "A cytotoxic-cell precursor waiting to recognise its antigen.",
+    "student": "Priming builds antigen-specific effector capacity before a memory population can persist.",
+    "markers": "CD8, CCR7, CD45RA, TCF7",
+    "location": "Blood and lymphoid tissue",
+    "refs": [
+      "tcell_atlas"
+    ],
+    "icon": "naiveCD8",
+    "clinical": ""
+  },
+  "cd8_effector": {
+    "id": "cd8_effector",
+    "name": "Cytotoxic effector",
+    "kind": "Effector state",
+    "plain": "An active killer that removes infected or abnormal cells.",
+    "student": "Perforin and granzymes support target-cell killing; the program also appears in some memory cells.",
+    "markers": "CD8, PRF1, GZMB, NKG7",
+    "location": "Responding tissues and blood",
+    "refs": [
+      "tcell_atlas"
+    ],
+    "icon": "ctl",
+    "clinical": ""
+  },
+  "temra": {
+    "id": "temra",
+    "name": "TEMRA",
+    "kind": "Memory state",
+    "plain": "An experienced T-cell population that has re-expressed CD45RA.",
+    "student": "The CCR7-negative, CD45RA-positive phenotype often accompanies strong cytotoxic differentiation.",
+    "markers": "CD8, CCR7−, CD45RA+",
+    "location": "Often peripheral blood",
+    "refs": [
+      "immune_atlas"
+    ],
+    "icon": "ctl",
+    "clinical": "TEMRA is a phenotype, not proof that an individual cell is senescent or exhausted."
+  },
+  "exhausted": {
+    "id": "exhausted",
+    "name": "Exhaustion-associated",
+    "kind": "Context-dependent state",
+    "plain": "Persistent stimulation can reshape a T cell’s ability to respond.",
+    "student": "Inhibitory-receptor-rich and TCF7-associated states differ within human tumour T-cell populations.",
+    "markers": "PDCD1, LAG3, HAVCR2; TCF7 varies",
+    "location": "Chronic stimulation, including tumours",
+    "refs": [
+      "cd8_states"
+    ],
+    "icon": "ctl",
+    "clinical": "PD-1 alone cannot diagnose exhaustion; activation history and a broader functional program matter."
+  },
+  "b_transitional": {
+    "id": "b_transitional",
+    "name": "Transitional B",
+    "kind": "Maturation state",
+    "plain": "A recently formed B cell completing its peripheral maturation.",
+    "student": "High CD24 and CD38 help distinguish transitional populations within a B-cell gate.",
+    "markers": "CD19, CD24-high, CD38-high",
+    "location": "Blood and spleen",
+    "refs": [
+      "bcell_atlas"
+    ],
+    "icon": "bcell",
+    "clinical": ""
+  },
+  "b_naive": {
+    "id": "b_naive",
+    "name": "Naive B",
+    "kind": "Subtype",
+    "plain": "An antibody designer that has not yet joined an antigen-driven response.",
+    "student": "Naive cells usually co-express surface IgM and IgD and lack CD27.",
+    "markers": "CD19, IGHM, IGHD, CD27−",
+    "location": "Blood and lymphoid follicles",
+    "refs": [
+      "bcell_atlas"
+    ],
+    "icon": "bcell",
+    "clinical": ""
+  },
+  "gc_dark": {
+    "id": "gc_dark",
+    "name": "Germinal centre · dark zone",
+    "kind": "Cyclic state",
+    "plain": "B cells multiply and alter their antibody sequences.",
+    "student": "Human dark-zone cells are relatively CXCR4-high and CD83-low within the germinal-centre population.",
+    "markers": "BCL6, CXCR4-high, CD83-low",
+    "location": "Germinal centres",
+    "refs": [
+      "gc_states"
+    ],
+    "icon": "bcell",
+    "clinical": ""
+  },
+  "gc_light": {
+    "id": "gc_light",
+    "name": "Germinal centre · light zone",
+    "kind": "Cyclic state",
+    "plain": "B cells compete for antigen and help from Tfh cells.",
+    "student": "Relative CD83 elevation and lower CXCR4 distinguish this selection-associated state.",
+    "markers": "BCL6, CXCR4-low, CD83-high",
+    "location": "Germinal centres",
+    "refs": [
+      "gc_states"
+    ],
+    "icon": "bcell",
+    "clinical": "Dark and light zones describe cycling states; they are not a one-way developmental sequence."
+  },
+  "b_unswitched": {
+    "id": "b_unswitched",
+    "name": "Unswitched memory B",
+    "kind": "Memory subtype",
+    "plain": "An experienced B cell that still carries IgM, often with IgD.",
+    "student": "Memory identity and antibody class are related but separate features.",
+    "markers": "CD19, often CD27+, IGHM",
+    "location": "Blood and lymphoid tissue",
+    "refs": [
+      "bcell_atlas"
+    ],
+    "icon": "bcell",
+    "clinical": ""
+  },
+  "b_switched": {
+    "id": "b_switched",
+    "name": "Class-switched memory B",
+    "kind": "Memory subtype",
+    "plain": "An experienced B cell carrying an antibody class such as IgG or IgA.",
+    "student": "Class switching changes the heavy-chain constant region while preserving antigen specificity.",
+    "markers": "CD19, IGHG or IGHA; CD27 variable",
+    "location": "Blood and tissues",
+    "refs": [
+      "bcell_health"
+    ],
+    "icon": "bcell",
+    "clinical": ""
+  },
+  "plasmablast": {
+    "id": "plasmablast",
+    "name": "Plasmablast",
+    "kind": "Secretory state",
+    "plain": "A rapidly responding antibody-producing cell, often still dividing.",
+    "student": "An emerging secretory program accompanies reduced B-cell identity and high CD38 expression.",
+    "markers": "CD27-high, CD38-high, MKI67 often",
+    "location": "Blood during responses; tissues",
+    "refs": [
+      "bcell_health"
+    ],
+    "icon": "plasma",
+    "clinical": ""
+  },
+  "plasma_long": {
+    "id": "plasma_long",
+    "name": "Plasma cell",
+    "kind": "Secretory cell",
+    "plain": "A specialised factory that releases large amounts of antibody.",
+    "student": "PRDM1 and XBP1 support secretion; a subset persists in long-lived survival niches.",
+    "markers": "CD38-high, SDC1/CD138, MZB1, XBP1",
+    "location": "Bone marrow and tissues",
+    "refs": [
+      "bcell_health"
+    ],
+    "icon": "plasma",
+    "clinical": "A plasma-cell phenotype alone does not establish how long that cell will survive."
+  },
+  "mono_classical": {
+    "id": "mono_classical",
+    "name": "Classical monocyte",
+    "kind": "Subtype",
+    "plain": "A circulating responder readily recruited to sites of inflammation.",
+    "student": "High CD14 with little CD16 marks the classical blood phenotype.",
+    "markers": "CD14++, CD16−, CCR2",
+    "location": "Blood",
+    "refs": [
+      "dc_atlas"
+    ],
+    "icon": "monocyte",
+    "clinical": ""
+  },
+  "mono_intermediate": {
+    "id": "mono_intermediate",
+    "name": "Intermediate monocyte",
+    "kind": "Subtype",
+    "plain": "A smaller circulating population with overlapping sensing and presentation programs.",
+    "student": "CD14-high, CD16-positive cells occupy an intermediate phenotypic compartment.",
+    "markers": "CD14++, CD16+, HLA-DRA",
+    "location": "Blood",
+    "refs": [
+      "dc_atlas"
+    ],
+    "icon": "monocyte",
+    "clinical": ""
+  },
+  "mono_nonclassical": {
+    "id": "mono_nonclassical",
+    "name": "Non-classical monocyte",
+    "kind": "Subtype",
+    "plain": "A circulating population associated with surveillance of blood vessels.",
+    "student": "Higher CD16 and lower CD14 distinguish it from classical monocytes.",
+    "markers": "CD14-low, CD16++, FCGR3A",
+    "location": "Blood",
+    "refs": [
+      "dc_atlas"
+    ],
+    "icon": "monocyte",
+    "clinical": ""
+  },
+  "macro_alveolar": {
+    "id": "macro_alveolar",
+    "name": "Alveolar macrophage",
+    "kind": "Tissue subtype",
+    "plain": "Clears inhaled material and helps maintain the air sacs.",
+    "student": "A lung-adapted lipid-handling program supports surfactant homeostasis.",
+    "markers": "FABP4, PPARG, MARCO",
+    "location": "Lung alveoli",
+    "refs": [
+      "lung_atlas",
+      "macrophage_atlas"
+    ],
+    "icon": "macrophage",
+    "clinical": ""
+  },
+  "macro_kupffer": {
+    "id": "macro_kupffer",
+    "name": "Kupffer cell",
+    "kind": "Tissue subtype",
+    "plain": "A liver-resident macrophage positioned to sample blood-borne material.",
+    "student": "The hepatic niche shapes a specialised scavenging and immune-surveillance program.",
+    "markers": "MARCO, VSIG4; TIMD4 varies",
+    "location": "Liver sinusoids",
+    "refs": [
+      "liver"
+    ],
+    "icon": "macrophage",
+    "clinical": ""
+  },
+  "microglia": {
+    "id": "microglia",
+    "name": "Microglia",
+    "kind": "Tissue subtype",
+    "plain": "Resident immune sentries help maintain the brain and spinal cord.",
+    "student": "Homeostatic microglial programs change during injury and neurological disease.",
+    "markers": "P2RY12, TMEM119, CX3CR1",
+    "location": "Central nervous system",
+    "refs": [
+      "microglia"
+    ],
+    "icon": "macrophage",
+    "clinical": ""
+  },
+  "macro_recruited": {
+    "id": "macro_recruited",
+    "name": "Recruited macrophage",
+    "kind": "Origin / state",
+    "plain": "A macrophage formed from a recruited monocyte in a tissue.",
+    "student": "Local signals remodel its inflammatory, repair and metabolic programs over time.",
+    "markers": "CD68, LYZ; FCN1 early, tissue-dependent",
+    "location": "Inflamed and remodelling tissues",
+    "refs": [
+      "macrophage_atlas"
+    ],
+    "icon": "macrophage",
+    "clinical": ""
+  },
+  "cdc1": {
+    "id": "cdc1",
+    "name": "Conventional DC1 · cDC1",
+    "kind": "Subtype",
+    "plain": "A dendritic-cell specialist in presenting captured material to CD8 T cells.",
+    "student": "Cross-presentation is a prominent cDC1 function, though it is not exclusive to this subset.",
+    "markers": "CLEC9A, XCR1, CD141",
+    "location": "Blood and tissues",
+    "refs": [
+      "dc_atlas"
+    ],
+    "icon": "dendritic",
+    "clinical": ""
+  },
+  "cdc2": {
+    "id": "cdc2",
+    "name": "Conventional DC2 · cDC2",
+    "kind": "Subtype",
+    "plain": "A diverse dendritic-cell compartment that helps instruct CD4 T-cell responses.",
+    "student": "CD1c and antigen-presentation programs characterise many human cDC2 populations.",
+    "markers": "CD1c, FCER1A, CLEC10A",
+    "location": "Blood and tissues",
+    "refs": [
+      "dc_atlas"
+    ],
+    "icon": "dendritic",
+    "clinical": ""
+  },
+  "dc3": {
+    "id": "dc3",
+    "name": "DC3",
+    "kind": "Subtype",
+    "plain": "A dendritic-cell population with features that partly resemble monocytes.",
+    "student": "CD163 helps distinguish human DC3 within CD1c-positive populations.",
+    "markers": "CD1c+, CD163+, CD88−; CD14 varies",
+    "location": "Blood and inflammatory tissues",
+    "refs": [
+      "dc3"
+    ],
+    "icon": "dendritic",
+    "clinical": "DC3 is not simply a synonym for a monocyte-derived dendritic cell."
+  },
+  "pdc": {
+    "id": "pdc",
+    "name": "Plasmacytoid DC · pDC",
+    "kind": "Subtype",
+    "plain": "A specialised detector capable of a strong antiviral interferon response.",
+    "student": "Viral sensing can induce substantial type I interferon production.",
+    "markers": "IL3RA/CD123, CLEC4C/CD303, TCF4",
+    "location": "Blood and lymphoid tissue",
+    "refs": [
+      "dc_atlas"
+    ],
+    "icon": "dendritic",
+    "clinical": ""
+  },
+  "dc_migratory": {
+    "id": "dc_migratory",
+    "name": "Migratory / activated DC",
+    "kind": "Activation state",
+    "plain": "An activated dendritic cell prepared to carry information to a lymph node.",
+    "student": "CCR7-associated migration and costimulatory programs can occur across dendritic-cell identities.",
+    "markers": "CCR7, LAMP3, CD80/CD86",
+    "location": "Tissues and draining lymph nodes",
+    "refs": [
+      "immune_atlas"
+    ],
+    "icon": "dendritic",
+    "clinical": ""
+  },
+  "nk_dim": {
+    "id": "nk_dim",
+    "name": "CD56-dim · NK1-like",
+    "kind": "Subtype",
+    "plain": "The major blood NK compartment with strong cytotoxic machinery.",
+    "student": "NK1-associated programs include perforin, granzymes and Fc-receptor-linked effector capacity.",
+    "markers": "CD56-dim, FCGR3A/CD16, PRF1",
+    "location": "Predominantly blood",
+    "refs": [
+      "nk_atlas"
+    ],
+    "icon": "nk",
+    "clinical": ""
+  },
+  "nk_bright": {
+    "id": "nk_bright",
+    "name": "CD56-bright · NK2-like",
+    "kind": "Subtype",
+    "plain": "An NK compartment well equipped to respond to cytokine signals.",
+    "student": "Higher NKG2A and GZMK distinguish many NK2-like cells from cytotoxic NK1 populations.",
+    "markers": "CD56-bright, KLRC1, GZMK",
+    "location": "Blood and tissues",
+    "refs": [
+      "nk_atlas"
+    ],
+    "icon": "nk",
+    "clinical": ""
+  },
+  "nk_adaptive": {
+    "id": "nk_adaptive",
+    "name": "Adaptive-like · NK3",
+    "kind": "Context-dependent subset",
+    "plain": "An NK population shaped by previous immune experience, often involving cytomegalovirus.",
+    "student": "NKG2C enrichment is common in the NK3 program described in the reference atlas.",
+    "markers": "KLRC2/NKG2C, IFNG; phenotype varies",
+    "location": "Often CMV-exposed blood",
+    "refs": [
+      "nk_atlas"
+    ],
+    "icon": "nk",
+    "clinical": ""
+  },
+  "mast_t": {
+    "id": "mast_t",
+    "name": "Tryptase-dominant · MC_T",
+    "kind": "Protease phenotype",
+    "plain": "A mast-cell phenotype often encountered at mucosal surfaces.",
+    "student": "Tryptase is expressed with little or no chymase in the traditional MC_T classification.",
+    "markers": "TPSAB1/TPSB2; CMA1 low or absent",
+    "location": "Mucosal sites",
+    "refs": [
+      "mast_atlas"
+    ],
+    "icon": "mast",
+    "clinical": ""
+  },
+  "mast_tc": {
+    "id": "mast_tc",
+    "name": "Tryptase + chymase · MC_TC",
+    "kind": "Protease phenotype",
+    "plain": "A mast-cell phenotype common in connective tissues.",
+    "student": "Co-expression of tryptase and chymase distinguishes the traditional MC_TC phenotype.",
+    "markers": "TPSAB1/TPSB2, CMA1",
+    "location": "Skin and connective tissues",
+    "refs": [
+      "mast_atlas"
+    ],
+    "icon": "mast",
+    "clinical": ""
+  },
+  "mast_cycling": {
+    "id": "mast_cycling",
+    "name": "Proliferating mast cell",
+    "kind": "Activation state",
+    "plain": "Some tissue mast cells expand locally during inflammation.",
+    "student": "Cycling mast-cell states were observed in inflamed human nasal-polyp tissue.",
+    "markers": "MKI67 with KIT and mast-cell genes",
+    "location": "Inflamed airway tissue",
+    "refs": [
+      "mast_atlas"
+    ],
+    "icon": "mast",
+    "clinical": ""
+  },
+  "neut_immature": {
+    "id": "neut_immature",
+    "name": "Immature neutrophil",
+    "kind": "Maturation state",
+    "plain": "A developing neutrophil that may enter blood during increased production.",
+    "student": "Granule-gene programs and lower CD16 can accompany incomplete maturation.",
+    "markers": "MPO, ELANE; CD16 lower",
+    "location": "Bone marrow; blood during stress",
+    "refs": [
+      "neutrophil_atlas"
+    ],
+    "icon": "neutrophil",
+    "clinical": ""
+  },
+  "neut_mature": {
+    "id": "neut_mature",
+    "name": "Mature neutrophil",
+    "kind": "Maturation state",
+    "plain": "A fully developed circulating cell ready for rapid microbial defence.",
+    "student": "Maturation is associated with a segmented nucleus and a mature surface phenotype.",
+    "markers": "FCGR3B/CD16b, CD10, CSF3R",
+    "location": "Blood and recruited tissues",
+    "refs": [
+      "neutrophil_atlas"
+    ],
+    "icon": "neutrophil",
+    "clinical": ""
+  },
+  "neut_ifn": {
+    "id": "neut_ifn",
+    "name": "Interferon-responsive",
+    "kind": "Response state",
+    "plain": "A neutrophil carrying the transcriptional imprint of interferon signalling.",
+    "student": "An interferon-stimulated gene program can distinguish a response state within mature neutrophils.",
+    "markers": "ISG15, IFIT-family genes",
+    "location": "Blood; context-dependent",
+    "refs": [
+      "neutrophil_ifn"
+    ],
+    "icon": "neutrophil",
+    "clinical": ""
+  },
+  "eos_blood": {
+    "id": "eos_blood",
+    "name": "Circulating eosinophil",
+    "kind": "Compartment / state",
+    "plain": "An eosinophil travelling in blood before recruitment into a tissue.",
+    "student": "Human blood studies find flexible transcriptional states rather than a universal set of intrinsic subsets.",
+    "markers": "SIGLEC8, CCR3, EPX, IL5RA",
+    "location": "Blood",
+    "refs": [
+      "eosinophil_blood"
+    ],
+    "icon": "eosinophil",
+    "clinical": ""
+  },
+  "eos_tissue": {
+    "id": "eos_tissue",
+    "name": "Inflamed-tissue eosinophil",
+    "kind": "Compartment / state",
+    "plain": "Local signals can reshape an eosinophil after it enters tissue.",
+    "student": "Human nasal-polyp eosinophils show heterogeneous activation programs that differ from circulating populations.",
+    "markers": "EPX, CLC, IL5RA; activation genes vary",
+    "location": "Inflamed mucosa",
+    "refs": [
+      "eosinophil_tissue"
+    ],
+    "icon": "eosinophil",
+    "clinical": ""
+  },
+  "epi_basal": {
+    "id": "epi_basal",
+    "name": "Basal cell",
+    "kind": "Epithelial subtype",
+    "plain": "An airway reserve population that supports repair of the lining.",
+    "student": "Basal keratin and TP63 programs identify a major airway progenitor compartment.",
+    "markers": "KRT5, KRT14, TP63",
+    "location": "Conducting airways",
+    "refs": [
+      "airway_atlas",
+      "lung_atlas"
+    ],
+    "icon": "epithelium",
+    "clinical": ""
+  },
+  "epi_ciliated": {
+    "id": "epi_ciliated",
+    "name": "Ciliated cell",
+    "kind": "Epithelial subtype",
+    "plain": "Moves mucus and trapped material out of the airways.",
+    "student": "Motile-cilia programs distinguish these cells from secretory epithelial populations.",
+    "markers": "FOXJ1, cilia-associated genes",
+    "location": "Conducting airways",
+    "refs": [
+      "airway_atlas",
+      "lung_atlas"
+    ],
+    "icon": "epithelium",
+    "clinical": ""
+  },
+  "epi_secretory": {
+    "id": "epi_secretory",
+    "name": "Club / secretory cell",
+    "kind": "Epithelial subtype",
+    "plain": "Produces protective secretions along the airway surface.",
+    "student": "SCGB1A1-associated secretory programs vary along the human respiratory tract.",
+    "markers": "SCGB1A1, SCGB3A1",
+    "location": "Conducting airways",
+    "refs": [
+      "airway_atlas",
+      "lung_atlas"
+    ],
+    "icon": "epithelium",
+    "clinical": ""
+  },
+  "epi_goblet": {
+    "id": "epi_goblet",
+    "name": "Goblet cell",
+    "kind": "Epithelial subtype",
+    "plain": "Produces mucus that helps trap inhaled particles.",
+    "student": "Mucin-rich programs distinguish goblet-like secretory cells.",
+    "markers": "MUC5AC, MUC5B; site-dependent",
+    "location": "Airway mucosa",
+    "refs": [
+      "airway_atlas",
+      "lung_atlas"
+    ],
+    "icon": "epithelium",
+    "clinical": ""
+  },
+  "igm": {
+    "id": "igm",
+    "name": "IgM",
+    "kind": "Antibody class",
+    "plain": "Often the first secreted antibody class in a new response.",
+    "student": "Secreted IgM is usually pentameric and can efficiently recruit complement.",
+    "markers": "μ heavy chain / IGHM",
+    "location": "Blood; naive B-cell surface",
+    "refs": [
+      "bsi_bcells",
+      "imgt"
+    ],
+    "icon": "antibody",
+    "clinical": ""
+  },
+  "igd": {
+    "id": "igd",
+    "name": "IgD",
+    "kind": "Antibody class",
+    "plain": "A common antigen receptor alongside IgM on naive B cells.",
+    "student": "IgD and IgM can share antigen specificity on the same naive B cell.",
+    "markers": "δ heavy chain / IGHD",
+    "location": "Mainly naive B-cell surface",
+    "refs": [
+      "bsi_bcells",
+      "imgt"
+    ],
+    "icon": "antibody",
+    "clinical": ""
+  },
+  "igg": {
+    "id": "igg",
+    "name": "IgG",
+    "kind": "Antibody class",
+    "plain": "A major antibody class in blood and tissues.",
+    "student": "Four human subclasses differ in their interactions with Fc receptors and complement.",
+    "markers": "γ heavy chains / IGHG1–4",
+    "location": "Blood and tissue fluid",
+    "refs": [
+      "bsi_bcells",
+      "imgt"
+    ],
+    "icon": "antibody",
+    "clinical": ""
+  },
+  "iga": {
+    "id": "iga",
+    "name": "IgA",
+    "kind": "Antibody class",
+    "plain": "A major defender of mucosal surfaces.",
+    "student": "Secretory IgA helps limit microbial access across epithelial barriers.",
+    "markers": "α heavy chains / IGHA1–2",
+    "location": "Mucosal secretions; blood",
+    "refs": [
+      "bsi_bcells",
+      "imgt"
+    ],
+    "icon": "antibody",
+    "clinical": ""
+  },
+  "ige": {
+    "id": "ige",
+    "name": "IgE",
+    "kind": "Antibody class",
+    "plain": "Connects antigen recognition to mast cells and related allergic responses.",
+    "student": "FcεRI-bound IgE can trigger mast-cell activation when antigen cross-links it.",
+    "markers": "ε heavy chain / IGHE",
+    "location": "Tissue mast-cell surface; low in blood",
+    "refs": [
+      "bsi_bcells",
+      "imgt"
+    ],
+    "icon": "antibody",
+    "clinical": ""
+  },
+  "comp_classical": {
+    "id": "comp_classical",
+    "name": "Classical pathway",
+    "kind": "Protein pathway",
+    "plain": "Antibody-bound targets can recruit this route into complement activation.",
+    "student": "C1 activation feeds into C4 and C2 cleavage and subsequent C3 activation.",
+    "markers": "C1q/C1r/C1s, C4, C2",
+    "location": "Plasma and tissue fluid",
+    "refs": [
+      "bsi_complement"
+    ],
+    "icon": "complement",
+    "clinical": ""
+  },
+  "comp_lectin": {
+    "id": "comp_lectin",
+    "name": "Lectin pathway",
+    "kind": "Protein pathway",
+    "plain": "Soluble recognition proteins detect suitable microbial surface carbohydrates.",
+    "student": "MBL-associated proteases activate the C4/C2 route to C3 cleavage.",
+    "markers": "MBL, MASPs, C4, C2",
+    "location": "Plasma and tissue fluid",
+    "refs": [
+      "bsi_complement"
+    ],
+    "icon": "complement",
+    "clinical": ""
+  },
+  "comp_alternative": {
+    "id": "comp_alternative",
+    "name": "Alternative pathway",
+    "kind": "Protein pathway",
+    "plain": "An amplification route strengthens complement deposition on permissive surfaces.",
+    "student": "C3b, factor B and factor D support the alternative-pathway C3 convertase.",
+    "markers": "C3, factor B, factor D",
+    "location": "Plasma and target surfaces",
+    "refs": [
+      "bsi_complement"
+    ],
+    "icon": "complement",
+    "clinical": ""
+  }
+};
+const LINEAGE_MAPS = {
+  "cd4": {
+    "id": "cd4",
+    "name": "CD4 T-cell family",
+    "icon": "naiveCD4",
+    "summary": "Explore helper programs, regulatory states and the memory populations that preserve a response.",
+    "note": "Helper identity and memory state are different axes: a Th1 cell, for example, can also be a memory cell. These branches overlap.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Conventional helpers",
+        "profiles": [
+          "cd4_naive",
+          "th1",
+          "th2",
+          "th17",
+          "tfh"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Regulatory states",
+        "profiles": [
+          "treg_rest",
+          "treg_active"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Memory states",
+        "profiles": [
+          "tcm",
+          "tem",
+          "trm"
+        ]
+      }
+    ],
+    "refs": [
+      "immune_atlas",
+      "treg_states",
+      "tcell_atlas"
+    ],
+    "mode": "cells"
+  },
+  "cd8": {
+    "id": "cd8",
+    "name": "CD8 T-cell family",
+    "icon": "naiveCD8",
+    "summary": "Explore antigen-inexperienced, cytotoxic and memory states within the CD8 compartment.",
+    "note": "Memory, cytotoxicity and exhaustion are related dimensions, not a compulsory sequence. Interpret a cluster using its full program and tissue context.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Recognition & response",
+        "profiles": [
+          "cd8_naive",
+          "cd8_effector",
+          "exhausted"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Memory states",
+        "profiles": [
+          "tcm",
+          "tem",
+          "trm",
+          "temra"
+        ]
+      }
+    ],
+    "refs": [
+      "tcell_atlas",
+      "cd8_states"
+    ],
+    "mode": "cells"
+  },
+  "bcell": {
+    "id": "bcell",
+    "name": "B-cell family",
+    "icon": "bcell",
+    "summary": "Follow the identities and recurring states behind antibody selection, memory and secretion.",
+    "note": "Germinal-centre dark and light zones are recurring states. Antibody class does not, by itself, establish a B cell’s complete identity.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Early populations",
+        "profiles": [
+          "b_transitional",
+          "b_naive"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Germinal-centre states",
+        "profiles": [
+          "gc_dark",
+          "gc_light"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Memory & secretion",
+        "profiles": [
+          "b_unswitched",
+          "b_switched",
+          "plasmablast",
+          "plasma_long"
+        ]
+      }
+    ],
+    "refs": [
+      "bcell_atlas",
+      "gc_states",
+      "bcell_health"
+    ],
+    "mode": "cells"
+  },
+  "myeloid": {
+    "id": "myeloid",
+    "name": "Monocytes & macrophages",
+    "icon": "macrophage",
+    "summary": "Compare circulating monocytes with specialised macrophages adapted to different tissues.",
+    "note": "Many resident macrophages have developmental histories distinct from adult recruited monocytes. Human macrophage diversity is broader than a fixed M1/M2 split.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Blood monocytes",
+        "profiles": [
+          "mono_classical",
+          "mono_intermediate",
+          "mono_nonclassical"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Resident niches",
+        "profiles": [
+          "macro_alveolar",
+          "macro_kupffer",
+          "microglia"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Recruitment into tissue",
+        "profiles": [
+          "macro_recruited"
+        ]
+      }
+    ],
+    "refs": [
+      "dc_atlas",
+      "macrophage_atlas"
+    ],
+    "mode": "cells"
+  },
+  "dc": {
+    "id": "dc",
+    "name": "Dendritic-cell family",
+    "icon": "dendritic",
+    "summary": "Explore antigen-presenting identities alongside the activation programs they can adopt.",
+    "note": "Migratory activation can occur across dendritic-cell subsets. Marker combinations are needed to distinguish DCs from neighbouring monocyte populations.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Conventional identities",
+        "profiles": [
+          "cdc1",
+          "cdc2",
+          "dc3"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Interferon specialist",
+        "profiles": [
+          "pdc"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Shared activation program",
+        "profiles": [
+          "dc_migratory"
+        ]
+      }
+    ],
+    "refs": [
+      "dc_atlas",
+      "dc3"
+    ],
+    "mode": "cells"
+  },
+  "nk": {
+    "id": "nk",
+    "name": "Natural killer cells",
+    "icon": "nk",
+    "summary": "Compare cytotoxic, cytokine-responsive and adaptive-like NK compartments.",
+    "note": "NK1/NK2/NK3 refer to a published human reference framework. CD56 categories and transcriptomic clusters are related, but not interchangeable in every tissue.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Cytotoxic compartment",
+        "profiles": [
+          "nk_dim"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Cytokine-responsive compartment",
+        "profiles": [
+          "nk_bright"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Experience-associated compartment",
+        "profiles": [
+          "nk_adaptive"
+        ]
+      }
+    ],
+    "refs": [
+      "nk_atlas"
+    ],
+    "mode": "cells"
+  },
+  "mast": {
+    "id": "mast",
+    "name": "Mast-cell phenotypes",
+    "icon": "mast",
+    "summary": "Explore protease-based identities and a tissue-associated proliferating state.",
+    "note": "Protease patterns and activation states can change with the local environment. MC_T and MC_TC are useful phenotypes rather than immutable branches.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Protease phenotypes",
+        "profiles": [
+          "mast_t",
+          "mast_tc"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Inflammation-associated state",
+        "profiles": [
+          "mast_cycling"
+        ]
+      }
+    ],
+    "refs": [
+      "mast_atlas"
+    ],
+    "mode": "cells"
+  },
+  "neutrophil": {
+    "id": "neutrophil",
+    "name": "Neutrophil states",
+    "icon": "neutrophil",
+    "summary": "Explore maturation and response programs hidden within a single neutrophil label.",
+    "note": "A low-density fraction is not one uniform cell type. Maturation and stimulus-response programs can overlap, and cluster labels vary between studies.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Maturation",
+        "profiles": [
+          "neut_immature",
+          "neut_mature"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Response program",
+        "profiles": [
+          "neut_ifn"
+        ]
+      }
+    ],
+    "refs": [
+      "neutrophil_atlas",
+      "neutrophil_ifn"
+    ],
+    "mode": "states"
+  },
+  "eosinophil": {
+    "id": "eosinophil",
+    "name": "Eosinophil states",
+    "icon": "eosinophil",
+    "summary": "Compare circulating eosinophils with the programs seen after entry into inflamed tissue.",
+    "note": "Human eosinophil studies do not establish a universal resident/inflammatory binary. These are context-dependent states, not canonical sublineages.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "In circulation",
+        "profiles": [
+          "eos_blood"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "In tissue",
+        "profiles": [
+          "eos_tissue"
+        ]
+      }
+    ],
+    "refs": [
+      "eosinophil_blood",
+      "eosinophil_tissue"
+    ],
+    "mode": "states"
+  },
+  "epithelial": {
+    "id": "epithelial",
+    "name": "Airway epithelial cells",
+    "icon": "epithelium",
+    "summary": "Look inside the airway barrier: cells that renew it, move mucus and produce protective secretions.",
+    "note": "This view focuses on conducting airways. It is a selected epithelial reference, not a complete lung or immune-cell lineage.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Renewal",
+        "profiles": [
+          "epi_basal"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Clearance",
+        "profiles": [
+          "epi_ciliated"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Secretion",
+        "profiles": [
+          "epi_secretory",
+          "epi_goblet"
+        ]
+      }
+    ],
+    "refs": [
+      "lung_atlas",
+      "airway_atlas"
+    ],
+    "mode": "cells"
+  },
+  "memory": {
+    "id": "memory",
+    "name": "Immune memory",
+    "icon": "memory",
+    "summary": "Separate T-cell memory states from B-cell memory identities.",
+    "note": "Memory is shared across different cell lineages. Long-lived plasma cells provide another arm of durable protection but are distinct from memory B cells.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "T-cell memory",
+        "profiles": [
+          "tcm",
+          "tem",
+          "trm",
+          "temra"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "B-cell memory",
+        "profiles": [
+          "b_unswitched",
+          "b_switched"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Persistent antibody production",
+        "profiles": [
+          "plasma_long"
+        ]
+      }
+    ],
+    "refs": [
+      "tcell_atlas",
+      "bcell_health"
+    ],
+    "mode": "cells"
+  },
+  "antibody": {
+    "id": "antibody",
+    "name": "Antibody classes",
+    "icon": "antibody",
+    "summary": "Compare the five human antibody classes and the jobs their constant regions support.",
+    "note": "These are protein classes produced by B-lineage cells, not cell subclusters. Class switching changes effector function without changing the original antigen specificity.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Early B-cell receptors",
+        "profiles": [
+          "igm",
+          "igd"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Other antibody classes",
+        "profiles": [
+          "igg",
+          "iga",
+          "ige"
+        ]
+      }
+    ],
+    "refs": [
+      "bsi_bcells",
+      "imgt"
+    ],
+    "mode": "proteins"
+  },
+  "complement": {
+    "id": "complement",
+    "name": "Complement pathways",
+    "icon": "complement",
+    "summary": "Compare three entry routes that converge on complement activation.",
+    "note": "Complement is a protein system, not a cell lineage. These routes converge on C3 and downstream effector functions.",
+    "groups": [
+      {
+        "id": "0",
+        "name": "Antibody-linked recognition",
+        "profiles": [
+          "comp_classical"
+        ]
+      },
+      {
+        "id": "1",
+        "name": "Carbohydrate recognition",
+        "profiles": [
+          "comp_lectin"
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Amplification",
+        "profiles": [
+          "comp_alternative"
+        ]
+      }
+    ],
+    "refs": [
+      "bsi_complement"
+    ],
+    "mode": "proteins"
+  }
+};
+const LINEAGE_LINKS = {
+  "epithelium": [
+    "epithelial",
+    null
+  ],
+  "mast": [
+    "mast",
+    null
+  ],
+  "macrophage": [
+    "myeloid",
+    null
+  ],
+  "neutrophil": [
+    "neutrophil",
+    null
+  ],
+  "dendritic": [
+    "dc",
+    null
+  ],
+  "nk": [
+    "nk",
+    null
+  ],
+  "eosinophil": [
+    "eosinophil",
+    null
+  ],
+  "monocyte": [
+    "myeloid",
+    null
+  ],
+  "complement": [
+    "complement",
+    null
+  ],
+  "antibody": [
+    "antibody",
+    null
+  ],
+  "naiveCD4": [
+    "cd4",
+    "cd4_naive"
+  ],
+  "th1": [
+    "cd4",
+    "th1"
+  ],
+  "th2": [
+    "cd4",
+    "th2"
+  ],
+  "th17": [
+    "cd4",
+    "th17"
+  ],
+  "treg": [
+    "cd4",
+    null
+  ],
+  "tfh": [
+    "cd4",
+    "tfh"
+  ],
+  "naiveCD8": [
+    "cd8",
+    "cd8_naive"
+  ],
+  "ctl": [
+    "cd8",
+    "cd8_effector"
+  ],
+  "bcell": [
+    "bcell",
+    null
+  ],
+  "plasma": [
+    "bcell",
+    "plasma_long"
+  ],
+  "memory": [
+    "memory",
+    null
+  ]
+};
 </script>
 
 <script>
@@ -935,8 +2505,12 @@ function glyph(c){
   const nucleus = (d, extra="") => `<path class="cell-nucleus" d="${d}" ${extra}/>`;
   const dots = (points, cls="cell-dust", radius=1) => points.map(([x,y,r]) => `<circle class="${cls}" cx="${x}" cy="${y}" r="${r || radius}"/>`).join("");
   const shine = `<path class="cell-shine" d="M-18,-10 C-16,-17 -9,-21 -2,-21"/>`;
-  const badge = (label, resting=false) => `<g class="cell-badge${resting ? ' resting' : ''}" transform="translate(17 18)">
-    <circle r="9"/><text text-anchor="middle" dominant-baseline="central" style="font-size:${label.length>2 ? 6.3 : label.length>1 ? 7.6 : 9}px">${label}</text></g>`;
+  const badge = (label, resting=false) => {
+    const wide=label.length>2, width=Math.max(24,label.length*5.5+8);
+    return `<g class="cell-badge${resting ? ' resting' : ''}" transform="translate(${wide?12:17} 18)">
+      ${wide?`<rect x="${-width/2}" y="-8" width="${width}" height="16" rx="8"/>`:'<circle r="9"/>'}
+      <text text-anchor="middle" dominant-baseline="central" style="font-size:${wide?7.5:label.length>1?7.6:9}px">${label}</text></g>`;
+  };
   const grain = dots([[-8,-8,1.5],[4,-11,1.2],[9,-3,1.8],[-10,3,1.2],[-2,9,1.8],[5,5,1],[-2,-3,1]], "cell-chromatin");
   const granules = [[-15,-12,2.5],[-5,-17,2.5],[7,-16,2.7],[16,-8,2.3],[18,2,2.6],[12,12,2.4],[2,17,2.7],[-9,15,2.5],[-17,7,2.5],[-19,-2,2.2],[-8,-3,2.4],[3,-6,2.6],[7,4,2.5],[-4,8,2.4]];
   let art;
@@ -998,7 +2572,7 @@ function glyph(c){
         + nucleus("M-9,-17 C-20,-13 -20,3 -12,9 C-7,13 0,11 2,7 C4,3 -1,1 1,-4 C3,-9 11,-7 11,-12 C10,-19 -1,-20 -9,-17Z")
         + dots([[-10,-8,2],[-5,-13,1.3],[-10,1,1.5],[2,-13,1.7]],"cell-chromatin")
         + dots([[11,1,2.4],[16,7,2.6],[6,10,2.5],[-2,15,2.1],[10,17,2],[19,-1,1.8],[-11,17,1.7]],"cell-cytotoxic-granule")
-        + shine + badge(c.id === "nk" ? "NK" : "8");
+        + shine + badge(c.id === "nk" ? "NK" : "CD8");
       break;
     case "bcell":
       art = surface()
@@ -1023,7 +2597,7 @@ function glyph(c){
           <path class="cell-membrane" fill="url(#cell-cytoplasm-bcell)" d="M-5,5 C-7,-7 3,-16 13,-15 C24,-15 29,-6 27,5 C27,17 19,24 9,23 C-1,24 -6,14 -5,5Z"/>
           <ellipse class="cell-nucleus" cx="11" cy="4" rx="10" ry="11"/>
           <path class="cell-shine" d="M0,-3 Q3,-10 11,-11"/>
-        </g>` + dots([[-14,-6,1.5],[-7,1,1.3],[8,0,1.7],[14,9,1.4]],"cell-chromatin") + badge("M");
+        </g>` + dots([[-14,-6,1.5],[-7,1,1.3],[8,0,1.7],[14,9,1.4]],"cell-chromatin") + badge("Mem");
       break;
     case "antibody":
       art = `<g class="cell-antibody">
@@ -1045,7 +2619,7 @@ function glyph(c){
       break;
     default: {
       // T-cell subsets share morphology. Badges are identifiers, not anatomical structures.
-      const labels = {naiveCD4:"4",naiveCD8:"8",th1:"1",th2:"2",th17:"17",treg:"R",tfh:"FH"};
+      const labels = {naiveCD4:"CD4",naiveCD8:"CD8",th1:"Th1",th2:"Th2",th17:"Th17",treg:"Treg",tfh:"Tfh"};
       const resting = c.id === "naiveCD4" || c.id === "naiveCD8";
       art = surface() + `<circle class="cell-nucleus" cx="-1" cy="-1" r="${resting ? 17.5 : 16}"/>`
         + grain + `<path class="cell-nuclear-fold" d="M-11,-6 Q-7,-14 1,-13"/>`
@@ -1427,6 +3001,7 @@ gEdges.addEventListener("mouseout", ev => {
   }
 });
 document.addEventListener("keydown", ev => {
+  if(document.getElementById("lineageDialog").open) return;
   if(ev.key === "Escape" && !ev.target.matches("input, textarea, select, [contenteditable]")) clearSelection();
 });
 </script>
@@ -1458,7 +3033,7 @@ function railIntro(){
     <p style="margin-top:.7em;color:var(--ink-2)">Almost nothing in immunity is done by one cell alone. A cell detects, a second cell carries the news somewhere useful, a third decides what kind of response to mount, and a fourth carries it out. Changes to these interactions can disrupt immune responses.</p>
     <div class="block">
       <h3>Three ways to use this</h3>
-      <p style="color:var(--ink-2)"><strong>Click a cell</strong> on the map to read what it does and every conversation it takes part in.</p>
+      <p style="color:var(--ink-2)"><strong>Click a cell</strong> to read its role and conversations, then choose <strong>Explore subtypes</strong> to open a more detailed family map.</p>
       <p style="color:var(--ink-2)"><strong>Hover a connection</strong> to see the actual molecule that carries it. Labels stay hidden until you ask, so the map stays readable.</p>
       <p style="color:var(--ink-2)"><strong>Play an event</strong> from the row at the top to follow a response in order, with illustrative biological timings.</p>
     </div>
@@ -1510,6 +3085,7 @@ function railCell(id){
       <span class="where">${esc(c.sub)}</span>
     </div>
     <p style="color:var(--ink-2)">${esc(c[state.depth])}</p>
+    ${explorerLink(id)}
     ${markers}
     <div class="block">
       <h3>Its conversations <span style="color:var(--muted);font-weight:400">(${es.length})</span></h3>
@@ -1854,6 +3430,147 @@ document.getElementById("depthSeg").addEventListener("click", ev => {
   }
   renderRail();
 });
+
+/* ---------- explore the identities and states inside each lineage ---------- */
+const lineageDialog=document.getElementById("lineageDialog");
+const lineageFamily=document.getElementById("lineageFamily");
+const lineageSearch=document.getElementById("lineageSearch");
+const lineageTree=document.getElementById("lineageTree");
+const lineageDetail=document.getElementById("lineageDetail");
+const lineageView={family:null,profile:null,opener:null};
+const familyProfiles=family=>family.groups.flatMap(group=>group.profiles);
+lineageFamily.innerHTML=Object.values(LINEAGE_MAPS).map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join("");
+
+function explorerLink(id){
+  const [familyId]=LINEAGE_LINKS[id], f=LINEAGE_MAPS[familyId];
+  const label=f.mode==="proteins" ? (familyId==="antibody"?"Explore antibody classes":"Explore complement pathways")
+    : f.mode==="states" ? "Explore cell states" : "Explore subtypes";
+  return `<button type="button" class="explore-card" data-explore="${id}" aria-haspopup="dialog" aria-controls="lineageDialog" style="--lineage-tone:var(${LINEAGES[NODE[f.icon].lin].v})">
+    <strong>${label}</strong><small>${esc(f.name)} · ${familyProfiles(f).length} profiles</small><span class="explore-arrow" aria-hidden="true">↗</span></button>`;
+}
+function subtypeSources(refs){
+  return `<ul class="source-list">${[...new Set(refs)].map(id=>{
+    const s=SUBTYPE_SOURCES[id];return `<li><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)} <span aria-hidden="true">↗</span></a></li>`;
+  }).join("")}</ul>`;
+}
+function openLineage(cellId,opener){
+  const link=LINEAGE_LINKS[cellId];if(!link) return;
+  stopPlay();
+  lineageView.family=link[0];lineageView.profile=link[1];lineageView.opener=opener||document.activeElement;
+  lineageFamily.value=lineageView.family;lineageSearch.value="";
+  renderLineage();
+  document.documentElement.classList.add("lineage-open");
+  lineageDialog.showModal();
+}
+function renderLineage(){
+  const f=LINEAGE_MAPS[lineageView.family];if(!f) return;
+  lineageDialog.style.setProperty("--lineage-tone",`var(${LINEAGES[NODE[f.icon].lin].v})`);
+  document.getElementById("lineageTitle").textContent=f.name;
+  document.getElementById("lineageDescription").textContent=f.summary;
+  document.getElementById("lineageReferenceLabel").textContent=f.mode==="proteins"?"Protein reference":"Curated human reference";
+  document.getElementById("lineageMapNote").innerHTML=`<strong>How to read this map</strong>${esc(f.note)}`;
+  document.getElementById("lineageFooter").textContent=f.mode==="proteins"
+    ? "Branches group related protein classes or pathways. Select a profile to see its role and sources."
+    : "Branches show learning groups, not a developmental timeline. Profiles are selected examples; study-specific clusters and marker patterns vary.";
+  document.querySelectorAll("#lineageDepth [data-depth]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.depth===state.depth)));
+  renderLineageTree();renderLineageDetail();
+}
+function renderLineageTree(){
+  const f=LINEAGE_MAPS[lineageView.family], query=normaliseSearch(lineageSearch.value);
+  const matches=id=>{const p=SUBTYPE_PROFILES[id];return normaliseSearch([p.name,p.kind,p.plain,p.student,p.markers,p.location].join(" ")).includes(query);};
+  const groups=f.groups.map(g=>({...g,profiles:g.profiles.filter(matches)})).filter(g=>g.profiles.length);
+  const count=groups.reduce((n,g)=>n+g.profiles.length,0), total=familyProfiles(f).length;
+  document.getElementById("lineageResultCount").textContent=query?`${count} of ${total} profiles`:`${total} profiles · select to explore`;
+  lineageTree.innerHTML=`<button type="button" class="lineage-root" data-overview aria-pressed="${!lineageView.profile}" aria-controls="lineageDetail">
+      <svg viewBox="-34 -34 68 68" aria-hidden="true">${glyph(NODE[f.icon])}</svg><span><strong>${esc(f.name)}</strong><small>Family overview</small></span></button>`
+    +(groups.length?`<ul class="lineage-branches" style="--columns:${groups.length}" aria-label="Profile groups">${groups.map(g=>`
+      <li class="lineage-branch"><h3>${esc(g.name)}</h3><ul>${g.profiles.map(id=>{
+        const p=SUBTYPE_PROFILES[id];return `<li><button type="button" class="subtype-node" data-profile="${id}" aria-pressed="${id===lineageView.profile}" aria-controls="lineageDetail"><strong>${esc(p.name)}</strong><small>${esc(p.kind)}</small></button></li>`;
+      }).join("")}</ul></li>`).join("")}</ul>`
+    :`<div class="lineage-empty"><p>No matching profiles in ${esc(f.name)}.</p><button class="pbtn" type="button" data-clear-lineage-search>Clear search</button></div>`);
+}
+function renderLineageDetail(){
+  const f=LINEAGE_MAPS[lineageView.family], p=SUBTYPE_PROFILES[lineageView.profile];
+  if(!p){
+    const count=familyProfiles(f).length;
+    lineageDetail.innerHTML=`<svg class="detail-portrait" viewBox="-34 -34 68 68" aria-hidden="true">${glyph(NODE[f.icon])}</svg>
+      <span class="profile-kind">${f.mode==="proteins"?"Protein system":"Family overview"}</span><h3>${esc(f.name)}</h3><p>${esc(f.summary)}</p>
+      <div class="detail-block"><span class="lineage-profile-count">${count}</span><p>profiles to explore. Choose any card on the map to see what makes it distinct.</p></div>
+      <div class="detail-block"><h4>Reference studies & resources</h4>${subtypeSources(f.refs)}</div>
+      <p class="lineage-next-hint">Your atlas selection and scenario position are saved while you explore.</p>`;
+  }else{
+    const detailed=state.depth!=="plain", interpretation=p.clinical||f.note;
+    lineageDetail.innerHTML=`<svg class="detail-portrait" viewBox="-34 -34 68 68" aria-hidden="true">${glyph(NODE[p.icon])}</svg>
+      <span class="profile-kind">${esc(p.kind)}</span><h3>${esc(p.name)}</h3><p>${esc(p.plain)}</p>
+      ${detailed?`<div class="detail-block"><h4>What distinguishes it</h4><p>${esc(p.student)}</p></div>
+      <div class="detail-block"><h4>${f.mode==="proteins"?"Key molecules":"Marker clues"}</h4><div class="marker-list">${p.markers.split(", ").map(m=>`<span>${esc(m)}</span>`).join("")}</div>
+      ${f.mode!=="proteins"?'<p class="lineage-next-hint">Protein markers and RNA clues are shown together. Use a panel and tissue context, not one marker alone.</p>':""}</div>`:""}
+      <div class="detail-block"><h4>Where to find it</h4><p>${esc(p.location)}</p></div>
+      ${state.depth==="clinical"?`<div class="detail-block"><h4>Interpretation</h4><p>${esc(interpretation)}</p></div>`:""}
+      <div class="detail-block"><h4>Read the evidence</h4>${subtypeSources(p.refs)}</div>
+      ${!detailed?'<p class="lineage-next-hint">Switch to Student or Immunologist for marker clues and more detail.</p>':""}`;
+  }
+  lineageDetail.insertAdjacentHTML("afterbegin",'<button type="button" class="pbtn lineage-map-return" data-back-to-subtypes>← Back to subtype map</button>');
+  lineageDetail.scrollTop=0;
+  document.getElementById("lineageStatus").textContent=p?`${p.name}. ${p.plain}`:`${f.name} overview.`;
+}
+lineageTree.addEventListener("click",event=>{
+  const button=event.target.closest("button");if(!button) return;
+  if(button.hasAttribute("data-clear-lineage-search")){lineageSearch.value="";renderLineageTree();lineageSearch.focus();return;}
+  if(!button.hasAttribute("data-profile") && !button.hasAttribute("data-overview")) return;
+  lineageView.profile=button.dataset.profile||null;
+  lineageTree.querySelectorAll("[data-profile]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.profile===lineageView.profile)));
+  lineageTree.querySelector("[data-overview]").setAttribute("aria-pressed",String(!lineageView.profile));
+  renderLineageDetail();
+  if(matchMedia("(max-width:760px)").matches){
+    lineageDetail.focus({preventScroll:true});
+    lineageDetail.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
+  }
+});
+lineageDetail.addEventListener("click",event=>{
+  if(!event.target.closest("[data-back-to-subtypes]")) return;
+  const selected=lineageTree.querySelector('[aria-pressed="true"]')||lineageTree.querySelector("button");
+  selected?.focus({preventScroll:true});
+  selected?.scrollIntoView({block:"center",behavior:"auto"});
+});
+lineageFamily.addEventListener("change",()=>{
+  lineageView.family=lineageFamily.value;lineageView.profile=null;lineageSearch.value="";renderLineage();
+  document.getElementById("lineageWorkspace").scrollTop=0;
+});
+lineageSearch.addEventListener("input",renderLineageTree);
+lineageSearch.addEventListener("keydown",event=>{
+  if(event.key==="Escape" && lineageSearch.value){event.preventDefault();event.stopPropagation();lineageSearch.value="";renderLineageTree();}
+});
+document.getElementById("lineageDepth").addEventListener("click",event=>{
+  const button=event.target.closest("[data-depth]");if(!button) return;
+  document.querySelector(`#depthSeg [data-depth="${button.dataset.depth}"]`).click();
+  document.querySelectorAll("#lineageDepth [data-depth]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.depth===state.depth)));
+  renderLineageDetail();
+});
+// Keep sequential keyboard navigation inside the explorer, including at either end.
+lineageDialog.addEventListener("keydown",event=>{
+  if(event.key!=="Tab") return;
+  const focusable=[...lineageDialog.querySelectorAll('button:not([disabled]), input, select, a[href], [tabindex="0"]')]
+    .filter(el=>el.getClientRects().length && !el.closest("[hidden]"));
+  const first=focusable[0], last=focusable[focusable.length-1];
+  if(event.shiftKey && (document.activeElement===first || !lineageDialog.contains(document.activeElement))){event.preventDefault();last?.focus();}
+  else if(!event.shiftKey && (document.activeElement===last || !lineageDialog.contains(document.activeElement))){event.preventDefault();first?.focus();}
+});
+document.getElementById("closeLineage").addEventListener("click",()=>lineageDialog.close());
+lineageDialog.addEventListener("click",event=>{
+  if(event.target!==lineageDialog) return;
+  const b=lineageDialog.getBoundingClientRect();
+  if(event.clientX<b.left || event.clientX>b.right || event.clientY<b.top || event.clientY>b.bottom) lineageDialog.close();
+});
+lineageDialog.addEventListener("close",()=>{
+  document.documentElement.classList.remove("lineage-open");
+  const opener=lineageView.opener?.isConnected?lineageView.opener:rail.querySelector("[data-explore]");
+  opener?.focus({preventScroll:true});
+});
+rail.addEventListener("click",event=>{
+  const button=event.target.closest("[data-explore]");if(button) openLineage(button.dataset.explore,button);
+});
+
 
 /* ---------- go ---------- */
 measure();

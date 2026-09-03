@@ -51,6 +51,21 @@ scenario** to continue. Escape pauses playback and clears cell inspection;
 to clear the highlight and pause playback; the selected scenario and step are
 kept, and **Play** restores the step’s connections.
 
+**A lineage explorer.** Select an entry, then choose **Explore subtypes** (or
+**Explore cell states**, **antibody classes**, or **complement pathways**).
+Thirteen focused maps contain 57 distinct reference profiles, with some memory
+profiles shared across maps. Click a profile to read its role, location and
+sources; Student and Immunologist views add marker clues and interpretation.
+Search within a family by name or marker, or switch families inside the explorer.
+**Back to atlas** or Escape returns to your saved selection, zoom and scenario
+position. If the explorer search contains text, Escape first clears the search.
+
+These are curated human reference groupings, not clusters calculated from an
+uploaded dataset or a fixed developmental tree. Cell identities, activation
+states and tissue phenotypes are labelled explicitly. Eosinophil and neutrophil
+states retain their study and tissue context; proteins have classes/pathways.
+References include primary human atlas studies, IMGT and educational resources.
+
 **A searchable index.** Find entries by cell name, marker or connected signal,
 including `Treg`, `CD4`, `IL-5` and `IFN-gamma`. Search filters the index without
 changing the selected scenario. Keyboard users can skip directly to the index.
@@ -96,11 +111,16 @@ rendering and interaction, then the reading panel, cell index and player.
   membranes and a shared nuclear stain palette. Distinctive features include
   segmented neutrophil nuclei, bilobed eosinophil nuclei, dendritic processes,
   mast-cell granules and an eccentric plasma-cell nucleus. T-cell subtype
-  badges are identifiers, not microscopic features; the shared memory node
+  badges spell out CD4, CD8, Th1, Th2, Th17, Treg and Tfh; they are identifiers,
+  not microscopic features; the shared memory node
   depicts both B and T cells. Selecting an entry shows a larger portrait.
   Drawings are schematic and not to scale. Morphology references:
   [ASH Image Bank: eosinophil](https://imagebank.hematology.org/image/60933/eosinophil?type=atlas)
   and [University of Utah: plasma cell](https://webpath.med.utah.edu/HISTHTML/NORMAL/NORM168.html).
+- **Explorer data** live in `SUBTYPE_PROFILES`, `LINEAGE_MAPS`, `LINEAGE_LINKS`
+  and `SUBTYPE_SOURCES`. Profiles are reusable across family maps; each atlas
+  entry has an explicit destination. The native dialog keeps the main map state
+  intact and supports keyboard navigation and small screens.
 - **Theming** is token-level, so the page follows light or dark preference and
   stays legible in both.
 
@@ -135,7 +155,8 @@ node scripts/validate.mjs
 ```
 
 It checks all four script blocks for syntax errors, unique IDs, complete
-reading depths, scenario edge references and source links. It checks structure,
+reading depths, scenario edge references, explorer coverage, profile references
+and source links. It checks structure,
 not scientific correctness or browser behavior.
 
 See [PROJECT_REVIEW.md](PROJECT_REVIEW.md) for the refinement report, scoped
