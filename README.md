@@ -80,9 +80,15 @@ rendering and interaction, then the reading panel, cell index and player.
 - **Selected sources** live in `SOURCES`. Add a `refs` array to a cell or a
   scenario step, with a source title, URL and a precise statement of what it
   supports. The current citations cover targeted corrections, not the full atlas.
-- **Cell glyphs** are hand-authored SVG resembling real morphology — the
-  multilobed neutrophil nucleus, dendritic processes, mast cell granules, the
-  plasma cell's clock-face nucleus. No icon font, no emoji.
+- **Cell portraits** are scalable SVG with softly shaded cytoplasm, outlined
+  membranes and a shared nuclear stain palette. Distinctive features include
+  segmented neutrophil nuclei, bilobed eosinophil nuclei, dendritic processes,
+  mast-cell granules and an eccentric plasma-cell nucleus. T-cell subtype
+  badges are identifiers, not microscopic features; the shared memory node
+  depicts both B and T cells. Selecting an entry shows a larger portrait.
+  Drawings are schematic and not to scale. Morphology references:
+  [ASH Image Bank: eosinophil](https://imagebank.hematology.org/image/60933/eosinophil?type=atlas)
+  and [University of Utah: plasma cell](https://webpath.med.utah.edu/HISTHTML/NORMAL/NORM168.html).
 - **Theming** is token-level, so the page follows light or dark preference and
   stays legible in both.
 

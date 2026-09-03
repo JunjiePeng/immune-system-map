@@ -286,6 +286,49 @@ g.node.pulse .body{animation:pulse 1.6s ease-in-out infinite}
 
 footer.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;max-width:80ch}
 footer.foot p{margin-bottom:.5em}
+/* Cell interiors keep a common stain palette; membranes retain the lineage colour. */
+:root{--cell-nucleus-light:#B198C4;--cell-nucleus-mid:#846491;--cell-nucleus-deep:#583B68;--cell-granule-light:#C189B0;--cell-granule-deep:#754574;--cell-eosin-light:#EBA76D;--cell-eosin-deep:#B76838;--cell-sheen:rgba(255,255,255,.72)}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--cell-nucleus-light:#C5A8DA;--cell-nucleus-mid:#9C7AB1;--cell-nucleus-deep:#6E4E83;--cell-granule-light:#D8A0CC;--cell-granule-deep:#9A699C;--cell-eosin-light:#F0B889;--cell-eosin-deep:#D88A50;--cell-sheen:rgba(255,255,255,.34)}
+}
+:root[data-theme="dark"]{--cell-nucleus-light:#C5A8DA;--cell-nucleus-mid:#9C7AB1;--cell-nucleus-deep:#6E4E83;--cell-granule-light:#D8A0CC;--cell-granule-deep:#9A699C;--cell-eosin-light:#F0B889;--cell-eosin-deep:#D88A50;--cell-sheen:rgba(255,255,255,.34)}
+.cell-art{pointer-events:none;stroke-linejoin:round;stroke-linecap:round}
+.cell-membrane{stroke:currentColor;stroke-width:1.35}
+.cell-nucleus{fill:url(#cell-nucleus);stroke:var(--cell-nucleus-deep);stroke-width:.7}
+.cell-chromatin{fill:var(--cell-nucleus-deep);opacity:.52}
+.cell-nuclear-bridge{fill:none;stroke:var(--cell-nucleus-deep);stroke-width:2.2}
+.cell-nuclear-fold{fill:none;stroke:var(--cell-nucleus-light);stroke-width:1.3;opacity:.75}
+.cell-shine{fill:none;stroke:var(--cell-sheen);stroke-width:1.9}
+.cell-dust{fill:currentColor;opacity:.42}
+.cell-fine-granule{fill:var(--cell-granule-deep);opacity:.45}
+.cell-mast-granule{fill:url(#cell-granule);stroke:var(--cell-granule-deep);stroke-width:.45}
+.cell-eosin-granule{fill:var(--cell-eosin-light);stroke:var(--cell-eosin-deep);stroke-width:.7}
+.cell-cytotoxic-granule{fill:currentColor;stroke:var(--cell-nucleus-deep);stroke-width:.45;opacity:.9}
+.cell-vacuole,.cell-hof{fill:var(--surface);fill-opacity:.8}
+.cell-vacuole{stroke:currentColor;stroke-opacity:.35;stroke-width:.8}
+.cell-vesicle{fill:currentColor;opacity:.6}
+.cell-organelle,.cell-er{fill:none;stroke:currentColor;stroke-width:1.1;opacity:.62}
+.cell-clock{fill:var(--cell-nucleus-deep)}
+.cell-cilia,.cell-receptors,.cell-basement{fill:none;stroke:currentColor;stroke-width:1.4}
+.cell-basement{stroke-width:2.4}
+.cell-badge circle{fill:currentColor;stroke:var(--surface);stroke-width:1.8}
+.cell-badge text{fill:var(--surface);font-family:"Public Sans",sans-serif;font-weight:700;letter-spacing:-.3px}
+.cell-badge.resting circle{fill:var(--surface);stroke:currentColor;stroke-width:1.5}
+.cell-badge.resting text{fill:currentColor}
+.cell-antibody{fill:none}
+.cell-protein-shadow{stroke:var(--surface);stroke-width:11}
+.cell-heavy-chain{stroke:currentColor;stroke-width:4.6}
+.cell-light-chain{stroke:currentColor;stroke-width:2.7;opacity:.62}
+.cell-disulfide{stroke:var(--cell-nucleus-deep);stroke-width:1.1}
+.cell-binding-tip{stroke:var(--cell-nucleus-deep);stroke-width:3.1}
+.cell-protein-link{fill:none;stroke:currentColor;stroke-width:2;opacity:.5}
+.cell-protein-core{fill:currentColor;stroke:var(--surface);stroke-width:1.2}
+.cell-heading{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:center}
+.cell-portrait{display:block;width:76px;height:76px;overflow:visible}
+.cell-heading .eyebrow{font-size:.6rem;letter-spacing:.08em;margin-bottom:5px}
+.cell-heading h2{font-size:1.4rem}
+.symbol-note{font-size:.77rem;color:var(--muted);margin-top:13px;max-width:88ch}
+
 /* ---------- navigation and index search ---------- */
 .skip-link{position:absolute;left:16px;top:-100px;z-index:10;background:var(--surface);padding:10px 16px;border:2px solid var(--accent);border-radius:8px}
 .skip-link:focus{top:12px}
@@ -375,6 +418,7 @@ footer.foot p{margin-bottom:.5em}
     </div>
     <div class="legend" id="legend"></div>
     <div id="cellIndex"></div>
+    <p class="symbol-note">Schematic cell portraits, not to scale. T-cell badges identify subtypes; their shapes alone do not distinguish them. The paired memory symbol represents both B and T cells.</p>
   </section>
 
   <footer class="foot">
@@ -840,47 +884,151 @@ const BANDS = [
 
 const state = { depth:"plain", sel:null, scen:null, step:0, timer:null };
 
-/* ---------- glyphs: each cell drawn as what it looks like down a microscope ---------- */
+/* ---------- cell portraits: schematic morphology, with symbolic subtype badges ---------- */
+function cellDefinitions(){
+  return Object.entries(LINEAGES).map(([id, lineage]) => `
+    <radialGradient id="cell-cytoplasm-${id}" cx="30%" cy="23%" r="84%">
+      <stop offset="0" style="stop-color:color-mix(in srgb, var(--surface) 92%, var(${lineage.v}))"/>
+      <stop offset=".57" style="stop-color:color-mix(in srgb, var(--surface) 73%, var(${lineage.v}))"/>
+      <stop offset="1" style="stop-color:color-mix(in srgb, var(--surface) 39%, var(${lineage.v}))"/>
+    </radialGradient>`).join("") + `
+    <radialGradient id="cell-nucleus" cx="32%" cy="25%" r="80%">
+      <stop offset="0" style="stop-color:var(--cell-nucleus-light)"/>
+      <stop offset=".56" style="stop-color:var(--cell-nucleus-mid)"/>
+      <stop offset="1" style="stop-color:var(--cell-nucleus-deep)"/>
+    </radialGradient>
+    <radialGradient id="cell-granule" cx="30%" cy="22%" r="78%">
+      <stop offset="0" style="stop-color:var(--cell-granule-light)"/>
+      <stop offset="1" style="stop-color:var(--cell-granule-deep)"/>
+    </radialGradient>`;
+}
+
 function glyph(c){
-  const fill = `var(${LINEAGES[c.lin].v})`;
-  const s = o => `style="fill:${fill};${o||""}"`;
-  const hole = `style="fill:var(--surface);opacity:.55"`;
-  switch(c.glyph){
-    case "brick":
-      return `<rect x="-23" y="-17" width="46" height="34" rx="7" ${s()}/>
-              <rect x="-13" y="-8" width="26" height="16" rx="5" ${hole}/>`;
-    case "kidney":
-      return `<circle r="22" ${s()}/>
-              <path d="M-11,-6 a12,12 0 1,0 12,12 a8,8 0 1,1 -12,-12 z" ${hole}/>`;
-    case "multilobed":
-      return `<circle r="22" ${s()}/>
-              <circle cx="-8" cy="-6" r="6" ${hole}/><circle cx="7" cy="-7" r="5.5" ${hole}/>
-              <circle cx="1" cy="7" r="6" ${hole}/>`;
-    case "dendrite":
-      return `<g ${s()}>${[0,45,90,135,180,225,270,315].map(a=>{
-                const r=a*Math.PI/180;
-                return `<line x1="${Math.cos(r)*15}" y1="${Math.sin(r)*15}" x2="${Math.cos(r)*27}" y2="${Math.sin(r)*27}"
-                        style="stroke:${fill};stroke-width:3.4;stroke-linecap:round"/>`;}).join("")}
-              </g><circle r="16" ${s()}/><circle r="7" ${hole}/>`;
-    case "granule":
-      return `<circle r="22" ${s()}/>
-              ${[[-9,-8],[6,-10],[10,4],[-7,8],[0,-1],[-2,13]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.6" ${hole}/>`).join("")}`;
-    case "clock":
-      return `<ellipse rx="24" ry="20" ${s()}/>
-              <circle cx="-7" cy="-2" r="10" ${hole}/>
-              ${[0,60,120,180,240,300].map(a=>{const r=a*Math.PI/180;
-                return `<line x1="${-7+Math.cos(r)*4}" y1="${-2+Math.sin(r)*4}" x2="${-7+Math.cos(r)*9}" y2="${-2+Math.sin(r)*9}" style="stroke:${fill};stroke-width:1.6"/>`;}).join("")}
-              <path d="M6,8 q9,3 14,-4" style="fill:none;stroke:var(--surface);stroke-width:2.6;opacity:.6"/>`;
-    case "plain":
-      return `<circle r="22" ${s()}/><circle r="14" ${hole}/>`;
-    case "molecule":
-      if(c.id === "antibody")
-        return `<g style="stroke:${fill};stroke-width:5;stroke-linecap:round;fill:none">
-                  <line x1="0" y1="18" x2="0" y2="0"/><line x1="0" y1="0" x2="-13" y2="-16"/><line x1="0" y1="0" x2="13" y2="-16"/>
-                </g><circle cx="-13" cy="-16" r="4.5" ${s()}/><circle cx="13" cy="-16" r="4.5" ${s()}/>`;
-      return `${[0,1,2].map(i=>`<path d="M${-18+i*12},-14 l10,14 l-10,14" style="fill:none;stroke:${fill};stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:${1-i*0.22}"/>`).join("")}`;
-    default: return `<circle r="22" ${s()}/>`;
+  const tone = `var(${LINEAGES[c.lin].v})`;
+  const cyto = `url(#cell-cytoplasm-${c.lin})`;
+  const outline = "M-24,-4 C-25,-17 -14,-25 -2,-24 C12,-26 24,-16 25,-3 C27,11 17,24 3,25 C-11,26 -24,16 -24,-4Z";
+  const surface = (d=outline) => `<path class="cell-membrane" d="${d}" fill="${cyto}"/>`;
+  const nucleus = (d, extra="") => `<path class="cell-nucleus" d="${d}" ${extra}/>`;
+  const dots = (points, cls="cell-dust", radius=1) => points.map(([x,y,r]) => `<circle class="${cls}" cx="${x}" cy="${y}" r="${r || radius}"/>`).join("");
+  const shine = `<path class="cell-shine" d="M-18,-10 C-16,-17 -9,-21 -2,-21"/>`;
+  const badge = (label, resting=false) => `<g class="cell-badge${resting ? ' resting' : ''}" transform="translate(17 18)">
+    <circle r="9"/><text text-anchor="middle" dominant-baseline="central" style="font-size:${label.length>2 ? 6.3 : label.length>1 ? 7.6 : 9}px">${label}</text></g>`;
+  const grain = dots([[-8,-8,1.5],[4,-11,1.2],[9,-3,1.8],[-10,3,1.2],[-2,9,1.8],[5,5,1],[-2,-3,1]], "cell-chromatin");
+  const granules = [[-15,-12,2.5],[-5,-17,2.5],[7,-16,2.7],[16,-8,2.3],[18,2,2.6],[12,12,2.4],[2,17,2.7],[-9,15,2.5],[-17,7,2.5],[-19,-2,2.2],[-8,-3,2.4],[3,-6,2.6],[7,4,2.5],[-4,8,2.4]];
+  let art;
+  switch(c.id){
+    case "epithelium":
+      art = `<g class="cell-cilia">${[-24,-19,-14,-9,-4,1,6,11,16,21,25].map((x,i)=>`<path d="M${x},-16 Q${x-2},-22 ${x+(i%2 ? 1 : -1)},-27"/>`).join("")}</g>
+        ${[-25,-8,9].map((x,i)=>`<path class="cell-membrane" fill="${cyto}" d="M${x},-17 Q${x+8},-20 ${x+16},-17 L${x+16},19 Q${x+8},24 ${x},19Z"/>
+          <ellipse class="cell-nucleus" cx="${x+8}" cy="7" rx="4.5" ry="8"/>
+          <path class="cell-shine" d="M${x+3},-12 V-1"/>
+          <circle class="cell-chromatin" cx="${x+7}" cy="5" r="1.4"/>`).join("")}
+        <path class="cell-basement" d="M-27,24 H27"/>`;
+      break;
+    case "macrophage":
+      art = surface("M-23,-6 C-30,-13 -21,-16 -16,-19 C-13,-29 -5,-20 1,-23 C11,-29 13,-18 20,-15 C29,-14 21,-5 25,2 C30,9 20,12 18,19 C16,29 6,22 0,25 C-10,30 -13,20 -20,17 C-28,14 -21,4 -23,-6Z")
+        + nucleus("M-10,-14 C-20,-11 -19,5 -11,11 C-5,16 3,12 1,7 C-1,3 -7,3 -7,-2 C-7,-7 0,-8 -2,-12 C-3,-16 -7,-16 -10,-14Z")
+        + dots([[-12,-7,1.7],[-12,3,2],[-6,9,1.2]],"cell-chromatin")
+        + `<circle class="cell-vacuole" cx="12" cy="-7" r="5.2"/><circle class="cell-vacuole" cx="9" cy="12" r="4.2"/>
+          <circle class="cell-vesicle" cx="12" cy="-7" r="2"/><path class="cell-organelle" d="M7,11 l4,2 M14,2 l3,1"/>`
+        + dots([[-1,-19,1.2],[19,4,1.3],[-16,15,1.4],[-3,18,1.1]],"cell-dust") + shine;
+      break;
+    case "monocyte":
+      art = surface()
+        + nucleus("M-9,-16 C-21,-10 -19,7 -9,14 C0,21 13,15 14,7 C15,1 9,-1 6,4 C3,9 -3,7 -5,2 C-8,-3 -4,-7 1,-8 C7,-10 4,-19 -2,-18Z")
+        + dots([[-12,-6,1.6],[-10,4,1.8],[-3,11,1.6],[7,11,1.4],[-3,-13,1.4]],"cell-chromatin")
+        + `<circle class="cell-vacuole" cx="14" cy="-9" r="3.5"/>`
+        + dots([[-17,11],[-11,18],[0,21],[19,1],[17,11],[-19,-3],[8,-19]],"cell-dust",1.2) + shine;
+      break;
+    case "neutrophil":
+      art = surface()
+        + dots([[-15,-12],[-6,-18],[5,-18],[17,-7],[19,3],[16,12],[5,19],[-6,18],[-18,9],[-19,-1],[-2,-4],[9,4]],"cell-fine-granule",1.2)
+        + `<path class="cell-nuclear-bridge" d="M-10,-7 Q0,-13 9,-7 M10,-3 Q12,6 3,11"/>
+          <ellipse class="cell-nucleus" cx="-10" cy="-5" rx="6.5" ry="8.6" transform="rotate(-20 -10 -5)"/>
+          <ellipse class="cell-nucleus" cx="8" cy="-6" rx="6.3" ry="8" transform="rotate(28 8 -6)"/>
+          <ellipse class="cell-nucleus" cx="2" cy="11" rx="8.4" ry="5.8" transform="rotate(-16 2 11)"/>`
+        + dots([[-11,-7,2],[7,-8,1.6],[3,11,2]],"cell-chromatin") + shine;
+      break;
+    case "eosinophil":
+      art = surface()
+        + dots([...granules,[-12,2,2.2],[10,-1,2.1],[1,-13,2],[0,0,1.8]],"cell-eosin-granule")
+        + `<path class="cell-nuclear-bridge" d="M-8,0 Q0,9 8,0"/>
+          <ellipse class="cell-nucleus" cx="-8" cy="-1" rx="5.9" ry="10" transform="rotate(-15 -8 -1)"/>
+          <ellipse class="cell-nucleus" cx="7" cy="-1" rx="5.9" ry="9" transform="rotate(16 7 -1)"/>`
+        + dots([[-9,-3,1.6],[7,0,1.8]],"cell-chromatin") + shine;
+      break;
+    case "mast":
+      art = surface("M-24,-3 C-26,-11 -18,-21 -10,-23 C-1,-27 13,-23 20,-16 C26,-9 24,0 25,7 C23,18 11,24 1,25 C-10,25 -24,17 -24,-3Z")
+        + `<ellipse class="cell-nucleus" cx="-2" cy="0" rx="11" ry="13" opacity=".72"/>`
+        + dots([...granules,[-10,-10,2.8],[-3,-3,2.8],[5,10,2.6],[9,-8,2.6],[-11,5,2.8],[0,-12,2.6],[15,6,2.3]],"cell-mast-granule") + shine;
+      break;
+    case "dendritic":
+      art = surface("M-9,-13 C-13,-18 -9,-22 -13,-29 L-7,-25 L-3,-15 C1,-14 3,-15 6,-16 L18,-28 L17,-21 L12,-12 C16,-8 18,-7 22,-6 L30,-10 L26,-3 L18,1 C16,5 17,8 20,11 L29,16 L22,18 L14,13 C10,14 10,17 9,20 L12,29 L6,25 L1,17 C-3,16 -6,17 -9,21 L-15,28 L-15,20 L-11,12 C-14,9 -17,9 -20,10 L-29,14 L-24,7 L-16,2 C-16,-2 -18,-5 -21,-7 L-29,-14 L-22,-13 L-14,-9Z")
+        + `<ellipse class="cell-nucleus" cx="-1" cy="0" rx="8.5" ry="10.5" transform="rotate(-20)"/>`
+        + dots([[-4,-3,1.8],[2,4,1.6]],"cell-chromatin")
+        + `<path class="cell-shine" d="M-8,-8 Q-3,-14 3,-10 M-12,2 L-21,7 M10,-7 L17,-18"/>`;
+      break;
+    case "nk":
+    case "ctl":
+      art = surface()
+        + nucleus("M-9,-17 C-20,-13 -20,3 -12,9 C-7,13 0,11 2,7 C4,3 -1,1 1,-4 C3,-9 11,-7 11,-12 C10,-19 -1,-20 -9,-17Z")
+        + dots([[-10,-8,2],[-5,-13,1.3],[-10,1,1.5],[2,-13,1.7]],"cell-chromatin")
+        + dots([[11,1,2.4],[16,7,2.6],[6,10,2.5],[-2,15,2.1],[10,17,2],[19,-1,1.8],[-11,17,1.7]],"cell-cytotoxic-granule")
+        + shine + badge(c.id === "nk" ? "NK" : "8");
+      break;
+    case "bcell":
+      art = surface()
+        + `<circle class="cell-nucleus" cx="-2" cy="-1" r="16"/>` + grain + shine
+        + `<g class="cell-receptors">${[-70,-20,30,80,130,180].map(angle=>`<path transform="rotate(${angle})" d="M0,-23 V-27 M0,-27 l-3,-3 M0,-27 l3,-3"/>`).join("")}</g>`
+        + badge("B");
+      break;
+    case "plasma":
+      art = surface("M-24,-2 C-24,-15 -14,-22 -2,-22 C12,-25 25,-12 25,1 C25,16 12,24 -2,23 C-16,23 -24,14 -24,-2Z")
+        + `<path class="cell-er" d="M-14,-15 Q2,-25 16,-10 M-6,-14 Q10,-19 19,-5 M10,5 Q17,8 21,1 M5,14 Q16,20 20,10 M-1,18 Q13,24 20,15"/>
+          <ellipse class="cell-hof" cx="10" cy="0" rx="6.5" ry="8"/>
+          <circle class="cell-nucleus" cx="-9" cy="4" r="11.5"/>
+          <g class="cell-clock" transform="translate(-9 4)">${[0,51,102,153,204,255,306].map(a=>`<path transform="rotate(${a})" d="M0,-4 L-1.5,-9 L1.5,-9Z"/>`).join("")}</g>`
+        + dots([[-9,4,2]],"cell-chromatin") + shine;
+      break;
+    case "memory":
+      art = `<g style="color:var(--lin-tcell)">
+          <path class="cell-membrane" fill="url(#cell-cytoplasm-tcell)" d="M-27,-2 C-29,-13 -20,-22 -10,-21 C2,-22 8,-13 7,-3 C9,8 0,16 -10,16 C-20,18 -27,10 -27,-2Z"/>
+          <ellipse class="cell-nucleus" cx="-11" cy="-3" rx="10" ry="11"/>
+          <path class="cell-shine" d="M-23,-10 Q-18,-18 -11,-17"/>
+        </g><g style="color:var(--lin-bcell)">
+          <path class="cell-membrane" fill="url(#cell-cytoplasm-bcell)" d="M-5,5 C-7,-7 3,-16 13,-15 C24,-15 29,-6 27,5 C27,17 19,24 9,23 C-1,24 -6,14 -5,5Z"/>
+          <ellipse class="cell-nucleus" cx="11" cy="4" rx="10" ry="11"/>
+          <path class="cell-shine" d="M0,-3 Q3,-10 11,-11"/>
+        </g>` + dots([[-14,-6,1.5],[-7,1,1.3],[8,0,1.7],[14,9,1.4]],"cell-chromatin") + badge("M");
+      break;
+    case "antibody":
+      art = `<g class="cell-antibody">
+          <path class="cell-protein-shadow" d="M0,23 V1 M0,1 L-18,-20 M0,1 L18,-20"/>
+          <path class="cell-heavy-chain" d="M-3,21 V2 Q-3,-2 -7,-5 L-20,-20 M3,21 V2 Q3,-2 7,-5 L20,-20"/>
+          <path class="cell-light-chain" d="M-9,-2 L-23,-17 M9,-2 L23,-17"/>
+          <path class="cell-disulfide" d="M-3,10 H3 M-3,15 H3 M-13,-9 l-3,3 M13,-9 l3,3"/>
+          <path class="cell-binding-tip" d="M-17,-17 L-20,-20 M-20,-14 L-23,-17 M17,-17 L20,-20 M20,-14 L23,-17"/>
+        </g>`;
+      break;
+    case "complement":
+      art = `<path class="cell-protein-link" d="M-17,-11 L-1,-4 L15,-13 M-1,-4 L10,16 M-1,-4 L-16,14"/>
+        <path class="cell-membrane" fill="${cyto}" d="M-24,-16 Q-18,-24 -11,-17 Q-4,-12 -10,-6 Q-16,1 -23,-5 Q-30,-10 -24,-16Z"/>
+        <path class="cell-membrane" fill="${cyto}" d="M10,-21 Q18,-25 23,-18 Q29,-11 22,-6 Q15,0 9,-6 Q3,-13 10,-21Z"/>
+        <path class="cell-membrane" fill="${cyto}" d="M4,9 Q12,3 19,10 Q25,17 18,23 Q11,29 4,23 Q-2,17 4,9Z"/>
+        <circle class="cell-membrane" fill="${cyto}" cx="-17" cy="15" r="7"/>
+        <path class="cell-protein-core" d="M-8,-10 Q0,-16 7,-9 Q14,-1 7,6 Q0,13 -7,5 Q-14,-1 -8,-10Z"/>
+        <path class="cell-shine" d="M-22,-12 Q-18,-18 -14,-14 M12,-15 Q16,-20 20,-15 M6,14 Q11,8 16,14 M-5,-5 Q0,-10 5,-4"/>`;
+      break;
+    default: {
+      // T-cell subsets share morphology. Badges are identifiers, not anatomical structures.
+      const labels = {naiveCD4:"4",naiveCD8:"8",th1:"1",th2:"2",th17:"17",treg:"R",tfh:"FH"};
+      const resting = c.id === "naiveCD4" || c.id === "naiveCD8";
+      art = surface() + `<circle class="cell-nucleus" cx="-1" cy="-1" r="${resting ? 17.5 : 16}"/>`
+        + grain + `<path class="cell-nuclear-fold" d="M-11,-6 Q-7,-14 1,-13"/>`
+        + shine + badge(labels[c.id] || "T", resting);
+    }
   }
+  return `<g class="cell-art cell-art-${c.id}" style="color:${tone}" aria-hidden="true">${art}</g>`;
 }
 
 /* ---------- draw ---------- */
@@ -889,6 +1037,7 @@ const gBands = document.getElementById("bands");
 const gEdges = document.getElementById("edges");
 const gLabels = document.getElementById("edgeLabels");
 const gNodes = document.getElementById("nodes");
+svg.querySelector("defs").insertAdjacentHTML("beforeend", cellDefinitions());
 
 gBands.innerHTML = BANDS.map(b => `
   <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="14"
@@ -964,10 +1113,10 @@ function measure(){
     r.setAttribute("width", w); r.setAttribute("height", h);
   });
   OBST = [];
-  CELLS.forEach(c => OBST.push({ x:c.x-29, y:c.y-29, w:58, h:58 }));
+  CELLS.forEach(c => OBST.push({ x:c.x-31, y:c.y-31, w:62, h:62 }));
   gNodes.querySelectorAll("g.node").forEach(g => {
     const c = NODE[g.dataset.id];
-    g.querySelectorAll("text").forEach(t => {
+    g.querySelectorAll(".node-label").forEach(t => {
       const bb = t.getBBox();
       OBST.push({ x:c.x+bb.x-3, y:c.y+bb.y-2, w:bb.width+6, h:bb.height+4 });
     });
@@ -1223,8 +1372,10 @@ function railCell(id){
     </div>` : "";
 
   rail.innerHTML = `
-    <p class="eyebrow">${esc(COMPARTMENTS[c.comp])}</p>
-    <h2>${esc(c.name)}</h2>
+    <div class="cell-heading">
+      <svg class="cell-portrait" viewBox="-34 -34 68 68" aria-hidden="true">${glyph(c)}</svg>
+      <div><p class="eyebrow">${esc(COMPARTMENTS[c.comp])}</p><h2>${esc(c.name)}</h2></div>
+    </div>
     <div class="meta">
       <span class="chip" style="color:var(${lin.v})"><span class="swatch"></span>${esc(lin.label)}</span>
       <span class="where">${esc(c.sub)}</span>
