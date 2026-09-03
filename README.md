@@ -5,9 +5,9 @@
 *Built by Junjie Peng · MIT licensed · questions, corrections and suggestions:
 [open an issue](https://github.com/junjiepeng/immune-system-map/issues)*
 
-An interactive map of how immune cells signal to one another, written so that
-the same page works for a curious member of the public, an undergraduate
-revising immunology, and a working immunologist.
+An interactive reference for immune-cell communication, with one professional
+reading flow that builds from definitions to mechanisms, marker guides and
+biological context. Numbered references accompany the explanations.
 
 Almost nothing in immunity is done by one cell alone. A cell detects, a second
 carries the news somewhere useful, a third decides what kind of response to
@@ -21,28 +21,38 @@ cell groups and two soluble components: antibody and complement. They are
 placed in representative compartments: airway surface, infected tissue,
 draining lymph node and bloodstream. Forty-three connections carry
 labels describing signalling, differentiation or protein production —
-`CXCL8`, `MHC II + CD80/86 + IL-12`,
+`CXCL8`, `peptide–MHC II + CD80/86`,
 `perforin, granzyme B, FasL`. Connection labels appear when you hover a connection,
 select an entry or follow a scenario. Paths route around measured cell names
 and headings; connection labels leave the arrows and arrowheads unobstructed.
 Compartment borders include padding beneath the cell names.
 
-**Three reading depths, switched in place.** One control switches the
-explanatory prose throughout the page:
+**One complete explanation.** Cells and scenario steps use a definition or
+overview, mechanism and biological context. Marker guides explain how cells
+are identified and where interpretation depends on tissue or assay. There is
+no reading-level selector and no detail hidden behind a different audience mode.
 
-| Depth | What you get |
-| --- | --- |
-| Curious reader | Plain language and analogies, no prior biology assumed |
-| Student | Named cytokines, receptors and mechanisms, at undergraduate level |
-| Immunologist | Surface phenotypes, transcription factors, the relevant inborn errors, and where current drugs act |
+**Foundations and key terms.** The header links to an introductory guide covering
+recognition, adaptive responses, communication and the distinction between cell
+identity, state and dataset cluster. A glossary defines 28 concepts and
+abbreviations. Explanations offer relevant terms in an expandable definition
+list without changing the main reading flow.
 
-**Five responses played step by step**, with illustrative biological timings:
+**Contextual references.** All 21 entries, 43 interactions, 34 scenario steps and
+57 subtype profiles have sources. The shared bibliography contains 55 references
+with source type and scope notes. Numbered links open the source in a new tab;
+the reference list distinguishes educational introductions, primary studies and
+consensus material. Source presence is not a claim of systematic evidence review.
 
-- **Flu virus in the airway** — nine steps from initial exposure to immune memory
-- **An mRNA vaccine in your arm** — why the arm aches, and why titre falling is not immunity failing
-- **A splinter and Staph in the skin** — complement, neutrophils, Th17, and the scar
-- **Pollen, and why hay fever exists** — silent sensitisation, degranulation, the late phase, and how immunotherapy retrains it
-- **When it turns on you** — tolerance, how it is maintained, and what breaks
+**Five responses played step by step**, with illustrative phases:
+
+- **Influenza in the airway** — local sensing, adaptive responses and memory.
+- **An mRNA vaccine** — antigen expression, germinal centres and immune memory.
+- **A bacterial skin wound** — microbial recognition, recruitment and repair.
+- **An IgE-associated allergy** — sensitisation, re-exposure and inflammation.
+- **Tolerance and autoimmunity** — tolerance and an illustrative lupus-like network.
+
+Use **Next** to read at your own pace or **Play** for automatic progression.
 
 **Inspect without losing your place.** Choosing a cell during a scenario pauses
 playback. Use **Back to scenario** to return to the same step, or **Resume
@@ -55,7 +65,7 @@ kept, and **Play** restores the step’s connections.
 **Explore cell states**, **antibody classes**, or **complement pathways**).
 Thirteen focused maps contain 57 distinct reference profiles, with some memory
 profiles shared across maps. Click a profile to read its role, location and
-sources; Student and Immunologist views add marker clues and interpretation.
+sources, with family context, marker clues and interpretation in the same view.
 Search within a family by name or marker, or switch families inside the explorer.
 **Back to atlas** or Escape returns to your saved selection, zoom and scenario
 position. If the explorer search contains text, Escape first clears the search.
@@ -76,7 +86,7 @@ side column on wide windows and moves below the map on smaller ones. **+** and
 **−** change zoom in 5% steps for closer inspection; **Fit** shows the whole map
 again. When zoomed in, hold the left mouse button and drag to pan, or swipe on a
 touchscreen. A normal click still selects a cell; releasing a drag does not.
-Resizing preserves your selected cell, reading depth and scenario progress.
+Resizing preserves your selected cell, zoom and scenario progress.
 
 ## Running it
 
@@ -90,23 +100,27 @@ python3 -m http.server 8000
 
 Google Fonts is the only external request needed for the page styling; data,
 layout, drawing and interaction ship in the file. The app works with fallback
-fonts offline. Selected entries link to external scientific sources.
+fonts offline. External scientific references open only when followed.
 
 ## How it is built
 
 Four `<script>` blocks in order: cell and connection data, scenario data, map
 rendering and interaction, then the reading panel, cell index and player.
 
-- **Cells** carry `plain` / `student` / `clinical` prose plus surface markers
-  and a clinical note. Adding a cell means writing all three depths, or it
-  renders blank at that level.
-- **Connections** carry a mechanism label and a plain-language gloss. Scenarios
-  use `"cellA|cellB"` for either direction or `"cellA>cellB"` for an exact
-  direction. Use a directed key when an undirected pair would be ambiguous.
-  Active connection endpoints are included in the highlighted node list.
-- **Selected sources** live in `SOURCES`. Add a `refs` array to a cell or a
-  scenario step, with a source title, URL and a precise statement of what it
-  supports. The current citations cover targeted corrections, not the full atlas.
+- **Cells** use `summary`, `mechanism`, `context`, `markers`, `refs` and
+  `contextRefs`. Short `mapSub` labels keep map geometry separate from the fuller
+  role descriptions in the reading panel.
+- **Connections** use `sig`, `summary` and `refs`, with explanations identifying
+  indirect pathways. Scenarios use `"cellA|cellB"` for either direction or
+  `"cellA>cellB"` for an exact direction. Active edge endpoints are highlighted.
+- **Scenario steps** use the same unified prose fields as cells. Captions show
+  the summary; the panel provides the mechanism, context and linked signals.
+- **References** live in the shared `SOURCES` object: `title`, `url`, `kind`
+  and `scope`. Every content entry requires a valid reference array. References
+  are deduplicated within each reading panel; citation numbers are shared across
+  the page and explorer.
+- **Glossary** entries in `GLOSSARY` include a term, definition and matching
+  phrases. These drive both the foundations glossary and contextual definitions.
 - **Cell portraits** are scalable SVG with softly shaded cytoplasm, outlined
   membranes and a shared nuclear stain palette. Distinctive features include
   segmented neutrophil nuclei, bilobed eosinophil nuclei, dendritic processes,
@@ -118,7 +132,7 @@ rendering and interaction, then the reading panel, cell index and player.
   [ASH Image Bank: eosinophil](https://imagebank.hematology.org/image/60933/eosinophil?type=atlas)
   and [University of Utah: plasma cell](https://webpath.med.utah.edu/HISTHTML/NORMAL/NORM168.html).
 - **Explorer data** live in `SUBTYPE_PROFILES`, `LINEAGE_MAPS`, `LINEAGE_LINKS`
-  and `SUBTYPE_SOURCES`. Profiles are reusable across family maps; each atlas
+  and the shared `SOURCES` bibliography. Profiles are reusable across family maps; each atlas
   entry has an explicit destination. The native dialog keeps the main map state
   intact and supports keyboard navigation and small screens.
 - **Theming** is token-level, so the page follows light or dark preference and
@@ -135,8 +149,9 @@ body, and IBM Plex Mono is reserved for markers and cytokines so that
 This is a simplified teaching map. Some connections represent indirect effects,
 differentiation or protein production rather than a direct ligand–receptor
 interaction. Scenario timings are illustrative and vary with dose, route, age
-and prior exposure. Selected entries include sources; a systematic evidence
-review of the full atlas remains a priority.
+and prior exposure. Each explanation links to scoped evidence; this curation
+is not a systematic review. Human and animal experiments are distinguished
+where relevant, and study-specific states are not presented as universal lineages.
 
 Deliberate simplifications, named in the site footer as well as here: innate
 lymphoid cells, γδ T cells, follicular dendritic cells, basophils and the bone
@@ -155,9 +170,9 @@ node scripts/validate.mjs
 ```
 
 It checks all four script blocks for syntax errors, unique IDs, complete
-reading depths, scenario edge references, explorer coverage, profile references
-and source links. It checks structure,
-not scientific correctness or browser behavior.
+unified explanations, scenario edge references, explorer coverage, glossary
+entries and citation references. It also rejects obsolete reading-level fields.
+It checks structure and coverage, not scientific correctness or browser behavior.
 
 See [PROJECT_REVIEW.md](PROJECT_REVIEW.md) for the refinement report, scoped
 scientific corrections, verification details and a prioritized roadmap.
@@ -166,8 +181,9 @@ scientific corrections, verification details and a prioritized roadmap.
 
 Corrections to the immunology are especially welcome — open an issue saying
 which cell or connection is wrong and what it should say. If you are adding
-content, remember that every piece of prose exists three times, once per
-reading depth.
+content, begin with a definition, add the mechanism and context, explain essential
+terms and attach evidence that supports the particular claims. Avoid treating
+a single marker or dataset cluster as a universal cell identity.
 
 ## Licence
 
