@@ -51,6 +51,12 @@ scenario** to continue. Escape pauses playback and clears cell inspection;
 including `Treg`, `CD4`, `IL-5` and `IFN-gamma`. Search filters the index without
 changing the selected scenario. Keyboard users can skip directly to the index.
 
+**Responsive layout.** The map fits the available width automatically when the
+window changes size or moves between monitors. The details panel uses a flexible
+side column on wide windows and moves below the map on smaller ones. **+** and
+**−** zoom the map for closer inspection; **Fit** shows the whole map again.
+Resizing preserves your selected cell, reading depth and scenario progress.
+
 ## Running it
 
 There is nothing to install and nothing to build. The whole site is a single
