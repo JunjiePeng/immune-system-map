@@ -200,9 +200,11 @@ svg.atlas{
 .edge-label rect{fill:var(--surface);stroke:var(--line);stroke-width:1}
 .edge-label .leader{stroke:var(--line-strong);stroke-width:1;fill:none;opacity:.7}
 g.node{cursor:pointer}
+/* The artwork is decorative; this filled target keeps the entire cell clickable. */
+g.node .node-hit{fill:transparent;stroke:none;pointer-events:all}
 g.node .body{transition:transform .2s,filter .2s}
 g.node:hover .body{filter:brightness(1.06)}
-g.node .ring{fill:none;stroke:var(--accent);stroke-width:2.5;opacity:0;transition:opacity .2s}
+g.node .ring{pointer-events:none;fill:none;stroke:var(--accent);stroke-width:2.5;opacity:0;transition:opacity .2s}
 g.node.sel .ring{opacity:1}
 g.node.dim{opacity:.22}
 g.node.pulse .body{animation:pulse 1.6s ease-in-out infinite}
@@ -1198,6 +1200,7 @@ function placeLabels(indices){
 gNodes.innerHTML = CELLS.map(c => `
   <g class="node" data-id="${c.id}" transform="translate(${c.x},${c.y})" tabindex="0" role="button"
      aria-label="${c.name}, ${LINEAGES[c.lin].label}, in ${COMPARTMENTS[c.comp]}">
+    <circle class="node-hit" r="34" aria-hidden="true"></circle>
     <circle class="ring" r="32"></circle>
     <g class="body">${glyph(c)}</g>
     <text class="node-label" y="44" text-anchor="middle">${shortName(c)}</text>
