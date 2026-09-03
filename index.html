@@ -174,12 +174,15 @@ header.top{
   box-shadow:var(--shadow);overflow:hidden;
 }
 .map-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:10px clamp(12px,1.5vw,18px);border-bottom:1px solid var(--line)}
+.map-toolbar-title{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
+.map-pan-hint{font-size:.74rem;color:var(--muted)}
 .map-zoom{display:flex;align-items:center;gap:6px;min-width:0}
 .map-zoom .pbtn{min-width:34px;min-height:34px;padding:4px 9px}
 .map-zoom .pbtn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 .map-zoom output{min-width:4ch;font-size:.75rem;text-align:center;font-variant-numeric:tabular-nums;color:var(--muted)}
 .mapscroll{width:100%;min-width:0;overflow:auto;overscroll-behavior-x:contain}
-.mapscroll[data-zoomed="true"]{max-height:75vh;max-height:75dvh}
+.mapscroll[data-zoomed="true"]{max-height:75vh;max-height:75dvh;cursor:grab}
+.mapscroll.is-panning,.mapscroll.is-panning *{cursor:grabbing!important}
 .mapscroll:focus-visible{outline-offset:-3px}
 svg.atlas{
   display:block;width:100%;min-width:0;max-width:none;height:auto;aspect-ratio:1200 / 790;
@@ -384,15 +387,15 @@ footer.foot p{margin-bottom:.5em}
     <div>
       <div class="mapcard">
         <div class="map-toolbar">
-          <span class="eyebrow">Explore the map</span>
+          <div class="map-toolbar-title"><span class="eyebrow">Explore the map</span><span class="map-pan-hint" id="mapPanHint">Zoom in to move around</span></div>
           <div class="map-zoom" role="group" aria-label="Map zoom">
             <button type="button" class="pbtn" id="fitMapBtn" aria-label="Fit the entire map to the available width" aria-pressed="true" aria-controls="mapViewport">Fit</button>
-            <button type="button" class="pbtn" id="zoomOutBtn" aria-label="Zoom out" aria-controls="mapViewport" disabled>−</button>
+            <button type="button" class="pbtn" id="zoomOutBtn" aria-label="Zoom out by 5 percent" aria-controls="mapViewport" disabled>−</button>
             <output id="mapZoomLevel" aria-label="Map zoom level" aria-live="polite">100%</output>
-            <button type="button" class="pbtn" id="zoomInBtn" aria-label="Zoom in" aria-controls="mapViewport">+</button>
+            <button type="button" class="pbtn" id="zoomInBtn" aria-label="Zoom in by 5 percent" aria-controls="mapViewport">+</button>
           </div>
         </div>
-        <div class="mapscroll" id="mapViewport" role="region" aria-label="Immune cell map; zoomed maps can be scrolled" tabindex="0">
+        <div class="mapscroll" id="mapViewport" role="region" aria-label="Immune cell map" aria-describedby="mapPanHint" tabindex="0">
           <svg class="atlas" id="atlas" viewBox="0 0 1200 790" role="graphics-document group"
                aria-label="Map of immune cells arranged by body compartment: airway surface, infected tissue, draining lymph node and bloodstream, with labelled signalling connections between them.">
             <defs>
@@ -1300,6 +1303,7 @@ function visibleLabelSet(extra){
 }
 gEdges.addEventListener("mouseover", ev => {
   const g = ev.target.closest("g[data-i]"); if(!g || (state.scen && !state.sel)) return;
+  if(mapViewport.classList.contains("is-panning")) return;
   const i = +g.dataset.i;
   g.querySelector(".edge").classList.add("hot");
   const set = visibleLabelSet(i);
@@ -1622,14 +1626,20 @@ const fitMapBtn = document.getElementById("fitMapBtn");
 const zoomOutBtn = document.getElementById("zoomOutBtn");
 const zoomInBtn = document.getElementById("zoomInBtn");
 const mapZoomLevel = document.getElementById("mapZoomLevel");
+const mapPanHint = document.getElementById("mapPanHint");
+const MAP_ZOOM_STEP = .05;
 let mapZoom = 1;
 let mapZoomFrame = 0;
+let mapZoomAnchor = null;
 function setMapZoom(nextZoom){
   cancelAnimationFrame(mapZoomFrame);
-  const next = Math.max(1,Math.min(3,nextZoom));
-  const ratio = next / mapZoom;
-  const centerX = (mapViewport.scrollLeft + mapViewport.clientWidth/2) * ratio;
-  const centerY = (mapViewport.scrollTop + mapViewport.clientHeight/2) * ratio;
+  // Round each change so repeated 5% steps return exactly to the 100% / 300% limits.
+  const next = Math.max(1,Math.min(3,Math.round(nextZoom*100)/100));
+  const bounds = svg.getBoundingClientRect();
+  const anchor = mapZoomAnchor || {
+    x:(mapViewport.scrollLeft + mapViewport.clientWidth/2)/bounds.width,
+    y:(mapViewport.scrollTop + mapViewport.clientHeight/2)/bounds.height
+  };
   mapZoom = next;
   svg.style.width = `${mapZoom*100}%`;
   mapViewport.dataset.zoomed = String(mapZoom > 1);
@@ -1637,22 +1647,88 @@ function setMapZoom(nextZoom){
   zoomOutBtn.disabled = mapZoom === 1;
   zoomInBtn.disabled = mapZoom === 3;
   mapZoomLevel.value = `${Math.round(mapZoom*100)}%`;
+  mapPanHint.textContent = mapZoom > 1 ? "Drag or swipe to move" : "Zoom in to move around";
   if(mapZoom === 1){
+    mapZoomAnchor = null;
     mapViewport.scrollLeft = 0;
     mapViewport.scrollTop = 0;
   } else {
-    // SVG dimensions settle at paint time. Centre only after the new scroll area exists.
+    // Keep one anchor through rapid zoom clicks, then centre after the SVG has resized.
+    mapZoomAnchor = anchor;
     mapZoomFrame = requestAnimationFrame(() => {
       mapZoomFrame = requestAnimationFrame(() => {
-        mapViewport.scrollLeft = centerX - mapViewport.clientWidth/2;
-        mapViewport.scrollTop = centerY - mapViewport.clientHeight/2;
+        const resized = svg.getBoundingClientRect();
+        mapViewport.scrollLeft = anchor.x*resized.width - mapViewport.clientWidth/2;
+        mapViewport.scrollTop = anchor.y*resized.height - mapViewport.clientHeight/2;
+        mapZoomAnchor = null;
       });
     });
   }
 }
 fitMapBtn.addEventListener("click",() => setMapZoom(1));
-zoomOutBtn.addEventListener("click",() => setMapZoom(mapZoom-.5));
-zoomInBtn.addEventListener("click",() => setMapZoom(mapZoom+.5));
+zoomOutBtn.addEventListener("click",() => setMapZoom(mapZoom-MAP_ZOOM_STEP));
+zoomInBtn.addEventListener("click",() => setMapZoom(mapZoom+MAP_ZOOM_STEP));
+
+/* Mouse panning starts only after deliberate movement; touch keeps native swipe scrolling. */
+let mapPan = null;
+let ignoreMapClick = false;
+let mapClickReset = 0;
+mapViewport.addEventListener("pointerdown",event => {
+  ignoreMapClick = false;
+  clearTimeout(mapClickReset);
+  if(event.pointerType !== "mouse" || event.button !== 0 || mapPan) return;
+  if(mapViewport.scrollWidth <= mapViewport.clientWidth && mapViewport.scrollHeight <= mapViewport.clientHeight) return;
+  const bounds = mapViewport.getBoundingClientRect();
+  // Leave the native scrollbars to the browser.
+  if(event.clientX >= bounds.left+mapViewport.clientLeft+mapViewport.clientWidth ||
+     event.clientY >= bounds.top+mapViewport.clientTop+mapViewport.clientHeight) return;
+  mapPan = {
+    pointerId:event.pointerId, x:event.clientX, y:event.clientY,
+    left:mapViewport.scrollLeft, top:mapViewport.scrollTop, moved:false
+  };
+});
+window.addEventListener("pointermove",event => {
+  if(!mapPan || event.pointerId !== mapPan.pointerId) return;
+  if(!(event.buttons & 1)){ finishMapPan(event); return; }
+  const dx = event.clientX-mapPan.x, dy = event.clientY-mapPan.y;
+  if(!mapPan.moved){
+    if(Math.hypot(dx,dy) < 5) return;
+    mapPan.moved = true;
+    cancelAnimationFrame(mapZoomFrame);
+    mapZoomAnchor = null;
+    // Capture after the threshold, so a normal click still reaches the cell underneath.
+    mapViewport.setPointerCapture(event.pointerId);
+    mapViewport.classList.add("is-panning");
+    paint(lastPaint);
+  }
+  event.preventDefault();
+  mapViewport.scrollLeft = mapPan.left-dx;
+  mapViewport.scrollTop = mapPan.top-dy;
+});
+function finishMapPan(event){
+  if(!mapPan || (event?.pointerId !== undefined && event.pointerId !== mapPan.pointerId)) return;
+  const pan = mapPan;
+  mapPan = null;
+  mapViewport.classList.remove("is-panning");
+  if(pan.moved){
+    // Suppress the click generated by this drag, never the next deliberate click.
+    ignoreMapClick = true;
+    clearTimeout(mapClickReset);
+    mapClickReset = setTimeout(() => { ignoreMapClick = false; },300);
+  }
+  if(mapViewport.hasPointerCapture(pan.pointerId)) mapViewport.releasePointerCapture(pan.pointerId);
+}
+window.addEventListener("pointerup",finishMapPan);
+window.addEventListener("pointercancel",finishMapPan);
+window.addEventListener("blur",finishMapPan);
+mapViewport.addEventListener("lostpointercapture",finishMapPan);
+mapViewport.addEventListener("click",event => {
+  if(!ignoreMapClick || event.detail === 0) return;
+  ignoreMapClick = false;
+  clearTimeout(mapClickReset);
+  event.preventDefault();
+  event.stopImmediatePropagation();
+},true);
 
 /* ---------- reading depth ---------- */
 document.getElementById("depthSeg").addEventListener("click", ev => {

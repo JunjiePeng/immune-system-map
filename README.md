@@ -54,7 +54,9 @@ changing the selected scenario. Keyboard users can skip directly to the index.
 **Responsive layout.** The map fits the available width automatically when the
 window changes size or moves between monitors. The details panel uses a flexible
 side column on wide windows and moves below the map on smaller ones. **+** and
-**−** zoom the map for closer inspection; **Fit** shows the whole map again.
+**−** change zoom in 5% steps for closer inspection; **Fit** shows the whole map
+again. When zoomed in, hold the left mouse button and drag to pan, or swipe on a
+touchscreen. A normal click still selects a cell; releasing a drag does not.
 Resizing preserves your selected cell, reading depth and scenario progress.
 
 ## Running it
