@@ -28,7 +28,9 @@ and headings; connection labels leave the arrows and arrowheads unobstructed.
 Compartment borders include padding beneath the cell names.
 
 **One complete explanation.** Cells and scenario steps use a definition or
-overview, mechanism and biological context. Marker guides explain how cells
+overview, mechanism and biological context. Every cell, family and subset
+begins with **What it is** (or **What they are**) and **Main role**, before
+mechanisms or markers. Marker guides explain how cells
 are identified and where interpretation depends on tissue or assay. There is
 no reading-level selector and no detail hidden behind a different audience mode.
 
@@ -61,7 +63,13 @@ scenario** to continue. Escape pauses playback and clears cell inspection;
 to clear the highlight and pause playback; the selected scenario and step are
 kept, and **Play** restores the step’s connections.
 
-**A lineage explorer.** Select an entry, then choose **Explore subtypes** (or
+**Direct access to subset maps.** The homepage’s **Explore cell subsets**
+directory opens any of the 13 family maps in one click. Each opens at its
+family introduction, without selecting a cell first. The header also links
+to this directory. Closing the explorer returns focus to the family card and
+preserves the current atlas selection, zoom and scenario step.
+
+**A lineage explorer.** You can also select an atlas entry and choose **Explore subtypes** (or
 **Explore cell states**, **antibody classes**, or **complement pathways**).
 Thirteen focused maps contain 57 distinct reference profiles, with some memory
 profiles shared across maps. Click a profile to read its role, location and
@@ -107,7 +115,7 @@ fonts offline. External scientific references open only when followed.
 Four `<script>` blocks in order: cell and connection data, scenario data, map
 rendering and interaction, then the reading panel, cell index and player.
 
-- **Cells** use `summary`, `mechanism`, `context`, `markers`, `refs` and
+- **Cells** use `summary`, `role`, `mechanism`, `context`, `markers`, `refs` and
   `contextRefs`. Short `mapSub` labels keep map geometry separate from the fuller
   role descriptions in the reading panel.
 - **Connections** use `sig`, `summary` and `refs`, with explanations identifying
@@ -133,7 +141,9 @@ rendering and interaction, then the reading panel, cell index and player.
   and [University of Utah: plasma cell](https://webpath.med.utah.edu/HISTHTML/NORMAL/NORM168.html).
 - **Explorer data** live in `SUBTYPE_PROFILES`, `LINEAGE_MAPS`, `LINEAGE_LINKS`
   and the shared `SOURCES` bibliography. Profiles are reusable across family maps; each atlas
-  entry has an explicit destination. The native dialog keeps the main map state
+  entry has an explicit destination. Families have introductory `definition` and
+  `role` fields; profile introductions use `summary` and `role`. The homepage
+  directory derives its cards directly from these maps. The native dialog keeps the main map state
   intact and supports keyboard navigation and small screens.
 - **Theming** is token-level, so the page follows light or dark preference and
   stays legible in both.

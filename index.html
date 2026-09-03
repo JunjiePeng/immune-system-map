@@ -456,6 +456,21 @@ html.lineage-open{overflow:hidden}
 @media(max-width:1000px){.lineage-workspace{grid-template-columns:minmax(0,1fr) minmax(270px,36%)}}
 @media(max-width:760px){.lineage-workspace{display:block}.header-links{width:100%}.foundation-grid,.guide-bottom,.foundation-card .term-list{grid-template-columns:1fr}.foundation-grid{gap:18px}.foundation-grid article+article{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:18px}.guide-bottom{gap:16px}.lineage-detail .source-list{font-size:.78rem}}
 
+/* Direct access to family maps on the first page. */
+.subset-launcher{margin:0 0 24px;padding:18px 20px 20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);scroll-margin-top:16px}
+.subset-launcher-heading{display:flex;justify-content:space-between;align-items:center;gap:12px 24px;margin-bottom:15px}.subset-launcher h2{font-size:1.2rem;line-height:1.25}.subset-launcher-heading p{font-size:.81rem;line-height:1.5;margin:4px 0 0;color:var(--ink-2)}.subset-launcher-heading a{flex-shrink:0;font-size:.78rem;text-underline-offset:3px}
+.subset-directory{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.family-link{display:grid;grid-template-columns:38px minmax(0,1fr) 12px;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);text-align:left;cursor:pointer;min-width:0;min-height:70px;transition:background .15s,border-color .15s}
+.family-link:hover{border-color:var(--family-tone);background:color-mix(in srgb,var(--surface) 94%,var(--family-tone))}.family-link svg{width:38px;height:38px;overflow:visible}.family-link strong{font-size:.78rem;line-height:1.35;display:block;overflow-wrap:anywhere}.family-link small{display:block;margin-top:4px;font-size:.65rem;line-height:1.4;color:var(--muted)}.family-open{font-size:1rem;color:var(--family-tone)}
+.identity-intro{margin-top:15px}.identity-intro>h3,.identity-intro>h4{font:600 .82rem/1.4 "Public Sans",sans-serif;margin:0 0 7px;color:var(--ink)}.identity-intro>p{color:var(--ink-2);font-size:.91rem;line-height:1.7}
+.main-role{padding:11px 13px;border-left:2px solid var(--lineage-tone,var(--accent));border-radius:0 8px 8px 0;background:var(--surface-2);margin-top:13px}.main-role h3,.main-role h4{font:600 .76rem/1.4 "Public Sans",sans-serif;margin:0 0 5px;color:var(--ink)}.main-role p{font-size:.86rem;line-height:1.6;color:var(--ink-2)}
+@media(max-width:1100px){.subset-directory{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:850px){.subset-directory{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.subset-launcher{padding:15px}.subset-launcher-heading{display:block}.subset-launcher-heading a{display:inline-block;margin-top:8px}.subset-directory{grid-template-columns:repeat(2,minmax(0,1fr))}.family-link{grid-template-columns:32px minmax(0,1fr);gap:7px;padding:9px}.family-link svg{width:32px;height:32px}.family-open{display:none}.family-link strong{font-size:.74rem}}
+@media(max-width:360px){.subset-directory{grid-template-columns:1fr}.family-link{grid-template-columns:38px minmax(0,1fr) 12px}.family-open{display:block}}
+
+.lineage-map-intro .lineage-role{display:block;margin-top:8px}
+
 </style>
 </head>
 <body>
@@ -467,8 +482,13 @@ html.lineage-open{overflow:hidden}
       <h1>Immune <em>Crosstalk</em> Atlas</h1>
       <p>Understand immune responses from the first signal to long-term memory. Explore cells and subtypes through clear definitions, mechanisms, marker guides and research references.</p>
     </div>
-    <nav class="header-links" aria-label="Learning resources"><a href="#foundations">Start with the foundations</a><a href="#glossary">Key terms</a></nav>
+    <nav class="header-links" aria-label="Learning resources"><a href="#subsetMaps">Cell subsets</a><a href="#foundations">Start with the foundations</a><a href="#glossary">Key terms</a></nav>
   </header>
+
+  <section class="subset-launcher" id="subsetMaps" aria-labelledby="subsetMapsHeading">
+    <div class="subset-launcher-heading"><div><h2 id="subsetMapsHeading">Explore cell subsets</h2><p>Open a family to learn what its cells do, then explore individual subsets. Antibody classes and complement pathways are included below.</p></div><a href="#mapViewport">Go to the interaction map ↓</a></div>
+    <div class="subset-directory" id="subsetDirectory"></div>
+  </section>
 
   <nav class="scenarios" aria-label="Scenarios">
     <span class="eyebrow" style="margin-right:4px">Watch it happen</span>
@@ -952,7 +972,8 @@ const CELLS = [
       "epithelial_ifn",
       "tslp"
     ],
-    "mapSub": "Barrier sensing"
+    "mapSub": "Barrier sensing",
+    "role": "Maintain the tissue barrier, clear material from the airway and signal infection or injury to nearby immune cells."
   },
   {
     "id": "mast",
@@ -974,7 +995,8 @@ const CELLS = [
     "contextRefs": [
       "tryptase"
     ],
-    "mapSub": "Mediator release"
+    "mapSub": "Mediator release",
+    "role": "Rapidly release mediators that change local tissue and vascular responses, including during immediate allergy."
   },
   {
     "id": "macrophage",
@@ -997,7 +1019,8 @@ const CELLS = [
       "bsi_macrophages",
       "macrophage_atlas"
     ],
-    "mapSub": "Tissue phagocyte"
+    "mapSub": "Tissue phagocyte",
+    "role": "Remove microbes and damaged cells while coordinating tissue maintenance, inflammation and repair."
   },
   {
     "id": "neutrophil",
@@ -1022,7 +1045,8 @@ const CELLS = [
       "neutrophil_atlas",
       "neutrophil_ifn"
     ],
-    "mapSub": "Rapid recruitment"
+    "mapSub": "Rapid recruitment",
+    "role": "Rapidly reach infected tissue and use phagocytosis and antimicrobial components to control microbes."
   },
   {
     "id": "dendritic",
@@ -1049,7 +1073,8 @@ const CELLS = [
       "dc3",
       "pdc_ifn"
     ],
-    "mapSub": "Antigen presentation"
+    "mapSub": "Antigen presentation",
+    "role": "Present antigen and provide the signals that help initiate and shape T-cell responses."
   },
   {
     "id": "nk",
@@ -1072,7 +1097,8 @@ const CELLS = [
       "bsi_nk",
       "nk_atlas"
     ],
-    "mapSub": "Innate cytotoxicity"
+    "mapSub": "Innate cytotoxicity",
+    "role": "Recognise abnormal target-cell signals, eliminate susceptible targets and support local immune responses."
   },
   {
     "id": "eosinophil",
@@ -1097,7 +1123,8 @@ const CELLS = [
       "eosinophil_blood",
       "eosinophil_tissue"
     ],
-    "mapSub": "Type 2 responses"
+    "mapSub": "Type 2 responses",
+    "role": "Participate in parasite-associated and type 2 responses; their mediators can also contribute to allergic tissue injury."
   },
   {
     "id": "monocyte",
@@ -1120,7 +1147,8 @@ const CELLS = [
       "dc_atlas",
       "macrophage_atlas"
     ],
-    "mapSub": "Blood myeloid cell"
+    "mapSub": "Blood myeloid cell",
+    "role": "Survey the circulation, respond to inflammatory recruitment signals and contribute to tissue myeloid populations."
   },
   {
     "id": "complement",
@@ -1141,7 +1169,8 @@ const CELLS = [
     "contextRefs": [
       "bsi_complement"
     ],
-    "mapSub": "Protein cascade"
+    "mapSub": "Protein cascade",
+    "role": "Coat targets for removal, recruit inflammatory cells and damage susceptible microbial membranes."
   },
   {
     "id": "antibody",
@@ -1166,7 +1195,8 @@ const CELLS = [
       "imgt",
       "bsi_bcells"
     ],
-    "mapSub": "Immunoglobulin"
+    "mapSub": "Immunoglobulin",
+    "role": "Recognise antigen and connect that recognition to neutralisation or other immune effector functions."
   },
   {
     "id": "naiveCD4",
@@ -1189,7 +1219,8 @@ const CELLS = [
       "bsi_helpers",
       "tcell_atlas"
     ],
-    "mapSub": "Unprimed helper"
+    "mapSub": "Unprimed helper",
+    "role": "Supply antigen-responsive precursors that can become helper or regulatory T-cell populations after activation."
   },
   {
     "id": "th1",
@@ -1213,7 +1244,8 @@ const CELLS = [
       "bsi_helpers",
       "tcell_atlas"
     ],
-    "mapSub": "Type 1 helper"
+    "mapSub": "Type 1 helper",
+    "role": "Support macrophage antimicrobial activity and other responses against intracellular microbes."
   },
   {
     "id": "th2",
@@ -1241,7 +1273,8 @@ const CELLS = [
       "bsi_eos",
       "imgt"
     ],
-    "mapSub": "Type 2 helper"
+    "mapSub": "Type 2 helper",
+    "role": "Coordinate type 2 responses involving eosinophils, antibodies and epithelial tissues."
   },
   {
     "id": "th17",
@@ -1266,7 +1299,8 @@ const CELLS = [
       "human_th17",
       "tcell_atlas"
     ],
-    "mapSub": "Barrier defence"
+    "mapSub": "Barrier defence",
+    "role": "Support antimicrobial barrier responses and the recruitment of neutrophils against extracellular microbes."
   },
   {
     "id": "treg",
@@ -1290,7 +1324,8 @@ const CELLS = [
       "helios",
       "treg_states"
     ],
-    "mapSub": "Immune regulation"
+    "mapSub": "Immune regulation",
+    "role": "Restrain excessive or inappropriate immune responses and help maintain tolerance to self."
   },
   {
     "id": "tfh",
@@ -1315,7 +1350,8 @@ const CELLS = [
       "gc_states",
       "vaccine_gc"
     ],
-    "mapSub": "B-cell help"
+    "mapSub": "B-cell help",
+    "role": "Provide the contact and cytokine help that supports B-cell selection and differentiation."
   },
   {
     "id": "naiveCD8",
@@ -1340,7 +1376,8 @@ const CELLS = [
       "bsi_dc",
       "tcell_atlas"
     ],
-    "mapSub": "Unprimed CD8"
+    "mapSub": "Unprimed CD8",
+    "role": "Supply antigen-responsive precursors for cytotoxic and memory CD8 T-cell responses."
   },
   {
     "id": "ctl",
@@ -1363,7 +1400,8 @@ const CELLS = [
       "bsi_cd8",
       "cd8_states"
     ],
-    "mapSub": "Cytotoxic effector"
+    "mapSub": "Cytotoxic effector",
+    "role": "Eliminate recognised infected or abnormal cells through directed cytotoxic mechanisms."
   },
   {
     "id": "bcell",
@@ -1388,7 +1426,8 @@ const CELLS = [
       "bcell_atlas",
       "gc_states"
     ],
-    "mapSub": "Antigen recognition"
+    "mapSub": "Antigen recognition",
+    "role": "Recognise antigen and generate antibody-secreting cells and memory B-cell populations."
   },
   {
     "id": "plasma",
@@ -1415,7 +1454,8 @@ const CELLS = [
       "vaccine_gc",
       "vaccine_memory"
     ],
-    "mapSub": "Antibody secretion"
+    "mapSub": "Antibody secretion",
+    "role": "Secrete antibody to support immune protection in tissue fluids and the circulation."
   },
   {
     "id": "memory",
@@ -1440,7 +1480,8 @@ const CELLS = [
       "immune_atlas",
       "vaccine_memory"
     ],
-    "mapSub": "Adaptive memory"
+    "mapSub": "Adaptive memory",
+    "role": "Retain adaptive responses that can be recalled when a related antigen is encountered again."
   }
 ];
 const EDGES = [
@@ -1920,9 +1961,10 @@ const SUBTYPE_PROFILES = {
       "memory_states"
     ],
     "icon": "memory",
-    "summary": "A mobile reserve that can multiply quickly when a familiar threat returns.",
+    "summary": "Central memory T cells are antigen-experienced lymphocytes that commonly circulate through lymphoid organs.",
     "mechanism": "CCR7-associated lymphoid homing distinguishes central memory from many effector-memory cells.",
-    "context": ""
+    "context": "",
+    "role": "Provide a persistent population that can expand and contribute to renewed responses."
   },
   "tem": {
     "id": "tem",
@@ -1934,9 +1976,10 @@ const SUBTYPE_PROFILES = {
       "memory_states"
     ],
     "icon": "memory",
-    "summary": "Experienced T cells ready to act in the circulation and tissues.",
+    "summary": "Effector memory T cells are antigen-experienced lymphocytes with trafficking and functional properties distinct from central memory cells.",
     "mechanism": "These cells lack CCR7 and retain faster effector potential than naive cells.",
-    "context": ""
+    "context": "",
+    "role": "Provide relatively rapid effector responses in the circulation and tissues."
   },
   "trm": {
     "id": "trm",
@@ -1948,9 +1991,10 @@ const SUBTYPE_PROFILES = {
       "tcell_atlas"
     ],
     "icon": "memory",
-    "summary": "Local sentries remain near a previous encounter instead of routinely circulating.",
+    "summary": "Tissue-resident memory T cells are antigen-experienced lymphocytes maintained within particular tissue environments.",
     "mechanism": "Residency programs differ by organ; CD103 is common in some epithelial sites but is not universal.",
-    "context": ""
+    "context": "",
+    "role": "Support local responses at sites where antigen may be encountered again."
   },
   "cd4_naive": {
     "id": "cd4_naive",
@@ -1962,9 +2006,10 @@ const SUBTYPE_PROFILES = {
       "immune_atlas"
     ],
     "icon": "naiveCD4",
-    "summary": "An uncommitted helper waiting to recognise its particular antigen.",
+    "summary": "Naive CD4 T cells are mature helper-lineage lymphocytes that have not yet been primed by their relevant antigen.",
     "mechanism": "Antigen presentation and the surrounding cytokines shape subsequent helper programs.",
-    "context": ""
+    "context": "",
+    "role": "Provide precursors for helper and regulatory responses following antigen recognition."
   },
   "th1": {
     "id": "th1",
@@ -1978,9 +2023,10 @@ const SUBTYPE_PROFILES = {
       "tcell_atlas"
     ],
     "icon": "th1",
-    "summary": "Coordinates defence against threats living inside cells.",
+    "summary": "Th1 cells are CD4 helper T cells associated with type 1 immune responses.",
     "mechanism": "IL-12 and IFN-γ support a T-bet-associated program. Th1-derived IFN-γ enhances macrophage antimicrobial activity and antigen presentation. This creates communication between antigen-specific lymphocytes and tissue phagocytes.",
-    "context": "Th1 activity is one part of antiviral and intracellular bacterial defence, alongside cytotoxic cells and antibodies. Persistent activation can also contribute to inflammation. A helper program and a memory state describe different aspects of the same T cell."
+    "context": "Th1 activity is one part of antiviral and intracellular bacterial defence, alongside cytotoxic cells and antibodies. Persistent activation can also contribute to inflammation. A helper program and a memory state describe different aspects of the same T cell.",
+    "role": "Support defence against intracellular microbes, particularly through macrophage activation."
   },
   "th2": {
     "id": "th2",
@@ -1996,9 +2042,10 @@ const SUBTYPE_PROFILES = {
       "imgt"
     ],
     "icon": "th2",
-    "summary": "Coordinates parasite defence and many allergic responses.",
+    "summary": "Th2 cells are CD4 helper T cells associated with type 2 immune responses.",
     "mechanism": "IL-4 supports the GATA3-associated Th2 program. IL-4 and IL-13 can promote IgE class switching in appropriately stimulated human B cells. IL-5 supports eosinophils, while IL-13 can increase mucus-related epithelial responses.",
-    "context": "Type 2 immunity extends beyond Th2 cells: innate lymphoid cells, mast cells and epithelial signals also contribute. Type 2 inflammation can therefore occur without a simple one-allergen, one-T-cell explanation. The atlas shows selected links within this wider network."
+    "context": "Type 2 immunity extends beyond Th2 cells: innate lymphoid cells, mast cells and epithelial signals also contribute. Type 2 inflammation can therefore occur without a simple one-allergen, one-T-cell explanation. The atlas shows selected links within this wider network.",
+    "role": "Coordinate eosinophil, antibody and epithelial responses in parasite defence and allergic inflammation."
   },
   "th17": {
     "id": "th17",
@@ -2013,9 +2060,10 @@ const SUBTYPE_PROFILES = {
       "tcell_atlas"
     ],
     "icon": "th17",
-    "summary": "Helps defend barriers against extracellular microbes.",
+    "summary": "Th17 cells are CD4 helper T cells associated with the production of IL-17-family cytokines.",
     "mechanism": "The RORγt-associated program produces IL-17A and IL-17F; some cells also produce IL-22. These signals act largely through epithelial and stromal cells to induce antimicrobial programs, chemokines and neutrophil-supporting factors. IL-1β, IL-6 and IL-23 are important in human Th17 biology.",
-    "context": "Differentiation rules differ between human and mouse experiments, and vary with the starting population and culture conditions. IL-17 can be produced by cells other than Th17, including γδ T cells and innate lymphocytes. The simplified arrow does not imply a unique source."
+    "context": "Differentiation rules differ between human and mouse experiments, and vary with the starting population and culture conditions. IL-17 can be produced by cells other than Th17, including γδ T cells and innate lymphocytes. The simplified arrow does not imply a unique source.",
+    "role": "Support epithelial defence and neutrophil responses against extracellular microbes."
   },
   "tfh": {
     "id": "tfh",
@@ -2030,9 +2078,10 @@ const SUBTYPE_PROFILES = {
       "vaccine_gc"
     ],
     "icon": "tfh",
-    "summary": "Helps B cells improve and select their antibody responses.",
+    "summary": "Follicular helper T cells are CD4 lymphocytes specialised in supporting B cells in lymphoid follicles.",
     "mechanism": "CXCR5 helps position Tfh cells near B cells, while BCL6 is central to the follicular program. CD40L on Tfh cells engages CD40 on B cells, and cytokines such as IL-21 support their response. Repeated interactions help select B cells for antibody-secreting or memory fates.",
-    "context": "Germinal centres contain cyclic dark-zone and light-zone states rather than a simple one-way chain. Circulating Tfh-like cells are useful research populations but are not identical to germinal-centre Tfh. Other forms of B-cell activation also exist outside germinal centres."
+    "context": "Germinal centres contain cyclic dark-zone and light-zone states rather than a simple one-way chain. Circulating Tfh-like cells are useful research populations but are not identical to germinal-centre Tfh. Other forms of B-cell activation also exist outside germinal centres.",
+    "role": "Help select and develop B-cell responses, including antibody-secreting and memory populations."
   },
   "treg_rest": {
     "id": "treg_rest",
@@ -2044,9 +2093,10 @@ const SUBTYPE_PROFILES = {
       "treg_states"
     ],
     "icon": "treg",
-    "summary": "A resting regulatory reserve that restrains inappropriate immune responses.",
+    "summary": "Resting regulatory T cells are a relatively unactivated population within the human Treg compartment.",
     "mechanism": "CD45RA-positive FOXP3-low human Tregs can acquire an activated regulatory phenotype.",
-    "context": ""
+    "context": "",
+    "role": "Provide regulatory capacity that helps restrain inappropriate immune activation."
   },
   "treg_active": {
     "id": "treg_active",
@@ -2058,9 +2108,10 @@ const SUBTYPE_PROFILES = {
       "treg_states"
     ],
     "icon": "treg",
-    "summary": "Regulatory cells actively engaged in controlling an immune response.",
+    "summary": "Activated regulatory T cells are Tregs in an activated functional state.",
     "mechanism": "Human activated Tregs have higher FOXP3 and lack CD45RA in this phenotypic framework.",
-    "context": "FOXP3 expression alone also occurs in some activated conventional T cells; use a combined phenotype."
+    "context": "FOXP3 expression alone also occurs in some activated conventional T cells; use a combined phenotype.",
+    "role": "Suppress or limit ongoing immune responses and help protect tissues from excessive activation."
   },
   "cd8_naive": {
     "id": "cd8_naive",
@@ -2072,9 +2123,10 @@ const SUBTYPE_PROFILES = {
       "tcell_atlas"
     ],
     "icon": "naiveCD8",
-    "summary": "A cytotoxic-cell precursor waiting to recognise its antigen.",
+    "summary": "Naive CD8 T cells are mature lymphocytes that have not yet been primed by their relevant antigen.",
     "mechanism": "Priming builds antigen-specific effector capacity before a memory population can persist.",
-    "context": ""
+    "context": "",
+    "role": "Provide precursors for antigen-specific cytotoxic and memory responses."
   },
   "cd8_effector": {
     "id": "cd8_effector",
@@ -2086,9 +2138,10 @@ const SUBTYPE_PROFILES = {
       "tcell_atlas"
     ],
     "icon": "ctl",
-    "summary": "An active killer that removes infected or abnormal cells.",
+    "summary": "Cytotoxic effector CD8 T cells are activated lymphocytes with machinery for directed target-cell killing.",
     "mechanism": "Perforin and granzymes support target-cell killing; the program also appears in some memory cells.",
-    "context": ""
+    "context": "",
+    "role": "Eliminate recognised infected or abnormal cells."
   },
   "temra": {
     "id": "temra",
@@ -2100,9 +2153,10 @@ const SUBTYPE_PROFILES = {
       "immune_atlas"
     ],
     "icon": "ctl",
-    "summary": "An experienced T-cell population that has re-expressed CD45RA.",
+    "summary": "TEMRA cells are effector-memory T cells that re-express the CD45RA molecule.",
     "mechanism": "The CCR7-negative, CD45RA-positive phenotype often accompanies strong cytotoxic differentiation.",
-    "context": "TEMRA is a phenotype, not proof that an individual cell is senescent or exhausted."
+    "context": "TEMRA is a phenotype, not proof that an individual cell is senescent or exhausted.",
+    "role": "Contribute an antigen-experienced effector population; function varies with tissue and exposure history."
   },
   "exhausted": {
     "id": "exhausted",
@@ -2114,9 +2168,10 @@ const SUBTYPE_PROFILES = {
       "cd8_states"
     ],
     "icon": "ctl",
-    "summary": "Persistent stimulation can reshape a T cell’s ability to respond.",
+    "summary": "Exhaustion-associated T cells are populations shaped by persistent antigen stimulation and altered functional programs.",
     "mechanism": "Inhibitory-receptor-rich and TCF7-associated states differ within human tumour T-cell populations.",
-    "context": "PD-1 alone cannot diagnose exhaustion; activation history and a broader functional program matter."
+    "context": "PD-1 alone cannot diagnose exhaustion; activation history and a broader functional program matter.",
+    "role": "Participate in responses under chronic stimulation, with effector capacity that can differ from other activated cells."
   },
   "b_transitional": {
     "id": "b_transitional",
@@ -2128,9 +2183,10 @@ const SUBTYPE_PROFILES = {
       "bcell_atlas"
     ],
     "icon": "bcell",
-    "summary": "A recently formed B cell completing its peripheral maturation.",
+    "summary": "Transitional B cells are recently generated B cells completing stages of maturation outside the bone marrow.",
     "mechanism": "High CD24 and CD38 help distinguish transitional populations within a B-cell gate.",
-    "context": ""
+    "context": "",
+    "role": "Contribute to the developing mature B-cell pool."
   },
   "b_naive": {
     "id": "b_naive",
@@ -2142,9 +2198,10 @@ const SUBTYPE_PROFILES = {
       "bcell_atlas"
     ],
     "icon": "bcell",
-    "summary": "An antibody designer that has not yet joined an antigen-driven response.",
+    "summary": "Naive B cells are mature B lymphocytes that have not yet entered an antigen-driven response.",
     "mechanism": "Naive cells usually co-express surface IgM and IgD and lack CD27.",
-    "context": ""
+    "context": "",
+    "role": "Recognise antigen and provide precursors for activated, memory and antibody-secreting populations."
   },
   "gc_dark": {
     "id": "gc_dark",
@@ -2156,9 +2213,10 @@ const SUBTYPE_PROFILES = {
       "gc_states"
     ],
     "icon": "bcell",
-    "summary": "B cells multiply and alter their antibody sequences.",
+    "summary": "Dark-zone germinal-centre B cells occupy a proliferative state within the germinal-centre response.",
     "mechanism": "Human dark-zone cells are relatively CXCR4-high and CD83-low within the germinal-centre population.",
-    "context": ""
+    "context": "",
+    "role": "Expand and diversify antibody-receptor sequences before further selection."
   },
   "gc_light": {
     "id": "gc_light",
@@ -2170,9 +2228,10 @@ const SUBTYPE_PROFILES = {
       "gc_states"
     ],
     "icon": "bcell",
-    "summary": "B cells compete for antigen and help from Tfh cells.",
+    "summary": "Light-zone germinal-centre B cells occupy a selection-associated state within the germinal centre.",
     "mechanism": "Relative CD83 elevation and lower CXCR4 distinguish this selection-associated state.",
-    "context": "Dark and light zones describe cycling states; they are not a one-way developmental sequence."
+    "context": "Dark and light zones describe cycling states; they are not a one-way developmental sequence.",
+    "role": "Acquire antigen and Tfh help that influence survival and subsequent differentiation."
   },
   "b_unswitched": {
     "id": "b_unswitched",
@@ -2184,9 +2243,10 @@ const SUBTYPE_PROFILES = {
       "bcell_atlas"
     ],
     "icon": "bcell",
-    "summary": "An experienced B cell that still carries IgM, often with IgD.",
+    "summary": "Unswitched memory B cells are antigen-experienced B cells that retain IgM, often alongside IgD.",
     "mechanism": "Memory identity and antibody class are related but separate features.",
-    "context": ""
+    "context": "",
+    "role": "Contribute to recall responses while retaining an unswitched immunoglobulin phenotype."
   },
   "b_switched": {
     "id": "b_switched",
@@ -2198,9 +2258,10 @@ const SUBTYPE_PROFILES = {
       "bcell_health"
     ],
     "icon": "bcell",
-    "summary": "An experienced B cell carrying an antibody class such as IgG or IgA.",
+    "summary": "Class-switched memory B cells are antigen-experienced B cells expressing classes such as IgG or IgA.",
     "mechanism": "Class switching changes the heavy-chain constant region while preserving antigen specificity.",
-    "context": ""
+    "context": "",
+    "role": "Support renewed antibody responses after antigen re-exposure."
   },
   "plasmablast": {
     "id": "plasmablast",
@@ -2212,9 +2273,10 @@ const SUBTYPE_PROFILES = {
       "bcell_health"
     ],
     "icon": "plasma",
-    "summary": "A rapidly responding antibody-producing cell, often still dividing.",
+    "summary": "Plasmablasts are antibody-secreting B-lineage cells that often retain the capacity to divide.",
     "mechanism": "An emerging secretory program accompanies reduced B-cell identity and high CD38 expression.",
-    "context": ""
+    "context": "",
+    "role": "Supply antibody during an active response and contribute to the antibody-secreting compartment."
   },
   "plasma_long": {
     "id": "plasma_long",
@@ -2226,9 +2288,10 @@ const SUBTYPE_PROFILES = {
       "bcell_health"
     ],
     "icon": "plasma",
-    "summary": "A specialised factory that releases large amounts of antibody.",
+    "summary": "Plasma cells are differentiated B-lineage cells specialised for antibody secretion. Some persist in supportive tissue niches.",
     "mechanism": "PRDM1 and XBP1 support secretion; a subset persists in long-lived survival niches.",
-    "context": "A plasma-cell phenotype alone does not establish how long that cell will survive."
+    "context": "A plasma-cell phenotype alone does not establish how long that cell will survive.",
+    "role": "Maintain antibody production; longevity depends on the population and its environment."
   },
   "mono_classical": {
     "id": "mono_classical",
@@ -2240,9 +2303,10 @@ const SUBTYPE_PROFILES = {
       "dc_atlas"
     ],
     "icon": "monocyte",
-    "summary": "A circulating responder readily recruited to sites of inflammation.",
+    "summary": "Classical monocytes are a major circulating monocyte population commonly identified by high CD14 and little or no CD16.",
     "mechanism": "High CD14 with little CD16 marks the classical blood phenotype.",
-    "context": ""
+    "context": "",
+    "role": "Respond to inflammatory recruitment signals and contribute to tissue myeloid responses."
   },
   "mono_intermediate": {
     "id": "mono_intermediate",
@@ -2254,9 +2318,10 @@ const SUBTYPE_PROFILES = {
       "dc_atlas"
     ],
     "icon": "monocyte",
-    "summary": "A smaller circulating population with overlapping sensing and presentation programs.",
+    "summary": "Intermediate monocytes are a circulating monocyte population with CD14-high and CD16-positive features.",
     "mechanism": "CD14-high, CD16-positive cells occupy an intermediate phenotypic compartment.",
-    "context": ""
+    "context": "",
+    "role": "Participate in immune sensing and antigen-presentation-associated programs."
   },
   "mono_nonclassical": {
     "id": "mono_nonclassical",
@@ -2268,9 +2333,10 @@ const SUBTYPE_PROFILES = {
       "dc_atlas"
     ],
     "icon": "monocyte",
-    "summary": "A circulating population associated with surveillance of blood vessels.",
+    "summary": "Non-classical monocytes are circulating monocytes commonly identified by lower CD14 and higher CD16 expression.",
     "mechanism": "Higher CD16 and lower CD14 distinguish it from classical monocytes.",
-    "context": ""
+    "context": "",
+    "role": "Contribute to surveillance of blood vessels and responses to vascular changes."
   },
   "macro_alveolar": {
     "id": "macro_alveolar",
@@ -2283,9 +2349,10 @@ const SUBTYPE_PROFILES = {
       "macrophage_atlas"
     ],
     "icon": "macrophage",
-    "summary": "Clears inhaled material and helps maintain the air sacs.",
+    "summary": "Alveolar macrophages are tissue macrophages that occupy the air spaces of the lung.",
     "mechanism": "A lung-adapted lipid-handling program supports surfactant homeostasis.",
-    "context": ""
+    "context": "",
+    "role": "Clear inhaled material and support the local air-sac environment."
   },
   "macro_kupffer": {
     "id": "macro_kupffer",
@@ -2297,9 +2364,10 @@ const SUBTYPE_PROFILES = {
       "liver"
     ],
     "icon": "macrophage",
-    "summary": "A liver-resident macrophage positioned to sample blood-borne material.",
+    "summary": "Kupffer cells are resident macrophages in the liver.",
     "mechanism": "The hepatic niche shapes a specialised scavenging and immune-surveillance program.",
-    "context": ""
+    "context": "",
+    "role": "Sample blood-borne material and contribute to local tissue maintenance and immune responses."
   },
   "microglia": {
     "id": "microglia",
@@ -2311,9 +2379,10 @@ const SUBTYPE_PROFILES = {
       "microglia"
     ],
     "icon": "macrophage",
-    "summary": "Resident immune sentries help maintain the brain and spinal cord.",
+    "summary": "Microglia are resident macrophage-like immune cells of the brain and spinal cord.",
     "mechanism": "Homeostatic microglial programs change during injury and neurological disease.",
-    "context": ""
+    "context": "",
+    "role": "Survey the local environment and contribute to clearance and tissue maintenance."
   },
   "macro_recruited": {
     "id": "macro_recruited",
@@ -2325,9 +2394,10 @@ const SUBTYPE_PROFILES = {
       "macrophage_atlas"
     ],
     "icon": "macrophage",
-    "summary": "A macrophage formed from a recruited monocyte in a tissue.",
+    "summary": "Recruited macrophages are tissue macrophages that arise from monocytes entering a tissue.",
     "mechanism": "Local signals remodel its inflammatory, repair and metabolic programs over time.",
-    "context": ""
+    "context": "",
+    "role": "Adapt to local conditions and contribute to clearance, inflammation or repair."
   },
   "cdc1": {
     "id": "cdc1",
@@ -2339,9 +2409,10 @@ const SUBTYPE_PROFILES = {
       "dc_atlas"
     ],
     "icon": "dendritic",
-    "summary": "A dendritic-cell specialist in presenting captured material to CD8 T cells.",
+    "summary": "Conventional type 1 dendritic cells (cDC1) are a specialised antigen-presenting population.",
     "mechanism": "Cross-presentation is a prominent cDC1 function, though it is not exclusive to this subset.",
-    "context": ""
+    "context": "",
+    "role": "Efficiently present captured antigen to CD8 T cells through cross-presentation."
   },
   "cdc2": {
     "id": "cdc2",
@@ -2353,9 +2424,10 @@ const SUBTYPE_PROFILES = {
       "dc_atlas"
     ],
     "icon": "dendritic",
-    "summary": "A diverse dendritic-cell compartment that helps instruct CD4 T-cell responses.",
+    "summary": "Conventional type 2 dendritic cells (cDC2) are a diverse antigen-presenting cell population.",
     "mechanism": "CD1c and antigen-presentation programs characterise many human cDC2 populations.",
-    "context": ""
+    "context": "",
+    "role": "Help initiate and shape CD4 T-cell responses."
   },
   "dc3": {
     "id": "dc3",
@@ -2367,9 +2439,10 @@ const SUBTYPE_PROFILES = {
       "dc3"
     ],
     "icon": "dendritic",
-    "summary": "A dendritic-cell population with features that partly resemble monocytes.",
+    "summary": "DC3 are a human dendritic-cell population with some features shared with monocytes.",
     "mechanism": "CD163 helps distinguish human DC3 within CD1c-positive populations.",
-    "context": "DC3 is not simply a synonym for a monocyte-derived dendritic cell."
+    "context": "DC3 is not simply a synonym for a monocyte-derived dendritic cell.",
+    "role": "Contribute antigen-presentation and inflammatory-response functions within the dendritic compartment."
   },
   "pdc": {
     "id": "pdc",
@@ -2381,9 +2454,10 @@ const SUBTYPE_PROFILES = {
       "dc_atlas"
     ],
     "icon": "dendritic",
-    "summary": "A specialised detector capable of a strong antiviral interferon response.",
+    "summary": "Plasmacytoid dendritic cells (pDCs) are specialised immune cells capable of strong interferon responses.",
     "mechanism": "Viral sensing can induce substantial type I interferon production.",
-    "context": ""
+    "context": "",
+    "role": "Detect appropriate stimuli and produce type I interferons, particularly in antiviral settings."
   },
   "dc_migratory": {
     "id": "dc_migratory",
@@ -2395,9 +2469,10 @@ const SUBTYPE_PROFILES = {
       "immune_atlas"
     ],
     "icon": "dendritic",
-    "summary": "An activated dendritic cell prepared to carry information to a lymph node.",
+    "summary": "Migratory or activated dendritic cells are dendritic cells in a state associated with activation and trafficking.",
     "mechanism": "CCR7-associated migration and costimulatory programs can occur across dendritic-cell identities.",
-    "context": ""
+    "context": "",
+    "role": "Carry and present antigen while connecting tissue responses with lymph-node lymphocytes."
   },
   "nk_dim": {
     "id": "nk_dim",
@@ -2409,9 +2484,10 @@ const SUBTYPE_PROFILES = {
       "nk_atlas"
     ],
     "icon": "nk",
-    "summary": "The major blood NK compartment with strong cytotoxic machinery.",
+    "summary": "CD56-dim NK cells form a major natural killer population in human blood.",
     "mechanism": "NK1-associated programs include perforin, granzymes and Fc-receptor-linked effector capacity.",
-    "context": ""
+    "context": "",
+    "role": "Provide cytotoxic activity against susceptible targets, including antibody-coated cells."
   },
   "nk_bright": {
     "id": "nk_bright",
@@ -2423,9 +2499,10 @@ const SUBTYPE_PROFILES = {
       "nk_atlas"
     ],
     "icon": "nk",
-    "summary": "An NK compartment well equipped to respond to cytokine signals.",
+    "summary": "CD56-bright NK cells are a natural killer population with prominent cytokine-responsive features.",
     "mechanism": "Higher NKG2A and GZMK distinguish many NK2-like cells from cytotoxic NK1 populations.",
-    "context": ""
+    "context": "",
+    "role": "Respond to cytokine signals and contribute immune-regulatory cytokine activity."
   },
   "nk_adaptive": {
     "id": "nk_adaptive",
@@ -2437,9 +2514,10 @@ const SUBTYPE_PROFILES = {
       "nk_atlas"
     ],
     "icon": "nk",
-    "summary": "An NK population shaped by previous immune experience, often involving cytomegalovirus.",
+    "summary": "Adaptive-like NK cells are populations shaped by previous immune exposure, often associated with cytomegalovirus.",
     "mechanism": "NKG2C enrichment is common in the NK3 program described in the reference atlas.",
-    "context": ""
+    "context": "",
+    "role": "Contribute NK responses influenced by prior exposure and altered receptor or functional programs."
   },
   "mast_t": {
     "id": "mast_t",
@@ -2451,9 +2529,10 @@ const SUBTYPE_PROFILES = {
       "mast_atlas"
     ],
     "icon": "mast",
-    "summary": "A mast-cell phenotype often encountered at mucosal surfaces.",
+    "summary": "Tryptase-dominant mast cells are a protease-defined mast-cell phenotype frequently found at mucosal sites.",
     "mechanism": "Tryptase is expressed with little or no chymase in the traditional MC_T classification.",
-    "context": ""
+    "context": "",
+    "role": "Release mast-cell mediators within local mucosal immune responses."
   },
   "mast_tc": {
     "id": "mast_tc",
@@ -2465,9 +2544,10 @@ const SUBTYPE_PROFILES = {
       "mast_atlas"
     ],
     "icon": "mast",
-    "summary": "A mast-cell phenotype common in connective tissues.",
+    "summary": "Tryptase-and-chymase-positive mast cells are a protease-defined phenotype common in connective tissues.",
     "mechanism": "Co-expression of tryptase and chymase distinguishes the traditional MC_TC phenotype.",
-    "context": ""
+    "context": "",
+    "role": "Release granule and other inflammatory mediators in their tissue environment."
   },
   "mast_cycling": {
     "id": "mast_cycling",
@@ -2479,9 +2559,10 @@ const SUBTYPE_PROFILES = {
       "mast_atlas"
     ],
     "icon": "mast",
-    "summary": "Some tissue mast cells expand locally during inflammation.",
+    "summary": "Proliferating mast cells are mast cells in a cell-division-associated state.",
     "mechanism": "Cycling mast-cell states were observed in inflamed human nasal-polyp tissue.",
-    "context": ""
+    "context": "",
+    "role": "Contribute to local expansion of a tissue mast-cell population."
   },
   "neut_immature": {
     "id": "neut_immature",
@@ -2493,9 +2574,10 @@ const SUBTYPE_PROFILES = {
       "neutrophil_atlas"
     ],
     "icon": "neutrophil",
-    "summary": "A developing neutrophil that may enter blood during increased production.",
+    "summary": "Immature neutrophils are developing granulocytes that have not yet acquired a fully mature phenotype.",
     "mechanism": "Granule-gene programs and lower CD16 can accompany incomplete maturation.",
-    "context": ""
+    "context": "",
+    "role": "Contribute to the developing neutrophil pool; their appearance in blood can accompany increased production."
   },
   "neut_mature": {
     "id": "neut_mature",
@@ -2507,9 +2589,10 @@ const SUBTYPE_PROFILES = {
       "neutrophil_atlas"
     ],
     "icon": "neutrophil",
-    "summary": "A fully developed circulating cell ready for rapid microbial defence.",
+    "summary": "Mature neutrophils are fully developed granulocytes found in circulation and recruited tissues.",
     "mechanism": "Maturation is associated with a segmented nucleus and a mature surface phenotype.",
-    "context": ""
+    "context": "",
+    "role": "Provide rapid antimicrobial effector activity."
   },
   "neut_ifn": {
     "id": "neut_ifn",
@@ -2521,9 +2604,10 @@ const SUBTYPE_PROFILES = {
       "neutrophil_ifn"
     ],
     "icon": "neutrophil",
-    "summary": "A neutrophil carrying the transcriptional imprint of interferon signalling.",
+    "summary": "Interferon-responsive neutrophils are neutrophils with a gene-expression state associated with interferon exposure.",
     "mechanism": "An interferon-stimulated gene program can distinguish a response state within mature neutrophils.",
-    "context": ""
+    "context": "",
+    "role": "Participate in the local immune response with activity shaped by interferon signalling."
   },
   "eos_blood": {
     "id": "eos_blood",
@@ -2535,9 +2619,10 @@ const SUBTYPE_PROFILES = {
       "eosinophil_blood"
     ],
     "icon": "eosinophil",
-    "summary": "An eosinophil travelling in blood before recruitment into a tissue.",
+    "summary": "Circulating eosinophils are eosinophilic granulocytes found in blood before or between tissue recruitment events.",
     "mechanism": "Human blood studies find flexible transcriptional states rather than a universal set of intrinsic subsets.",
-    "context": ""
+    "context": "",
+    "role": "Provide a recruitable eosinophil population for tissue immune responses."
   },
   "eos_tissue": {
     "id": "eos_tissue",
@@ -2549,9 +2634,10 @@ const SUBTYPE_PROFILES = {
       "eosinophil_tissue"
     ],
     "icon": "eosinophil",
-    "summary": "Local signals can reshape an eosinophil after it enters tissue.",
+    "summary": "Inflamed-tissue eosinophils are eosinophils whose state is shaped by an inflammatory tissue environment.",
     "mechanism": "Human nasal-polyp eosinophils show heterogeneous activation programs that differ from circulating populations.",
-    "context": ""
+    "context": "",
+    "role": "Contribute local mediators that can affect tissue function and inflammatory injury."
   },
   "epi_basal": {
     "id": "epi_basal",
@@ -2564,9 +2650,10 @@ const SUBTYPE_PROFILES = {
       "lung_atlas"
     ],
     "icon": "epithelium",
-    "summary": "An airway reserve population that supports repair of the lining.",
+    "summary": "Basal cells are airway epithelial cells that include populations with repair and renewal capacity.",
     "mechanism": "Basal keratin and TP63 programs identify a major airway progenitor compartment.",
-    "context": ""
+    "context": "",
+    "role": "Support maintenance and restoration of the airway lining."
   },
   "epi_ciliated": {
     "id": "epi_ciliated",
@@ -2579,9 +2666,10 @@ const SUBTYPE_PROFILES = {
       "lung_atlas"
     ],
     "icon": "epithelium",
-    "summary": "Moves mucus and trapped material out of the airways.",
+    "summary": "Ciliated cells are airway epithelial cells bearing motile hair-like structures called cilia.",
     "mechanism": "Motile-cilia programs distinguish these cells from secretory epithelial populations.",
-    "context": ""
+    "context": "",
+    "role": "Move mucus and trapped particles along the airway surface."
   },
   "epi_secretory": {
     "id": "epi_secretory",
@@ -2594,9 +2682,10 @@ const SUBTYPE_PROFILES = {
       "lung_atlas"
     ],
     "icon": "epithelium",
-    "summary": "Produces protective secretions along the airway surface.",
+    "summary": "Club and related secretory cells are airway epithelial populations that produce protective secretions.",
     "mechanism": "SCGB1A1-associated secretory programs vary along the human respiratory tract.",
-    "context": ""
+    "context": "",
+    "role": "Contribute to the local secretory barrier and airway maintenance."
   },
   "epi_goblet": {
     "id": "epi_goblet",
@@ -2609,9 +2698,10 @@ const SUBTYPE_PROFILES = {
       "lung_atlas"
     ],
     "icon": "epithelium",
-    "summary": "Produces mucus that helps trap inhaled particles.",
+    "summary": "Goblet cells are specialised mucus-secreting epithelial cells.",
     "mechanism": "Mucin-rich programs distinguish goblet-like secretory cells.",
-    "context": ""
+    "context": "",
+    "role": "Produce mucus that helps trap inhaled particles and protect the airway surface."
   },
   "igm": {
     "id": "igm",
@@ -2624,9 +2714,10 @@ const SUBTYPE_PROFILES = {
       "imgt"
     ],
     "icon": "antibody",
-    "summary": "Often the first secreted antibody class in a new response.",
+    "summary": "IgM is an immunoglobulin class expressed on B cells and secreted during many antibody responses.",
     "mechanism": "Secreted IgM is usually pentameric and can efficiently recruit complement.",
-    "context": ""
+    "context": "",
+    "role": "Provide early antigen-specific antibody activity and support complement activation."
   },
   "igd": {
     "id": "igd",
@@ -2639,9 +2730,10 @@ const SUBTYPE_PROFILES = {
       "imgt"
     ],
     "icon": "antibody",
-    "summary": "A common antigen receptor alongside IgM on naive B cells.",
+    "summary": "IgD is an immunoglobulin class commonly co-expressed with IgM on naive B cells.",
     "mechanism": "IgD and IgM can share antigen specificity on the same naive B cell.",
-    "context": ""
+    "context": "",
+    "role": "Contribute to antigen recognition as part of the B-cell receptor."
   },
   "igg": {
     "id": "igg",
@@ -2654,9 +2746,10 @@ const SUBTYPE_PROFILES = {
       "imgt"
     ],
     "icon": "antibody",
-    "summary": "A major antibody class in blood and tissues.",
+    "summary": "IgG is a major immunoglobulin class in blood and tissues, comprising four human subclasses.",
     "mechanism": "Four human subclasses differ in their interactions with Fc receptors and complement.",
-    "context": ""
+    "context": "",
+    "role": "Support neutralisation and recruit antibody-dependent effector functions according to subclass and context."
   },
   "iga": {
     "id": "iga",
@@ -2669,9 +2762,10 @@ const SUBTYPE_PROFILES = {
       "imgt"
     ],
     "icon": "antibody",
-    "summary": "A major defender of mucosal surfaces.",
+    "summary": "IgA is an immunoglobulin class prominent in mucosal secretions as well as present in blood.",
     "mechanism": "Secretory IgA helps limit microbial access across epithelial barriers.",
-    "context": ""
+    "context": "",
+    "role": "Help protect mucosal surfaces by recognising antigen and limiting microbial access."
   },
   "ige": {
     "id": "ige",
@@ -2684,9 +2778,10 @@ const SUBTYPE_PROFILES = {
       "imgt"
     ],
     "icon": "antibody",
-    "summary": "Connects antigen recognition to mast cells and related allergic responses.",
+    "summary": "IgE is an immunoglobulin class that binds high-affinity receptors on cells including mast cells.",
     "mechanism": "FcεRI-bound IgE can trigger mast-cell activation when antigen cross-links it.",
-    "context": ""
+    "context": "",
+    "role": "Connect antigen recognition to effector responses involved in allergy and parasite-associated immunity."
   },
   "comp_classical": {
     "id": "comp_classical",
@@ -2698,9 +2793,10 @@ const SUBTYPE_PROFILES = {
       "bsi_complement"
     ],
     "icon": "complement",
-    "summary": "Antibody-bound targets can recruit this route into complement activation.",
+    "summary": "The classical pathway is a route into complement activation that can begin on antibody-bound targets.",
     "mechanism": "C1 activation feeds into C4 and C2 cleavage and subsequent C3 activation.",
-    "context": ""
+    "context": "",
+    "role": "Initiate complement responses through recognition components including C1q."
   },
   "comp_lectin": {
     "id": "comp_lectin",
@@ -2712,9 +2808,10 @@ const SUBTYPE_PROFILES = {
       "bsi_complement"
     ],
     "icon": "complement",
-    "summary": "Soluble recognition proteins detect suitable microbial surface carbohydrates.",
+    "summary": "The lectin pathway is a route into complement activation involving soluble recognition proteins.",
     "mechanism": "MBL-associated proteases activate the C4/C2 route to C3 cleavage.",
-    "context": ""
+    "context": "",
+    "role": "Recognise suitable microbial surface patterns and activate downstream complement components."
   },
   "comp_alternative": {
     "id": "comp_alternative",
@@ -2726,9 +2823,10 @@ const SUBTYPE_PROFILES = {
       "bsi_complement"
     ],
     "icon": "complement",
-    "summary": "An amplification route strengthens complement deposition on permissive surfaces.",
+    "summary": "The alternative pathway is a complement activation and amplification route on permissive surfaces.",
     "mechanism": "C3b, factor B and factor D support the alternative-pathway C3 convertase.",
-    "context": ""
+    "context": "",
+    "role": "Amplify complement deposition and strengthen downstream effector activity."
   }
 };
 const LINEAGE_MAPS = {
@@ -2776,7 +2874,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "naiveCD4",
-    "introduction": "CD4 cells recognise peptide on MHC II and shape other immune responses. Helper programs, regulatory states and memory states describe different aspects of these cells; one cell may belong to more than one of these categories."
+    "introduction": "CD4 cells recognise peptide on MHC II and shape other immune responses. Helper programs, regulatory states and memory states describe different aspects of these cells; one cell may belong to more than one of these categories.",
+    "definition": "CD4 T cells are lymphocytes that help coordinate immune responses. The family includes helper populations, regulatory cells and memory populations.",
+    "role": "Coordinate other immune cells and regulate the balance between effective defence and tissue protection."
   },
   "cd8": {
     "id": "cd8",
@@ -2813,7 +2913,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "naiveCD8",
-    "introduction": "CD8 cells recognise peptide on MHC I. Antigen exposure, location and duration shape naive, effector, memory and exhausted states. These states are related, but this map does not reconstruct the history of an individual cell."
+    "introduction": "CD8 cells recognise peptide on MHC I. Antigen exposure, location and duration shape naive, effector, memory and exhausted states. These states are related, but this map does not reconstruct the history of an individual cell.",
+    "definition": "CD8 T cells are lymphocytes that can recognise infected or abnormal cells after antigen-specific activation. Their family includes naive, effector and memory states.",
+    "role": "Generate targeted cellular responses and retain populations capable of responding to later antigen exposure."
   },
   "bcell": {
     "id": "bcell",
@@ -2857,7 +2959,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "bcell",
-    "introduction": "B cells recognise antigen with surface immunoglobulin. Activation can produce germinal-centre responses, memory and antibody-secreting cells. The map separates these identities and states without implying that every response follows every branch."
+    "introduction": "B cells recognise antigen with surface immunoglobulin. Activation can produce germinal-centre responses, memory and antibody-secreting cells. The map separates these identities and states without implying that every response follows every branch.",
+    "definition": "B cells are lymphocytes that recognise antigen through surface immunoglobulin. They can develop into antibody-secreting cells or persist as memory populations.",
+    "role": "Connect antigen recognition to antibody production and humoral immune memory."
   },
   "myeloid": {
     "id": "myeloid",
@@ -2898,7 +3002,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "monocyte",
-    "introduction": "Monocytes circulate in blood; macrophages are adapted to tissue environments. Recruitment can connect these compartments, but resident macrophage populations also have distinct developmental origins and renewal mechanisms."
+    "introduction": "Monocytes circulate in blood; macrophages are adapted to tissue environments. Recruitment can connect these compartments, but resident macrophage populations also have distinct developmental origins and renewal mechanisms.",
+    "definition": "Monocytes and macrophages are related myeloid cells. Monocytes circulate in blood; macrophages occupy tissues and are adapted to their local environment.",
+    "role": "Detect and remove harmful material, coordinate inflammation and help maintain or repair tissues."
   },
   "dc": {
     "id": "dc",
@@ -2939,7 +3045,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "dendritic",
-    "introduction": "Dendritic populations capture and present antigen, but differ in lineage, location and cytokine production. Stable identity and activation or migration state must be interpreted separately."
+    "introduction": "Dendritic populations capture and present antigen, but differ in lineage, location and cytokine production. Stable identity and activation or migration state must be interpreted separately.",
+    "definition": "Dendritic cells are specialised antigen-presenting cells. Their populations differ in where they are found and how they communicate with lymphocytes.",
+    "role": "Connect local antigen detection to the initiation and shaping of T-cell responses."
   },
   "nk": {
     "id": "nk",
@@ -2976,7 +3084,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "nk",
-    "introduction": "Natural killer cells integrate activating and inhibitory signals to respond to abnormal targets. Surface phenotypes and transcriptomic reference groups overlap imperfectly; both depend on tissue and activation."
+    "introduction": "Natural killer cells integrate activating and inhibitory signals to respond to abnormal targets. Surface phenotypes and transcriptomic reference groups overlap imperfectly; both depend on tissue and activation.",
+    "definition": "Natural killer (NK) cells are innate lymphocytes that respond to signs of stress or abnormality in other cells. They do not require the same initial antigen-specific priming as naive T cells.",
+    "role": "Eliminate susceptible abnormal targets and provide cytokine signals to other immune cells."
   },
   "mast": {
     "id": "mast",
@@ -3007,7 +3117,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "mast",
-    "introduction": "Mast cells develop in tissues and release granule and lipid mediators. Protease content and activation state vary across organs. The selected profiles are useful reference phenotypes, not a complete lineage tree."
+    "introduction": "Mast cells develop in tissues and release granule and lipid mediators. Protease content and activation state vary across organs. The selected profiles are useful reference phenotypes, not a complete lineage tree.",
+    "definition": "Mast cells are long-lived tissue cells that store inflammatory mediators in granules. Their composition and responses vary between organs.",
+    "role": "Release mediators rapidly in local defence and inflammation, including immediate allergic responses."
   },
   "neutrophil": {
     "id": "neutrophil",
@@ -3039,7 +3151,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "states",
     "parent": "neutrophil",
-    "introduction": "Neutrophils develop through a maturation sequence and change their activity during inflammation. A transcriptional cluster can reflect maturity, interferon exposure or sampling conditions rather than a separate lineage."
+    "introduction": "Neutrophils develop through a maturation sequence and change their activity during inflammation. A transcriptional cluster can reflect maturity, interferon exposure or sampling conditions rather than a separate lineage.",
+    "definition": "Neutrophils are circulating granulocytes that can enter tissues rapidly during inflammation. Their populations change with maturation and exposure to local signals.",
+    "role": "Provide rapid antimicrobial activity through uptake of microbes, granule components and other effector mechanisms."
   },
   "eosinophil": {
     "id": "eosinophil",
@@ -3070,7 +3184,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "states",
     "parent": "eosinophil",
-    "introduction": "Eosinophils move between blood and tissues and respond to their local environment. The profiles below illustrate context and activation, rather than universally agreed human eosinophil subtypes."
+    "introduction": "Eosinophils move between blood and tissues and respond to their local environment. The profiles below illustrate context and activation, rather than universally agreed human eosinophil subtypes.",
+    "definition": "Eosinophils are granulocytes found in blood and tissues. They participate in parasite-associated responses, tissue immune activity and allergic inflammation.",
+    "role": "Respond within type 2 immune environments and release mediators that affect pathogens and host tissue."
   },
   "epithelial": {
     "id": "epithelial",
@@ -3110,7 +3226,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "epithelium",
-    "introduction": "Airway epithelia contain populations with distinct barrier, secretory and clearance functions. These are tissue cells rather than leukocytes, but their interactions with immune cells are central to barrier defence."
+    "introduction": "Airway epithelia contain populations with distinct barrier, secretory and clearance functions. These are tissue cells rather than leukocytes, but their interactions with immune cells are central to barrier defence.",
+    "definition": "Airway epithelial cells form the lining of the respiratory tract. They include barrier-supporting, mucus-producing and ciliated populations.",
+    "role": "Maintain the airway barrier, produce protective secretions and remove trapped material."
   },
   "memory": {
     "id": "memory",
@@ -3154,7 +3272,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "cells",
     "parent": "memory",
-    "introduction": "Memory includes several B-cell and T-cell populations. Trafficking, effector readiness and antigen-receptor history distinguish the groups. Persistent plasma cells maintain antibody but differ from resting memory B cells."
+    "introduction": "Memory includes several B-cell and T-cell populations. Trafficking, effector readiness and antigen-receptor history distinguish the groups. Persistent plasma cells maintain antibody but differ from resting memory B cells.",
+    "definition": "Immune memory includes persistent B-cell and T-cell populations. Long-lived plasma cells contribute sustained antibody but differ from resting memory B cells.",
+    "role": "Support faster responses on re-exposure and maintain selected adaptive immune functions."
   },
   "antibody": {
     "id": "antibody",
@@ -3188,7 +3308,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "proteins",
     "parent": "antibody",
-    "introduction": "Immunoglobulin classes differ in constant-region structure, location and effector properties. Class describes the protein, not a cell lineage. Antigen-binding specificity and antibody class are separate features."
+    "introduction": "Immunoglobulin classes differ in constant-region structure, location and effector properties. Class describes the protein, not a cell lineage. Antigen-binding specificity and antibody class are separate features.",
+    "definition": "Antibodies are immunoglobulin proteins made by plasma cells. Classes such as IgM, IgG, IgA and IgE share antigen-binding functions but differ in their effector properties.",
+    "role": "Bind antigen and support neutralisation, target removal or activation of other immune mechanisms."
   },
   "complement": {
     "id": "complement",
@@ -3224,7 +3346,9 @@ const LINEAGE_MAPS = {
     ],
     "mode": "proteins",
     "parent": "complement",
-    "introduction": "Complement activation can begin through three routes that converge on shared downstream components. These branches describe pathways, not separate populations of cells or a differentiation sequence."
+    "introduction": "Complement activation can begin through three routes that converge on shared downstream components. These branches describe pathways, not separate populations of cells or a differentiation sequence.",
+    "definition": "Complement is a regulated network of soluble and cell-associated proteins. Three activation pathways converge on shared downstream effector components.",
+    "role": "Mark targets for removal, promote local inflammatory responses and attack susceptible microbial surfaces."
   }
 };
 const LINEAGE_LINKS = {
@@ -4858,10 +4982,13 @@ function railIntro(){
     <p class="reading-lead">Immune cells recognise changes in their environment and influence one another through signals and direct contact. This atlas follows those interactions from local detection to a specific response and memory. ${citations(['foundations'])}</p>
     <ol class="reading-steps"><li><strong>Recognise.</strong> Barriers and innate cells detect infection or tissue damage.</li><li><strong>Coordinate.</strong> Antigen-presenting cells and lymphocytes shape an appropriate response.</li><li><strong>Act and regulate.</strong> Cells and proteins control the threat while limiting tissue injury.</li><li><strong>Retain memory.</strong> Selected adaptive populations persist for future encounters.</li></ol>
     <p><a class="text-link" href="#foundations">Read the foundations and key terms ↓</a></p>
-    <section class="block"><h3>Explore a cell</h3><p>Select a cell for its definition, mechanism, marker guide, biological context and references. Choose <strong>Explore subtypes</strong> to examine its family in more detail.</p></section>
+    <section class="block"><h3>Explore a family or cell</h3><p>Open any family directly from <a href="#subsetMaps">Explore cell subsets</a> above the map. Start with its introduction, then select a subset.</p><p>Select a cell for its definition, mechanism, marker guide, biological context and references. Choose <strong>Explore subtypes</strong> to examine its family in more detail.</p></section>
     <section class="block"><h3>Follow a response</h3><p>Choose a scenario, then use <strong>Next</strong> to read at your own pace or <strong>Play</strong> to watch the sequence. The caption summarises each step; this panel explains the mechanism.</p></section>
     <section class="block"><h3>Read the map</h3><p>Colour identifies a cell family. Compartments show representative locations. Arrows can indicate signalling, differentiation or protein production; some act through intermediates described in the explanation.</p></section>
     ${renderReferences({refs:['foundations']})}`;
+}
+function introduction(definition,role,refs,heading='h3',plural=false){
+  return `<section class="identity-intro"><${heading}>${plural?'What they are':'What it is'}</${heading}><p>${esc(definition)} ${citations(refs)}</p><div class="main-role"><${heading}>Main role</${heading}><p>${esc(role)} ${citations(refs)}</p></div></section>`;
 }
 function railCell(id){
   const c=NODE[id],lin=LINEAGES[c.lin],es=edgesOf(id);
@@ -4872,12 +4999,12 @@ function railCell(id){
   }).join("");
   rail.innerHTML=`<div class="cell-heading"><svg class="cell-portrait" viewBox="-34 -34 68 68" aria-hidden="true">${glyph(c)}</svg><div><p class="eyebrow">${esc(COMPARTMENTS[c.comp])}</p><h2>${esc(c.name)}</h2></div></div>
     <div class="meta"><span class="chip" style="color:var(${lin.v})"><span class="swatch"></span>${esc(lin.label)}</span><span class="where">${esc(c.sub)}</span></div>
-    <p class="reading-lead">${esc(c.summary)} ${citations(c.refs)}</p>
+    ${introduction(c.summary,c.role,c.refs)}
     ${explorerLink(id)}
     ${readingSection('How it works',c.mechanism,c.refs)}
     <section class="block"><h3>${c.lin==='soluble'?'Molecules and measurements':'How it is identified'}</h3><p class="marker-copy">${esc(c.markers)}</p><p class="hint">${c.lin==='soluble'?'These entries describe proteins and assays rather than cell identities.':'Markers are measured features, not exclusive identifiers. “+” and “−” indicate detected or undetected expression; “high” and “low” are relative to the comparison population.'} ${citations(c.refs)}</p></section>
     ${readingSection('Biological context',c.context,c.contextRefs)}
-    ${renderTerms([c.summary,c.mechanism,c.context,c.markers,...es.map(e=>e.summary)].join(' '))}
+    ${renderTerms([c.summary,c.role,c.mechanism,c.context,c.markers,...es.map(e=>e.summary)].join(' '))}
     <section class="block"><h3>Interactions on this map <span class="hint">(${es.length})</span></h3><ul class="talks">${convos}</ul></section>
     ${renderReferences({refs:[...c.refs,...es.flatMap(e=>e.refs)],contextRefs:c.contextRefs})}
     <div class="block"><button type="button" class="pbtn" id="clearSel">${state.scen?'Back to scenario':'Clear selection'}</button></div>`;
@@ -5203,18 +5330,27 @@ function explorerLink(id){
 }
 function openLineage(cellId,opener){
   const link=LINEAGE_LINKS[cellId];if(!link) return;
+  openFamily(link[0],opener,link[1]);
+}
+function openFamily(familyId,opener,profileId=null){
+  const family=LINEAGE_MAPS[familyId];if(!family) return;
   stopPlay();
-  lineageView.family=link[0];lineageView.profile=link[1];lineageView.opener=opener||document.activeElement;
-  lineageFamily.value=lineageView.family;lineageSearch.value="";
+  lineageView.family=familyId;
+  lineageView.profile=familyProfiles(family).includes(profileId)?profileId:null;
+  lineageView.opener=opener||document.activeElement;
+  lineageFamily.value=familyId;lineageSearch.value="";
   renderLineage();
   document.documentElement.classList.add("lineage-open");
   lineageDialog.showModal();
+  document.getElementById("lineageWorkspace").scrollTop=0;
+  document.querySelector(".lineage-map-pane").scrollTop=0;
+  lineageDetail.scrollTop=0;
 }
 function renderLineage(){
   const f=LINEAGE_MAPS[lineageView.family];if(!f) return;
   lineageDialog.style.setProperty("--lineage-tone",`var(${LINEAGES[NODE[f.icon].lin].v})`);
   document.getElementById("lineageTitle").textContent=f.name;
-  document.getElementById("lineageDescription").textContent=f.summary;
+  document.getElementById("lineageDescription").innerHTML=`${esc(f.definition)} <span class="lineage-role"><strong>Main role:</strong> ${esc(f.role)}</span>`;
   document.getElementById("lineageReferenceLabel").textContent=f.mode==="proteins"?"Protein reference":"Curated human reference";
   document.getElementById("lineageMapNote").innerHTML=`<strong>How to read this map</strong>${esc(f.note)}`;
   document.getElementById("lineageFooter").textContent=f.mode==="proteins"
@@ -5224,7 +5360,7 @@ function renderLineage(){
 }
 function renderLineageTree(){
   const f=LINEAGE_MAPS[lineageView.family], query=normaliseSearch(lineageSearch.value);
-  const matches=id=>{const p=SUBTYPE_PROFILES[id];return normaliseSearch([p.name,p.kind,p.summary,p.mechanism,p.markers,p.location].join(" ")).includes(query);};
+  const matches=id=>{const p=SUBTYPE_PROFILES[id];return normaliseSearch([p.name,p.kind,p.summary,p.role,p.mechanism,p.markers,p.location].join(" ")).includes(query);};
   const groups=f.groups.map(g=>({...g,profiles:g.profiles.filter(matches)})).filter(g=>g.profiles.length);
   const count=groups.reduce((n,g)=>n+g.profiles.length,0), total=familyProfiles(f).length;
   document.getElementById("lineageResultCount").textContent=query?`${count} of ${total} profiles`:`${total} profiles · select to explore`;
@@ -5241,21 +5377,21 @@ function renderLineageDetail(){
   const refs=p?uniqueRefs([...p.refs,...parent.refs]):f.refs;
   if(!p){
     lineageDetail.innerHTML=`<svg class="detail-portrait" viewBox="-34 -34 68 68" aria-hidden="true">${glyph(NODE[f.icon])}</svg><span class="profile-kind">${f.mode==='proteins'?'Protein system':'Family overview'}</span><h3>${esc(f.name)}</h3>
-      <p>${esc(f.introduction)} ${citations(f.refs)}</p>
+      ${introduction(f.definition,f.role,f.refs,'h4',f.mode!=='proteins')}
       <div class="detail-block"><h4>How this family works</h4><p>${esc(parent.mechanism)} ${citations(parent.refs)}</p></div>
       <div class="detail-block"><h4>Reading the branches</h4><p>${esc(f.note)}</p><p>Choose any of the ${familyProfiles(f).length} profiles to read its role, distinguishing features and evidence.</p></div>
-      ${renderTerms(f.introduction+' '+parent.mechanism+' '+f.note)}
+      ${renderTerms(f.definition+' '+f.role+' '+parent.mechanism+' '+f.note)}
       <div class="detail-block"><h4>References and further reading</h4>${sourceList(f.refs)}</div>`;
   }else{
     lineageDetail.innerHTML=`<svg class="detail-portrait" viewBox="-34 -34 68 68" aria-hidden="true">${glyph(NODE[p.icon])}</svg><span class="profile-kind">${esc(p.kind)}</span><h3>${esc(p.name)}</h3>
-      <p>${esc(p.summary)} ${citations(p.refs)}</p>
-      <div class="family-context"><strong>Within the ${esc(f.name)}</strong><p>${esc(f.introduction)} ${citations(parent.refs)}</p></div>
+      ${introduction(p.summary,p.role,p.refs,'h4')}
+      <div class="family-context"><strong>Family context: ${esc(f.name)}</strong><p>${esc(f.introduction)} ${citations(parent.refs)}</p></div>
       <div class="detail-block"><h4>What distinguishes it</h4><p>${esc(p.mechanism)} ${citations(p.refs)}</p></div>
       <div class="detail-block"><h4>${f.mode==='proteins'?'Key molecules':'Marker guide'}</h4><div class="marker-list">${p.markers.split(', ').map(m=>`<span>${esc(m)}</span>`).join('')}</div>
         ${f.mode!=='proteins'?'<p class="lineage-next-hint">Protein markers and RNA clues are shown together. Interpret a panel with tissue and assay context, rather than using one marker alone.</p>':''}</div>
       <div class="detail-block"><h4>Where it is found</h4><p>${esc(p.location)}</p></div>
       <div class="detail-block"><h4>Biological context</h4><p>${esc(p.context||f.note)} ${citations(p.context?p.refs:f.refs)}</p></div>
-      ${renderTerms([f.introduction,p.summary,p.mechanism,p.markers,p.context||f.note].join(' '))}
+      ${renderTerms([f.introduction,p.summary,p.role,p.mechanism,p.markers,p.context||f.note].join(' '))}
       <div class="detail-block"><h4>References and further reading</h4>${sourceList(uniqueRefs([...refs,...f.refs]))}</div>`;
   }
   lineageDetail.insertAdjacentHTML('afterbegin','<button type="button" class="pbtn lineage-map-return" data-back-to-subtypes>← Back to subtype map</button>');
@@ -5313,6 +5449,20 @@ rail.addEventListener("click",event=>{
   const button=event.target.closest("[data-explore]");if(button) openLineage(button.dataset.explore,button);
 });
 
+
+/* Every family can be opened from the homepage without selecting an atlas cell. */
+const subsetDirectory=document.getElementById('subsetDirectory');
+subsetDirectory.innerHTML=Object.values(LINEAGE_MAPS).map(f=>{
+  const type=f.mode==='proteins'?(f.id==='antibody'?'Classes':'Pathways'):f.mode==='states'?'States':'Subsets';
+  return `<button type="button" class="family-link" data-family="${f.id}" aria-haspopup="dialog" aria-controls="lineageDialog" style="--family-tone:var(${LINEAGES[NODE[f.icon].lin].v})">
+    <svg viewBox="-34 -34 68 68" aria-hidden="true">${glyph(NODE[f.icon])}</svg>
+    <span><strong>${esc(f.name)}</strong><small>${type} · ${familyProfiles(f).length} profiles</small></span><span class="family-open" aria-hidden="true">↗</span>
+  </button>`;
+}).join('');
+subsetDirectory.addEventListener('click',event=>{
+  const button=event.target.closest('[data-family]');
+  if(button) openFamily(button.dataset.family,button);
+});
 
 /* Foundations remain available without changing the atlas selection. */
 document.getElementById('foundationContent').innerHTML=`
