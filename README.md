@@ -23,7 +23,9 @@ draining lymph node and bloodstream. Forty-three connections carry
 labels describing signalling, differentiation or protein production —
 `CXCL8`, `MHC II + CD80/86 + IL-12`,
 `perforin, granzyme B, FasL`. Connection labels appear when you hover a connection,
-select an entry or follow a scenario.
+select an entry or follow a scenario. Paths route around measured cell names
+and headings; connection labels leave the arrows and arrowheads unobstructed.
+Compartment borders include padding beneath the cell names.
 
 **Three reading depths, switched in place.** One control switches the
 explanatory prose throughout the page:
@@ -45,7 +47,9 @@ explanatory prose throughout the page:
 **Inspect without losing your place.** Choosing a cell during a scenario pauses
 playback. Use **Back to scenario** to return to the same step, or **Resume
 scenario** to continue. Escape pauses playback and clears cell inspection;
-**Free explore** exits the scenario.
+**Free explore** exits the scenario. Click anywhere on the map outside a cell
+to clear the highlight and pause playback; the selected scenario and step are
+kept, and **Play** restores the step’s connections.
 
 **A searchable index.** Find entries by cell name, marker or connected signal,
 including `Treg`, `CD4`, `IL-5` and `IFN-gamma`. Search filters the index without

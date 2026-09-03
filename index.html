@@ -185,7 +185,7 @@ header.top{
 .mapscroll.is-panning,.mapscroll.is-panning *{cursor:grabbing!important}
 .mapscroll:focus-visible{outline-offset:-3px}
 svg.atlas{
-  display:block;width:100%;min-width:0;max-width:none;height:auto;aspect-ratio:1200 / 790;
+  display:block;width:100%;min-width:0;max-width:none;height:auto;aspect-ratio:1300 / 860;
   -webkit-user-select:none;user-select:none;   /* clicking a cell must not select its text */
 }
 
@@ -396,10 +396,10 @@ footer.foot p{margin-bottom:.5em}
           </div>
         </div>
         <div class="mapscroll" id="mapViewport" role="region" aria-label="Immune cell map" aria-describedby="mapPanHint" tabindex="0">
-          <svg class="atlas" id="atlas" viewBox="0 0 1200 790" role="graphics-document group"
+          <svg class="atlas" id="atlas" viewBox="0 0 1300 860" role="graphics-document group"
                aria-label="Map of immune cells arranged by body compartment: airway surface, infected tissue, draining lymph node and bloodstream, with labelled signalling connections between them.">
             <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" orient="auto-start-reverse">
                 <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"></path>
               </marker>
             </defs>
@@ -482,14 +482,14 @@ const SOURCES = {
 };
 
 const CELLS = [
-{ id:"epithelium", name:"Epithelial cell", sub:"the lining", lin:"barrier", comp:"barrier", glyph:"brick", x:120, y:100,
+{ id:"epithelium", name:"Epithelial cell", sub:"the lining", lin:"barrier", comp:"barrier", glyph:"brick", x:120, y:112,
   plain:"The wall itself. A tight sheet of cells covered in slime and tiny beating hairs that sweep dirt out. Most infections never get past it. When a cell of the wall is broken into, it does not fight — it shouts.",
   student:"A physical and chemical barrier: tight junctions, mucus, cilia, defensins and lysozyme. It also senses. Pattern recognition receptors on and inside these cells detect viral RNA or bacterial products and trigger release of type I interferons plus the alarmins IL-33, TSLP and IL-25, which set the tone of everything that follows.",
   clinical:"Non-haematopoietic sentinel. TLR3/7/8 and RIG-I/MDA5 sensing drives IRF3/IRF7 and NF-κB, giving IFN-β and CXCL8. Alarmin release (IL-33, TSLP, IL-25) biases downstream responses towards type 2 immunity, which is why epithelial dysfunction sits upstream of asthma and atopic dermatitis. Infected epithelium downregulates MHC I under some viruses, exposing it to NK missing-self killing.",
   markers:"EpCAM+, cytokeratin+, MHC I+ (MHC II inducible)",
   note:"Epithelial barrier genes (FLG in filaggrin deficiency) predict atopic disease more strongly than most immune loci. Barrier first, immunity second." },
 
-{ id:"mast", name:"Mast cell", sub:"the tripwire", lin:"myeloid", comp:"tissue", glyph:"granule", x:300, y:205,
+{ id:"mast", name:"Mast cell", sub:"the tripwire", lin:"myeloid", comp:"tissue", glyph:"granule", x:300, y:238,
   plain:"A cell packed with pre-loaded chemical grenades, sitting permanently in your skin, gut and airways. It does not need to prepare. Touch the trigger and it dumps everything in seconds, which is why an allergic reaction is immediate.",
   student:"Tissue-resident granulocyte loaded with histamine, heparin, tryptase and TNF. Degranulates within seconds of FcεRI cross-linking by allergen-bound IgE, or on complement anaphylatoxins C3a/C5a. Histamine dilates vessels and makes them leaky, letting plasma proteins and cells flood in. It then makes leukotrienes and prostaglandins over minutes.",
   clinical:"Kit-dependent, long-lived, tissue-resident. Two arms: rapid degranulation (histamine, tryptase, TNF) and delayed eicosanoid/cytokine synthesis (LTC4, PGD2, IL-4, IL-5, IL-13). Tryptase is the clinical marker of systemic activation. Distinguish IgE-dependent activation from MRGPRX2-mediated pseudo-allergy to drugs such as vancomycin and neuromuscular blockers.",
@@ -510,7 +510,7 @@ const CELLS = [
   markers:"CD15+, CD16b+, CD66b+, CD11b+",
   note:"Neutrophil count below 0.5 × 10⁹/L is the threshold at which fever becomes an emergency, because there is no cell left to make the usual signs of infection." },
 
-{ id:"dendritic", name:"Dendritic cell", sub:"the messenger", lin:"myeloid", comp:"tissue", glyph:"dendrite", x:485, y:205,
+{ id:"dendritic", name:"Dendritic cell", sub:"the messenger", lin:"myeloid", comp:"tissue", glyph:"dendrite", x:485, y:238,
   plain:"The one cell that connects the two halves of your immune system. It grabs a piece of whatever is attacking, then walks out of the tissue and into a lymph node to show that piece to the cells that plan the specific counterattack. Without this journey, nothing adaptive happens.",
   student:"The professional antigen-presenting cell. On sensing danger it matures: it stops eating, upregulates MHC II and the costimulatory molecules CD80/CD86, switches on CCR7 and migrates up the lymphatic vessel to the draining lymph node. There it gives a naive T cell three signals — antigen on MHC, costimulation, and a cytokine that decides which kind of helper cell is made.",
   clinical:"Subsets matter: cDC1 (CLEC9A, XCR1) cross-present to CD8 and drive Th1; cDC2 (CD1c) favour Th2/Th17; pDC (CD123, BDCA-2) are the dominant source of type I interferon. Signal 3 sets lineage — IL-12 → Th1, IL-6/IL-23 → Th17, IL-10/TGF-β → tolerance. A DC presenting antigen without costimulation deletes or anergises the T cell instead of activating it, which is the basis of peripheral tolerance.",
@@ -531,7 +531,7 @@ const CELLS = [
   markers:"CD11b+, Siglec-8+, CCR3+, IL-5Rα (CD125)+",
   note:"A blood eosinophil count above 0.3 × 10⁹/L identifies the asthma and COPD patients most likely to benefit from inhaled corticosteroids." },
 
-{ id:"monocyte", name:"Monocyte", sub:"the reinforcement", lin:"myeloid", comp:"blood", glyph:"kidney", x:210, y:697,
+{ id:"monocyte", name:"Monocyte", sub:"the reinforcement", lin:"myeloid", comp:"blood", glyph:"kidney", x:210, y:732,
   plain:"A cell that circulates in the blood waiting for an address. When a tissue calls, it leaves the bloodstream and grows into a macrophage on arrival. Reinforcements that change job when they get there.",
   student:"Circulates for a day or so. CCL2 acting on CCR2 pulls classical monocytes out of the blood into inflamed tissue, where they differentiate into macrophages or inflammatory dendritic cells depending on local cytokines. Non-classical monocytes instead patrol the vessel lumen.",
   clinical:"Classical CD14++CD16−, intermediate CD14++CD16+, non-classical CD14+CD16++. The intermediate subset expands in active inflammation and correlates with cardiovascular risk. Monocyte HLA-DR expression falls in sepsis-associated immunoparalysis and is used as a recovery marker in ICU immunomonitoring.",
@@ -900,10 +900,10 @@ const matchKey = (e, k) => {
 };
 
 const BANDS = [
-  {x:32,  y:48,  w:636,  h:104, v:"--band-barrier", label:"Airway surface · epithelium & mucus"},
-  {x:32,  y:152, w:636,  h:452, v:"--band-tissue",  label:"Infected tissue"},
-  {x:692, y:48,  w:476,  h:556, v:"--band-node",    label:"Draining lymph node"},
-  {x:32,  y:630, w:1136, h:126, v:"--band-blood",   label:"Bloodstream"}
+  {x:32,  y:48,  w:636,  h:144, v:"--band-barrier", label:"Airway surface · epithelium & mucus"},
+  {x:32,  y:192, w:636,  h:444, v:"--band-tissue",  label:"Infected tissue"},
+  {x:692, y:48,  w:576,  h:588, v:"--band-node",    label:"Draining lymph node"},
+  {x:32,  y:660, w:1236, h:152, v:"--band-blood",   label:"Bloodstream"}
 ];
 
 const state = { depth:"plain", sel:null, scen:null, step:0, timer:null };
@@ -1067,136 +1067,239 @@ gBands.innerHTML = BANDS.map(b => `
   <rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="14"
         style="fill:var(${b.v});stroke:var(--line);stroke-width:1"/>
   <text class="band-label" x="${b.x+16}" y="${b.y+24}">${b.label}</text>`).join("")
-  + `<path d="M604,232 L706,196" style="fill:none;stroke:var(--band-barrier);stroke-width:30;stroke-linecap:round;opacity:.9"/>
-     <text class="band-label" x="655" y="252" text-anchor="middle">lymphatic</text>
-     <path d="M212,634 L182,486" style="fill:none;stroke:var(--band-blood);stroke-width:32;stroke-linecap:round;opacity:.9"/>
-     <text class="band-label" x="620" y="700" text-anchor="middle" style="letter-spacing:.06em;text-transform:none;font-size:12px">
+  + `<path d="M604,265 L706,229" style="fill:none;stroke:var(--band-barrier);stroke-width:30;stroke-linecap:round;opacity:.9"/>
+     <text class="band-label" x="655" y="285" text-anchor="middle">lymphatic</text>
+     <path d="M212,664 L182,486" style="fill:none;stroke:var(--band-blood);stroke-width:32;stroke-linecap:round;opacity:.9"/>
+     <text class="band-label" x="690" y="734" text-anchor="middle" style="letter-spacing:.06em;text-transform:none;font-size:12px">
        Cells leave the blood to enter tissue, and antibody made in the node returns through it
      </text>`;
 
-function edgeGeom(e){
-  const A = NODE[e.a], B = NODE[e.b];
-  const dx = B.x-A.x, dy = B.y-A.y, len = Math.hypot(dx,dy) || 1;
-  const ux = dx/len, uy = dy/len, pad = 34;
-  const ax = A.x+ux*pad, ay = A.y+uy*pad, bx = B.x-ux*pad, by = B.y-uy*pad;
-  const mx = (ax+bx)/2, my = (ay+by)/2, bow = (e.bow||0)*len;
-  const cx = mx - uy*bow, cy = my + ux*bow;
-  return { d:`M${ax},${ay} Q${cx},${cy} ${bx},${by}`, ax, ay, cx, cy, bx, by };
-}
-
-const GEOM = EDGES.map(edgeGeom);
-
 gEdges.innerHTML = EDGES.map((e,i) => {
-  const g = GEOM[i];
   const marker = e.both ? `marker-start="url(#arrow)" marker-end="url(#arrow)"` : `marker-end="url(#arrow)"`;
   return `<g data-i="${i}">
-    <path class="edge" d="${g.d}" ${marker}></path>
-    <path class="edgehit" d="${g.d}"></path>
+    <path class="edge" d="" ${marker}></path>
+    <path class="edgehit" d=""></path>
   </g>`;
 }).join("");
+
+function signalLines(signal){
+  const lines=[""];
+  for(const word of signal.split(" ")){
+    const last=lines.length-1;
+    if(lines[last] && lines[last].length+word.length+1>22) lines.push(word);
+    else lines[last]+=(lines[last]?" ":"")+word;
+  }
+  return lines.map((line,i)=>`<tspan x="0" y="${(i-(lines.length-1)/2)*13}">${line}</tspan>`).join("");
+}
 
 gLabels.innerHTML = EDGES.map((e,i) =>
   `<g class="edge-label" data-i="${i}">
      <path class="leader"></path>
      <rect rx="4"></rect>
-     <text text-anchor="middle" dominant-baseline="central">${e.sig}</text>
+     <text text-anchor="middle" dominant-baseline="central">${signalLines(e.sig)}</text>
    </g>`).join("");
 
-/* ---------- label placement -------------------------------------------
-   Every label used to sit on its curve's midpoint, so lighting eight
-   connections at once stacked them on each other and on the cell names.
-   Each label now searches along its own curve for a spot that hits
-   nothing, treating cells, cell names and already-placed labels as
-   obstacles, and draws a leader line when it has to sit off the curve.
-   --------------------------------------------------------------------- */
-const LBL = [];        // measured label sizes
-let OBST = [];         // static obstacles: cell glyphs and their names
+/* ---------- measured routing and connection labels ---------- */
+const LBL = [];
+let OBST = [];
+let GEOM = [];
+const MAP_BOUNDS = {w:1300, h:860, margin:20};
+const overlap = (a,b) => Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))
+  * Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+const growBox = (b,p) => ({x:b.x-p,y:b.y-p,w:b.w+2*p,h:b.h+2*p});
+const distance = (a,b) => Math.hypot(b.x-a.x,b.y-a.y);
+const insideMap = b => b.x >= MAP_BOUNDS.margin && b.y >= MAP_BOUNDS.margin &&
+  b.x+b.w <= MAP_BOUNDS.w-MAP_BOUNDS.margin && b.y+b.h <= MAP_BOUNDS.h-MAP_BOUNDS.margin;
 
-const qAt = (g,t) => {
-  const u = 1-t;
-  return { x:u*u*g.ax + 2*u*t*g.cx + t*t*g.bx,
-           y:u*u*g.ay + 2*u*t*g.cy + t*t*g.by };
-};
-const qNormal = (g,t) => {
-  const u = 1-t;
-  const dx = 2*u*(g.cx-g.ax) + 2*t*(g.bx-g.cx);
-  const dy = 2*u*(g.cy-g.ay) + 2*t*(g.by-g.cy);
-  const len = Math.hypot(dx,dy) || 1;
-  return { x:-dy/len, y:dx/len };
-};
-const overlap = (a,b) => Math.max(0, Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))
-                       * Math.max(0, Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+// Segment/rectangle intersection, including diagonal paths through text.
+function crossesBox(a,b,r){
+  if(Math.max(a.x,b.x)<r.x || Math.min(a.x,b.x)>r.x+r.w ||
+     Math.max(a.y,b.y)<r.y || Math.min(a.y,b.y)>r.y+r.h) return false;
+  let lo=0, hi=1;
+  for(const [start,delta,min,max] of [[a.x,b.x-a.x,r.x,r.x+r.w],[a.y,b.y-a.y,r.y,r.y+r.h]]){
+    if(Math.abs(delta)<.0001){ if(start<min || start>max) return false; }
+    else {
+      const t1=(min-start)/delta, t2=(max-start)/delta;
+      lo=Math.max(lo,Math.min(t1,t2)); hi=Math.min(hi,Math.max(t1,t2));
+      if(lo>hi) return false;
+    }
+  }
+  return true;
+}
+const blocked = (a,b,obstacles=OBST) => obstacles.some(r=>crossesBox(a,b,r));
 
-function measure(){
-  gLabels.querySelectorAll(".edge-label").forEach(g => {
-    const i = +g.dataset.i, t = g.querySelector("text"), r = g.querySelector("rect");
-    const bb = t.getBBox();
-    const w = Math.ceil(bb.width) + 10, h = Math.ceil(bb.height) + 6;
-    LBL[i] = { w, h };
-    r.setAttribute("x", -w/2); r.setAttribute("y", -h/2);
-    r.setAttribute("width", w); r.setAttribute("height", h);
-  });
-  OBST = [];
-  CELLS.forEach(c => OBST.push({ x:c.x-31, y:c.y-31, w:62, h:62 }));
-  gNodes.querySelectorAll("g.node").forEach(g => {
-    const c = NODE[g.dataset.id];
-    g.querySelectorAll(".node-label").forEach(t => {
-      const bb = t.getBBox();
-      OBST.push({ x:c.x+bb.x-3, y:c.y+bb.y-2, w:bb.width+6, h:bb.height+4 });
+// Rounded bends retain clearance because routing corners sit outside the obstacles.
+function roundedRoute(points){
+  let d=`M${points[0].x},${points[0].y}`;
+  for(let j=1;j<points.length-1;j++){
+    const a=points[j-1], b=points[j], c=points[j+1];
+    const radius=Math.min(10,distance(a,b)/3,distance(b,c)/3);
+    const p={x:b.x+(a.x-b.x)*radius/distance(a,b),y:b.y+(a.y-b.y)*radius/distance(a,b)};
+    const q={x:b.x+(c.x-b.x)*radius/distance(b,c),y:b.y+(c.y-b.y)*radius/distance(b,c)};
+    d+=` L${p.x},${p.y} Q${b.x},${b.y} ${q.x},${q.y}`;
+  }
+  const end=points[points.length-1];
+  return d+` L${end.x},${end.y}`;
+}
+
+function routeEdges(){
+  const vertices=[], ports=new Map();
+  // Visibility graph: connect clear corridors around measured cells, names and headings.
+  for(const obstacle of OBST){
+    const b=growBox(obstacle,8);
+    for(const p of [{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x+b.w,y:b.y+b.h},{x:b.x,y:b.y+b.h}]){
+      if(insideMap({x:p.x,y:p.y,w:0,h:0}) && !blocked(p,p)) vertices.push(p);
+    }
+  }
+  for(const c of CELLS){
+    const candidates=[];
+    for(const degrees of [0,-45,-90,-135,180,30,150]){
+      const angle=degrees*Math.PI/180, ux=Math.cos(angle), uy=Math.sin(angle);
+      const tip={x:c.x+ux*37,y:c.y+uy*37};
+      const p={x:c.x+ux*57,y:c.y+uy*57};
+      const obstacles=OBST.filter(o=>o.kind!=="cell" || o.id!==c.id);
+      if(blocked(tip,p,obstacles) || blocked(p,p)) continue;
+      candidates.push({index:vertices.length,tip,p,ux,uy});
+      vertices.push(p);
+    }
+    ports.set(c.id,candidates);
+  }
+  const graph=vertices.map(()=>[]);
+  for(let a=0;a<vertices.length;a++) for(let b=a+1;b<vertices.length;b++){
+    if(blocked(vertices[a],vertices[b])) continue;
+    const length=distance(vertices[a],vertices[b]);
+    graph[a].push({index:b,length}); graph[b].push({index:a,length});
+  }
+  const portUse=new Map();
+  GEOM=EDGES.map((e,i)=>{
+    const sources=ports.get(e.a), targets=ports.get(e.b);
+    const A=NODE[e.a], B=NODE[e.b], span=distance(A,B);
+    const ux=(B.x-A.x)/span, uy=(B.y-A.y)/span;
+    const cost=vertices.map(()=>Infinity), previous=vertices.map(()=>-1), visited=new Set();
+    for(const p of sources) cost[p.index]=24*(1-p.ux*ux-p.uy*uy)+(portUse.get(p.index)||0)*18;
+    for(let step=0;step<vertices.length;step++){
+      let at=-1;
+      for(let v=0;v<vertices.length;v++) if(!visited.has(v) && (at<0 || cost[v]<cost[at])) at=v;
+      if(at<0 || !Number.isFinite(cost[at])) break;
+      visited.add(at);
+      for(const next of graph[at]){
+        const value=cost[at]+next.length;
+        if(value<cost[next.index]){ cost[next.index]=value; previous[next.index]=at; }
+      }
+    }
+    const target=[...targets].sort((a,b)=>
+      (cost[a.index]+24*(1+a.ux*ux+a.uy*uy)+(portUse.get(a.index)||0)*18)-
+      (cost[b.index]+24*(1+b.ux*ux+b.uy*uy)+(portUse.get(b.index)||0)*18))[0];
+    if(!target || !Number.isFinite(cost[target.index])) throw new Error(`No clear route: ${e.a} → ${e.b}`);
+    const route=[];
+    let at=target.index;
+    while(at!==-1){ route.unshift(at); at=previous[at]; }
+    const source=sources.find(p=>p.index===route[0]);
+    portUse.set(source.index,(portUse.get(source.index)||0)+1);
+    portUse.set(target.index,(portUse.get(target.index)||0)+1);
+    const points=[source.tip,...route.map(v=>vertices[v]),target.tip];
+    const d=roundedRoute(points);
+    const group=gEdges.querySelector(`[data-i="${i}"]`);
+    group.querySelectorAll("path").forEach(path=>path.setAttribute("d",d));
+    const path=group.querySelector(".edge"), length=path.getTotalLength();
+    // Sample the rendered curve, so label placement uses the actual rounded path.
+    const count=Math.ceil(length/6);
+    const sampled=Array.from({length:count+1},(_,j)=>{
+      const p=path.getPointAtLength(length*j/count); return {x:p.x,y:p.y};
     });
+    const heads=[target,...(e.both?[source]:[])].map(p=>growBox({
+      x:Math.min(p.tip.x,p.p.x),y:Math.min(p.tip.y,p.p.y),
+      w:Math.abs(p.tip.x-p.p.x),h:Math.abs(p.tip.y-p.p.y)
+    },8));
+    return {d,points:sampled,length,heads};
   });
 }
 
-// Tuned, not guessed: widening this set to 11x9 made placement WORSE
-// (1 graze -> 6), because extra candidates let an early label take a spot a
-// later one needed. Re-measure before changing either list.
-const T_STEPS   = [.5,.42,.58,.34,.66,.26,.74,.18,.82];
-const OFFSETS   = [0,-15,15,-28,28,-42,42];
+function edgeAt(g,t){
+  const position=Math.max(0,Math.min(1,t))*(g.points.length-1);
+  const j=Math.min(g.points.length-2,Math.floor(position)), f=position-j;
+  const a=g.points[j], b=g.points[j+1], length=distance(a,b)||1;
+  return {x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f,nx:-(b.y-a.y)/length,ny:(b.x-a.x)/length};
+}
+
+function measure(){
+  gLabels.querySelectorAll(".edge-label").forEach(g=>{
+    const i=+g.dataset.i, bb=g.querySelector("text").getBBox(), r=g.querySelector("rect");
+    const w=Math.ceil(bb.width)+12, h=Math.ceil(bb.height)+8;
+    LBL[i]={w,h};
+    r.setAttribute("x",-w/2); r.setAttribute("y",-h/2);
+    r.setAttribute("width",w); r.setAttribute("height",h);
+  });
+  OBST=CELLS.map(c=>({x:c.x-34,y:c.y-34,w:68,h:68,kind:"cell",id:c.id}));
+  gNodes.querySelectorAll("g.node").forEach(g=>{
+    const c=NODE[g.dataset.id];
+    g.querySelectorAll(".node-label").forEach(t=>{
+      const b=t.getBBox();
+      OBST.push({...growBox({x:c.x+b.x,y:c.y+b.y,w:b.width,h:b.height},6),kind:"name",id:c.id});
+    });
+  });
+  gBands.querySelectorAll("text").forEach(t=>{
+    const b=t.getBBox(); OBST.push({...growBox({x:b.x,y:b.y,w:b.width,h:b.height},6),kind:"heading"});
+  });
+  routeEdges();
+}
 
 function placeLabels(indices){
-  const taken = [];
-  // widest first: the labels that are hardest to fit get first choice
-  const order = [...indices].sort((a,b) => (LBL[b]?.w||0) - (LBL[a]?.w||0));
-  const result = new Map();
-
-  order.forEach(i => {
-    const g = GEOM[i], dim = LBL[i] || { w:70, h:16 };
-    let best = null, bestScore = Infinity;
-
-    outer:
-    for(const t of T_STEPS){
-      const p = qAt(g,t), n = qNormal(g,t);
-      for(const off of OFFSETS){
-        const x = p.x + n.x*off, y = p.y + n.y*off;
-        const box = { x:x-dim.w/2-2, y:y-dim.h/2-2, w:dim.w+4, h:dim.h+4 };
-        // keep the chip inside the drawing
-        if(box.x < 4 || box.y < 4 || box.x+box.w > 1196 || box.y+box.h > 786) continue;
-        let score = 0;
-        for(const o of OBST)  score += overlap(box,o);
-        for(const o of taken) score += overlap(box,o) * 3;   // label-on-label is worst
-        score += Math.abs(off) * 0.35;                        // prefer sitting on the curve
-        if(score === 0){ best = {x,y,box,off,anchor:p}; break outer; }
-        if(score < bestScore){ bestScore = score; best = {x,y,box,off,anchor:p}; }
+  const taken=[], leaders=[], result=new Map();
+  const heads=indices.flatMap(i=>GEOM[i].heads);
+  const segments=indices.flatMap(i=>GEOM[i].points.slice(1).map((p,j)=>({a:GEOM[i].points[j],b:p})));
+  const protectedBoxes=[...OBST,...heads];
+  const clear=box=>box.x>=44 && box.y>=64 && box.x+box.w<=1256 && box.y+box.h<=800 &&
+    !protectedBoxes.some(o=>overlap(box,o)>0) &&
+    !segments.some(s=>crossesBox(s.a,s.b,box));
+  const fits=r=>!taken.some(o=>overlap(r.box,o)>0) && !leaders.some(s=>crossesBox(s.a,s.b,r.box)) &&
+    !blocked(r.start,r.anchor,taken);
+  const anchors=new Map(), candidates=new Map();
+  function candidate(i,x,y,anchor,checkedBox=null){
+    const dim=LBL[i], box=checkedBox || {x:x-dim.w/2-3,y:y-dim.h/2-3,w:dim.w+6,h:dim.h+6};
+    if(!checkedBox && !clear(box)) return null;
+    const dx=anchor.x-x,dy=anchor.y-y;
+    const ratio=1/Math.max(Math.abs(dx)/(dim.w/2+2),Math.abs(dy)/(dim.h/2+2));
+    const start={x:x+dx*ratio,y:y+dy*ratio};
+    if(blocked(start,anchor)) return null;
+    return {x,y,box,anchor,start,score:distance(start,anchor)+Math.abs(anchor.t-.5)*18};
+  }
+  for(const i of indices){
+    const dim=LBL[i], choices=[];
+    const stops=[.5,.4,.6,.3,.7,.2,.8,.12,.88].map(t=>({...edgeAt(GEOM[i],t),t}));
+    anchors.set(i,stops);
+    const consider=(x,y,p)=>{const r=candidate(i,x,y,p);if(r) choices.push(r);};
+    for(const p of stops){
+      for(const off of [-22,22,-36,36,-52,52,-72,72,-96,96]) consider(p.x+p.nx*off,p.y+p.ny*off,p);
+      for(const dx of [-dim.w/2-16,0,dim.w/2+16]) for(const dy of [-dim.h/2-16,0,dim.h/2+16])
+        if(dx || dy) consider(p.x+dx,p.y+dy,p);
+    }
+    candidates.set(i,choices.sort((a,b)=>a.score-b.score));
+  }
+  // Give crowded connections first choice, rather than letting an easy label take their only gap.
+  const order=[...indices].sort((a,b)=>candidates.get(a).length-candidates.get(b).length || LBL[b].w-LBL[a].w);
+  for(const i of order){
+    const dim=LBL[i];
+    let best=candidates.get(i).find(fits);
+    if(!best){
+      for(let y=MAP_BOUNDS.margin+dim.h/2+3;y<MAP_BOUNDS.h-MAP_BOUNDS.margin-dim.h/2-3;y+=18){
+        for(let x=MAP_BOUNDS.margin+dim.w/2+3;x<MAP_BOUNDS.w-MAP_BOUNDS.margin-dim.w/2-3;x+=24){
+          const box={x:x-dim.w/2-3,y:y-dim.h/2-3,w:dim.w+6,h:dim.h+6};
+          if(!clear(box) || taken.some(o=>overlap(box,o)>0)) continue;
+          for(const anchor of anchors.get(i)){
+            const r=candidate(i,x,y,anchor,box);
+            if(r && (!best || r.score<best.score) && fits(r)) best=r;
+          }
+        }
       }
     }
-    if(best){ taken.push(best.box); result.set(i,best); }
-  });
-
-  gLabels.querySelectorAll(".edge-label").forEach(el => {
-    const i = +el.dataset.i, r = result.get(i);
+    if(best){ taken.push(best.box); leaders.push({a:best.start,b:best.anchor}); result.set(i,best); }
+  }
+  gLabels.querySelectorAll(".edge-label").forEach(el=>{
+    const r=result.get(+el.dataset.i);
     if(!r){ el.classList.remove("show"); return; }
-    el.setAttribute("transform", `translate(${r.x.toFixed(1)},${r.y.toFixed(1)})`);
-    const leader = el.querySelector(".leader");
-    // a short line back to the curve when the chip had to step aside
-    if(Math.abs(r.off) > 16){
-      const dx = r.anchor.x - r.x, dy = r.anchor.y - r.y;
-      const len = Math.hypot(dx,dy) || 1;
-      const startGap = Math.min(len, (LBL[i]?.h || 16)/2 + 2);
-      leader.setAttribute("d", `M${(dx/len*startGap).toFixed(1)},${(dy/len*startGap).toFixed(1)} L${dx.toFixed(1)},${dy.toFixed(1)}`);
-      leader.style.display = "";
-    } else {
-      leader.style.display = "none";
-    }
+    el.setAttribute("transform",`translate(${r.x.toFixed(2)},${r.y.toFixed(2)})`);
+    el.querySelector(".leader").setAttribute("d",`M${r.start.x-r.x},${r.start.y-r.y} L${r.anchor.x-r.x},${r.anchor.y-r.y}`);
   });
 }
 
@@ -1264,7 +1367,7 @@ function renderCellCaption(){
   document.getElementById("stepTitle").textContent = NODE[state.sel].name;
   document.getElementById("stepBody").textContent = sc
     ? `You are inspecting a cell. ${sc.label} is paused at “${sc.steps[state.step].title}”. Choose Back to scenario or Resume scenario to continue.`
-    : "Connections from this entry are lit on the map. Choose a conversation in the details panel to follow it.";
+    : "Connections from this entry are lit on the map. Click an empty area to clear the highlight, or choose a conversation in the details panel to follow it.";
 }
 
 function renderExploreCaption(){
@@ -1608,7 +1711,7 @@ playBtn.addEventListener("click", () => {
   if(state.timer){ stopPlay(); return; }
   if(!state.scen){ startScenario(SCENARIOS[0].id); }
   const sc = SCENARIOS.find(s => s.id === state.scen);
-  if(state.sel) showStep();
+  showStep();
   if(state.step >= sc.steps.length-1){ state.step = 0; showStep(); }
   state.timer = setInterval(() => {
     const s = SCENARIOS.find(x => x.id === state.scen);
@@ -1729,6 +1832,14 @@ mapViewport.addEventListener("click",event => {
   event.preventDefault();
   event.stopImmediatePropagation();
 },true);
+
+// Blank space, compartment headings and connection lines all dismiss the highlight.
+// The capture handler above consumes drags before they can reach this listener.
+mapViewport.addEventListener("click",event => {
+  if(event.target.closest("g.node")) return;
+  clearSelection();
+  paint({});
+});
 
 /* ---------- reading depth ---------- */
 document.getElementById("depthSeg").addEventListener("click", ev => {
