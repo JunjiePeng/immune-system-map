@@ -471,6 +471,10 @@ html.lineage-open{overflow:hidden}
 
 .lineage-map-intro .lineage-role{display:block;margin-top:8px}
 
+
+.family-search{margin-bottom:15px;max-width:680px}.family-search label{display:block;font-size:.78rem;font-weight:600;margin-bottom:6px}.family-search-row{display:flex;gap:8px}.family-search input{min-width:0;width:100%;font:inherit;font-size:.86rem;border:1px solid var(--line-strong);border-radius:8px;padding:11px 13px;color:var(--ink);background:var(--ground)}.family-search .hint{font-size:.73rem;margin-top:6px}.subset-search-results{margin-top:16px}.subset-search-results h3{font:600 .86rem "Public Sans",sans-serif;margin-bottom:10px}.subset-result-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.subset-result{display:block;text-align:left;border:1px solid var(--line);border-radius:9px;padding:13px;background:var(--surface);cursor:pointer;min-width:0}.subset-result:hover{border-color:var(--accent);background:var(--accent-soft)}.subset-result strong{display:block;font-size:.85rem}.subset-result small{display:block;color:var(--muted);font-size:.7rem;margin:4px 0 7px}.subset-result p{color:var(--ink-2);font-size:.78rem;line-height:1.6}.subset-empty{padding:16px;border:1px dashed var(--line-strong);border-radius:8px;color:var(--ink-2);font-size:.85rem}[hidden]{display:none!important}
+@media(max-width:760px){.subset-result-grid{grid-template-columns:1fr 1fr}.header-links a{min-height:42px;display:flex;align-items:center}.pbtn{min-height:36px}}
+@media(max-width:480px){.subset-result-grid{grid-template-columns:1fr}.family-search-row{align-items:stretch}}
 </style>
 </head>
 <body>
@@ -482,12 +486,14 @@ html.lineage-open{overflow:hidden}
       <h1>Immune <em>Crosstalk</em> Atlas</h1>
       <p>Understand immune responses from the first signal to long-term memory. Explore cells and subtypes through clear definitions, mechanisms, marker guides and research references.</p>
     </div>
-    <nav class="header-links" aria-label="Learning resources"><a href="#subsetMaps">Cell subsets</a><a href="#foundations">Start with the foundations</a><a href="#glossary">Key terms</a></nav>
+    <nav class="header-links" aria-label="Learning resources"><a href="#mapViewport">Interaction map</a><a href="#subsetMaps">Cell subsets</a><a href="#foundations">Start with the foundations</a><a href="#glossary">Key terms</a></nav>
   </header>
 
   <section class="subset-launcher" id="subsetMaps" aria-labelledby="subsetMapsHeading">
     <div class="subset-launcher-heading"><div><h2 id="subsetMapsHeading">Explore cell subsets</h2><p>Open a family to learn what its cells do, then explore individual subsets. Antibody classes and complement pathways are included below.</p></div><a href="#mapViewport">Go to the interaction map ↓</a></div>
+    <div class="family-search"><label for="familySearch">Find a family, subset or marker</label><div class="family-search-row"><input id="familySearch" type="search" placeholder="Try CD8, regulatory, plasma or CCR7" autocomplete="off" aria-controls="subsetDirectory subsetSearchResults"><button type="button" class="pbtn" id="clearFamilySearch" hidden>Clear</button></div><p id="familySearchStatus" class="hint" role="status" aria-live="polite"></p></div>
     <div class="subset-directory" id="subsetDirectory"></div>
+    <div id="subsetSearchResults" class="subset-search-results" hidden></div>
   </section>
 
   <nav class="scenarios" aria-label="Scenarios">
@@ -5463,6 +5469,35 @@ subsetDirectory.addEventListener('click',event=>{
   const button=event.target.closest('[data-family]');
   if(button) openFamily(button.dataset.family,button);
 });
+
+
+/* Search the complete reference catalogue before entering a family. */
+const familySearch=document.getElementById('familySearch');
+const subsetSearchResults=document.getElementById('subsetSearchResults');
+const clearFamilySearch=document.getElementById('clearFamilySearch');
+const profileFamilies=Object.fromEntries(Object.keys(SUBTYPE_PROFILES).map(id=>[id,Object.values(LINEAGE_MAPS).filter(f=>familyProfiles(f).includes(id))]));
+function filterFamilies(){
+  const query=normaliseSearch(familySearch.value);
+  const matches=Object.values(SUBTYPE_PROFILES).filter(p=>query&&normaliseSearch([p.name,p.summary,p.role,p.markers,...profileFamilies[p.id].map(f=>f.name)].join(' ')).includes(query));
+  let familyCount=0;
+  subsetDirectory.querySelectorAll('[data-family]').forEach(button=>{
+    const f=LINEAGE_MAPS[button.dataset.family];
+    const visible=!query||normaliseSearch([f.name,f.definition,f.role].join(' ')).includes(query)||matches.some(p=>familyProfiles(f).includes(p.id));
+    button.hidden=!visible;if(visible)familyCount++;
+  });
+  clearFamilySearch.hidden=!query;
+  document.getElementById('familySearchStatus').textContent=query?`${familyCount} families and ${matches.length} matching profiles.`:'13 family maps · search includes all 57 profiles and their markers.';
+  subsetSearchResults.hidden=!query;
+  subsetSearchResults.innerHTML=!query?'':matches.length?`<h3>Matching profiles</h3><div class="subset-result-grid">${matches.map(p=>{
+    const families=profileFamilies[p.id];
+    return `<button type="button" class="subset-result" data-open-profile="${p.id}" data-in-family="${families[0].id}" aria-haspopup="dialog" aria-controls="lineageDialog"><strong>${esc(p.name)} ↗</strong><small>${esc(families.map(f=>f.name).join(' · '))}</small><p>${esc(p.role)}</p></button>`;
+  }).join('')}</div>`:`<p class="subset-empty">${familyCount?'Choose a matching family above to browse its profiles.':'No matches. Try a broader cell name or marker, such as CD4, memory or CD19.'}</p>`;
+}
+familySearch.addEventListener('input',filterFamilies);
+clearFamilySearch.addEventListener('click',()=>{familySearch.value='';filterFamilies();familySearch.focus();});
+familySearch.addEventListener('keydown',event=>{if(event.key==='Escape'){event.stopPropagation();familySearch.value='';filterFamilies();}});
+subsetSearchResults.addEventListener('click',event=>{const button=event.target.closest('[data-open-profile]');if(button)openFamily(button.dataset.inFamily,button,button.dataset.openProfile);});
+filterFamilies();
 
 /* Foundations remain available without changing the atlas selection. */
 document.getElementById('foundationContent').innerHTML=`

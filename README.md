@@ -69,6 +69,11 @@ family introduction, without selecting a cell first. The header also links
 to this directory. Closing the explorer returns focus to the family card and
 preserves the current atlas selection, zoom and scenario step.
 
+**Search before opening a family.** The homepage search matches family names,
+subset descriptions and marker clues across all 57 profiles. Results open the
+selected profile directly and return keyboard focus to that result when closed.
+Shared profiles appear once, with their associated families listed.
+
 **A lineage explorer.** You can also select an atlas entry and choose **Explore subtypes** (or
 **Explore cell states**, **antibody classes**, or **complement pathways**).
 Thirteen focused maps contain 57 distinct reference profiles, with some memory
